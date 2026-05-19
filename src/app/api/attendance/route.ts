@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
       name: true,
       belt: true,
       degrees: true,
+      initialCheckins: true,
       photoUrl: true,
       bookings: {
         where: {
@@ -49,7 +50,7 @@ export async function GET(req: NextRequest) {
     belt: s.belt,
     degrees: s.degrees,
     photoUrl: s.photoUrl,
-    checkins: s.bookings.length,
+    checkins: s.bookings.length + s.initialCheckins,
   }));
 
   const totalCheckins = studentsData.reduce((sum, s) => sum + s.checkins, 0);

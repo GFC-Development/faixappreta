@@ -9,24 +9,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
-  const { userId, type, date, groupClassId, privateSlotId } = await req.json();
+  const { userId, count } = await req.json();
 
-  if (!userId || !type || !date) {
-    return NextResponse.json({ error: "Campos obrigatórios: userId, type, date" }, { status: 400 });
+  if (!userId) {
+    return NextResponse.json({ error: "userId é obrigatório" }, { status: 400 });
   }
 
-  const booking = await prisma.booking.create({
-    data: {
-      userId,
-      type,
-      date,
-      groupClassId: type === "GROUP" ? groupClassId : null,
-      privateSlotId: type === "PRIVATE" ? privateSlotId : null,
-      checkedIn: true,
-      status: "CONFIRMED",
-    },
-    include: { groupClass: true, privateSlot: true },
+  const increment = typeof count === "number" && count > 0 ? count : 1;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { initialCheckins: true },
   });
 
-  return NextResponse.json(booking, { status: 201 });
+  if (!user) {
+    return NextResponse.json({ error: "Aluno não encontrado" }, { status: 404 });
+  }
+
+  const updated = await prisma.user.update({
+    where: { id: userId },
+    data: { initialCheckins: user.initialCheckins + increment },
+    select: { id: true, initialCheckins: true },
+  });
+
+  return NextResponse.json(updated);
 }

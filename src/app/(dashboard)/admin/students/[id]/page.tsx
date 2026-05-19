@@ -80,34 +80,26 @@ export default function StudentProfilePage() {
   const [requirements, setRequirements] = useState<BeltRequirement[]>([]);
   const [degreeRequirements, setDegreeRequirements] = useState<DegreeRequirementData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [groupClasses, setGroupClasses] = useState<{ id: string; name: string; dayOfWeek: number }[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [addDate, setAddDate] = useState("");
-  const [addType, setAddType] = useState("GROUP");
-  const [addGroupClassId, setAddGroupClassId] = useState("");
+  const [addCount, setAddCount] = useState(1);
   const [saving, setSaving] = useState(false);
 
-  async function addManualBooking() {
-    if (!addDate) return;
+  async function addManualCheckins() {
+    if (addCount < 1) return;
     setSaving(true);
     const res = await fetch("/api/bookings/manual", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        userId: id,
-        type: addType,
-        date: addDate,
-        groupClassId: addType === "GROUP" ? addGroupClassId || null : null,
-      }),
+      body: JSON.stringify({ userId: id, count: addCount }),
     });
     if (res.ok) {
-      const booking = await res.json();
+      const data = await res.json();
       setStudent((prev) => {
         if (!prev) return prev;
-        return { ...prev, bookings: [booking, ...prev.bookings] };
+        return { ...prev, initialCheckins: data.initialCheckins };
       });
       setShowAddForm(false);
-      setAddDate("");
+      setAddCount(1);
     }
     setSaving(false);
   }
@@ -128,13 +120,11 @@ export default function StudentProfilePage() {
       fetch(`/api/students/${id}`).then((r) => r.json()),
       fetch("/api/belt-requirements").then((r) => r.json()),
       fetch("/api/belt-requirements?type=degree").then((r) => r.json()),
-      fetch("/api/group-classes").then((r) => r.json()),
     ])
-      .then(([studentData, reqData, degreeReqData, gcData]) => {
+      .then(([studentData, reqData, degreeReqData]) => {
         if (!studentData.error) setStudent(studentData);
         setRequirements(reqData);
         if (Array.isArray(degreeReqData)) setDegreeRequirements(degreeReqData);
-        if (Array.isArray(gcData)) setGroupClasses(gcData);
       })
       .finally(() => setLoading(false));
   }, [id]);
@@ -336,46 +326,22 @@ export default function StudentProfilePage() {
 
         {showAddForm && (
           <div className="mb-4 p-3 bg-zinc-800/50 rounded-lg space-y-3">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <p className="text-xs text-zinc-400">
+              Adicione presenças retroativas para este aluno. O total será somado ao contador de check-ins.
+            </p>
+            <div className="flex items-end gap-3">
               <div>
-                <label className="text-xs text-zinc-400 block mb-1">Data</label>
+                <label className="text-xs text-zinc-400 block mb-1">Quantidade</label>
                 <input
-                  type="date"
-                  value={addDate}
-                  onChange={(e) => setAddDate(e.target.value)}
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-sm text-zinc-50"
+                  type="number"
+                  min={1}
+                  value={addCount}
+                  onChange={(e) => setAddCount(Number(e.target.value))}
+                  className="w-24 bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-sm text-zinc-50"
                 />
               </div>
-              <div>
-                <label className="text-xs text-zinc-400 block mb-1">Tipo</label>
-                <select
-                  value={addType}
-                  onChange={(e) => setAddType(e.target.value)}
-                  className="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-sm text-zinc-50"
-                >
-                  <option value="GROUP">Coletiva</option>
-                  <option value="PRIVATE">Particular</option>
-                </select>
-              </div>
-              {addType === "GROUP" && (
-                <div>
-                  <label className="text-xs text-zinc-400 block mb-1">Aula</label>
-                  <select
-                    value={addGroupClassId}
-                    onChange={(e) => setAddGroupClassId(e.target.value)}
-                    className="w-full bg-zinc-900 border border-zinc-700 rounded px-2 py-1.5 text-sm text-zinc-50"
-                  >
-                    <option value="">Selecionar...</option>
-                    {groupClasses.map((gc) => (
-                      <option key={gc.id} value={gc.id}>{gc.name}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Button size="sm" onClick={addManualBooking} disabled={saving || !addDate}>
-                {saving ? "Salvando..." : "Salvar"}
+              <Button size="sm" onClick={addManualCheckins} disabled={saving || addCount < 1}>
+                {saving ? "Salvando..." : "Adicionar"}
               </Button>
               <Button size="sm" variant="secondary" onClick={() => setShowAddForm(false)}>
                 Cancelar

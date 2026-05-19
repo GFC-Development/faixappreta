@@ -12,6 +12,7 @@ export async function GET() {
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: {
+      initialCheckins: true,
       lastGraduationDate: true,
       lastPaymentDate: true,
       monthlyDueDay: true,

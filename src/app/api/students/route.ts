@@ -20,6 +20,7 @@ export async function GET() {
       studentType: true,
       belt: true,
       degrees: true,
+      initialCheckins: true,
       photoUrl: true,
       monthlyDueDay: true,
       lastPaymentDate: true,

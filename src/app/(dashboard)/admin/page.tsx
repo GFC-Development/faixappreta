@@ -20,6 +20,7 @@ interface Student {
   photoUrl: string | null;
   monthlyDueDay: number | null;
   lastPaymentDate: string | null;
+  initialCheckins: number;
   _count: { bookings: number };
 }
 
@@ -62,7 +63,7 @@ export default function AdminDashboard() {
     (s) => s.studentType === "PARTICULAR"
   ).length;
   const totalCheckins = students.reduce(
-    (sum, s) => sum + s._count.bookings,
+    (sum, s) => sum + s._count.bookings + s.initialCheckins,
     0
   );
 
@@ -160,7 +161,7 @@ export default function AdminDashboard() {
                         </span>
                       </div>
                     </td>
-                    <td className="py-3 px-3 text-zinc-300 hidden sm:table-cell">{s._count.bookings}</td>
+                    <td className="py-3 px-3 text-zinc-300 hidden sm:table-cell">{s._count.bookings + s.initialCheckins}</td>
                     <td className="py-3 px-3 hidden sm:table-cell">
                       {paymentStatus ? (
                         <Badge variant={paymentStatus.variant}>

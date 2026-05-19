@@ -89,6 +89,7 @@ export default function StudentHome() {
   const [events, setEvents] = useState<Event[]>([]);
   const [requirements, setRequirements] = useState<BeltRequirement[]>([]);
   const [degreeRequirements, setDegreeRequirements] = useState<DegreeRequirementData[]>([]);
+  const [initialCheckins, setInitialCheckins] = useState(0);
   const [lastGraduationDate, setLastGraduationDate] = useState<string | null>(null);
   const [currentWeekStart, setCurrentWeekStart] = useState(
     startOfWeek(new Date(), { weekStartsOn: 1 })
@@ -108,12 +109,13 @@ export default function StudentHome() {
     fetch("/api/student/profile")
       .then((r) => r.json())
       .then((data) => {
+        if (data.initialCheckins) setInitialCheckins(data.initialCheckins);
         if (data.lastGraduationDate) setLastGraduationDate(data.lastGraduationDate);
       })
       .catch(() => {});
   }, []);
 
-  const checkins = bookings.filter((b) => b.checkedIn).length;
+  const checkins = bookings.filter((b) => b.checkedIn).length + initialCheckins;
 
   const weekDays = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => addDays(currentWeekStart, i));
