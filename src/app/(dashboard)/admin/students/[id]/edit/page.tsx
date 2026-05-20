@@ -30,6 +30,7 @@ export default function EditStudentPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [studentType, setStudentType] = useState("COLETIVA");
   const [belt, setBelt] = useState("");
   const [degrees, setDegrees] = useState(0);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -47,6 +48,7 @@ export default function EditStudentPage() {
       .then((data) => {
         if (!data.error) {
           setStudent(data);
+          setStudentType(data.studentType || "COLETIVA");
           setBelt(data.belt);
           setDegrees(data.degrees);
           setPhotoUrl(data.photoUrl);
@@ -91,7 +93,7 @@ export default function EditStudentPage() {
       newPhotoUrl = uploadData.url;
     }
 
-    const body: Record<string, unknown> = { belt, degrees, photoUrl: newPhotoUrl, modalities: modalities.join(","), initialCheckins: Number(initialCheckins) || 0 };
+    const body: Record<string, unknown> = { studentType, belt, degrees, photoUrl: newPhotoUrl, modalities: modalities.join(","), initialCheckins: Number(initialCheckins) || 0 };
     if (monthlyDueDay) {
       body.monthlyDueDay = Number(monthlyDueDay);
     } else {
@@ -178,6 +180,19 @@ export default function EditStudentPage() {
             />
           </label>
         </div>
+      </Card>
+
+      {/* Plano */}
+      <Card className="mb-6">
+        <h2 className="text-lg font-semibold mb-4 text-zinc-50">Plano</h2>
+        <Select
+          label="Tipo de Aula"
+          value={studentType}
+          onChange={(e) => setStudentType(e.target.value)}
+        >
+          <option value="COLETIVA">Coletiva</option>
+          <option value="PARTICULAR">Particular</option>
+        </Select>
       </Card>
 
       {/* Modalidades */}
