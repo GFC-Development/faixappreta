@@ -17,6 +17,7 @@ model User {
   belt               String    @default("BRANCA")
   degrees            Int       @default(0)
   initialCheckins    Int       @default(0)
+  modalities         String    @default("GRAPPLING") // GRAPPLING, MMA, ou GRAPPLING,MMA
   photoUrl           String?
   monthlyDueDay      Int?
   lastPaymentDate    DateTime?

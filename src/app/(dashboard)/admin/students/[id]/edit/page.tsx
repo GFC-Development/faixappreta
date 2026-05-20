@@ -38,6 +38,7 @@ export default function EditStudentPage() {
   const [initialCheckins, setInitialCheckins] = useState<string>("0");
   const [monthlyDueDay, setMonthlyDueDay] = useState<string>("");
   const [lastPaymentDate, setLastPaymentDate] = useState<string>("");
+  const [modalities, setModalities] = useState<string[]>(["GRAPPLING"]);
   const [resetPassword, setResetPassword] = useState("");
 
   useEffect(() => {
@@ -49,6 +50,7 @@ export default function EditStudentPage() {
           setBelt(data.belt);
           setDegrees(data.degrees);
           setPhotoUrl(data.photoUrl);
+          setModalities((data.modalities || "GRAPPLING").split(","));
           setInitialCheckins(String(data.initialCheckins || 0));
           setMonthlyDueDay(data.monthlyDueDay ? String(data.monthlyDueDay) : "");
           setLastPaymentDate(
@@ -89,7 +91,7 @@ export default function EditStudentPage() {
       newPhotoUrl = uploadData.url;
     }
 
-    const body: Record<string, unknown> = { belt, degrees, photoUrl: newPhotoUrl, initialCheckins: Number(initialCheckins) || 0 };
+    const body: Record<string, unknown> = { belt, degrees, photoUrl: newPhotoUrl, modalities: modalities.join(","), initialCheckins: Number(initialCheckins) || 0 };
     if (monthlyDueDay) {
       body.monthlyDueDay = Number(monthlyDueDay);
     } else {
@@ -175,6 +177,33 @@ export default function EditStudentPage() {
               onChange={handlePhotoChange}
             />
           </label>
+        </div>
+      </Card>
+
+      {/* Modalidades */}
+      <Card className="mb-6">
+        <h2 className="text-lg font-semibold mb-4 text-zinc-50">Modalidades</h2>
+        <div className="flex flex-col gap-3">
+          {[
+            { value: "GRAPPLING", label: "Grappling / Jiu-Jitsu" },
+            { value: "MMA", label: "MMA / Boxe" },
+          ].map((m) => (
+            <label key={m.value} className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={modalities.includes(m.value)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setModalities((prev) => [...prev, m.value]);
+                  } else {
+                    setModalities((prev) => prev.filter((v) => v !== m.value));
+                  }
+                }}
+                className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-orange-500 focus:ring-orange-500"
+              />
+              <span className="text-sm text-zinc-200">{m.label}</span>
+            </label>
+          ))}
         </div>
       </Card>
 

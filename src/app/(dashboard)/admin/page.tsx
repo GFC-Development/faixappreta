@@ -15,6 +15,7 @@ interface Student {
   name: string;
   email: string;
   studentType: string;
+  modalities: string;
   belt: string;
   degrees: number;
   photoUrl: string | null;
@@ -119,6 +120,7 @@ export default function AdminDashboard() {
               <tr className="border-b border-zinc-800">
                 <th className="text-left py-3 px-3 text-zinc-400 font-medium">Aluno</th>
                 <th className="text-left py-3 px-3 text-zinc-400 font-medium hidden sm:table-cell">Tipo</th>
+                <th className="text-left py-3 px-3 text-zinc-400 font-medium hidden sm:table-cell">Modalidades</th>
                 <th className="text-left py-3 px-3 text-zinc-400 font-medium">Faixa</th>
                 <th className="text-left py-3 px-3 text-zinc-400 font-medium hidden sm:table-cell">Check-ins</th>
                 <th className="text-left py-3 px-3 text-zinc-400 font-medium hidden sm:table-cell">Pagamento</th>
@@ -151,6 +153,13 @@ export default function AdminDashboard() {
                       >
                         {s.studentType}
                       </Badge>
+                    </td>
+                    <td className="py-3 px-3 hidden sm:table-cell">
+                      <span className="text-xs text-zinc-400">
+                        {(s.modalities || "GRAPPLING").split(",").map((m: string) =>
+                          m === "GRAPPLING" ? "Grappling/JJ" : "MMA/Boxe"
+                        ).join(", ")}
+                      </span>
                     </td>
                     <td className="py-3 px-3">
                       <div className="flex items-center gap-2">

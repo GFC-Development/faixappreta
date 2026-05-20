@@ -18,6 +18,7 @@ export default function RegisterPage() {
     password: "",
     studentType: "COLETIVA",
   });
+  const [modalities, setModalities] = useState<string[]>(["GRAPPLING"]);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -54,7 +55,7 @@ export default function RegisterPage() {
     const res = await fetch("/api/students", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, photoUrl }),
+      body: JSON.stringify({ ...form, modalities: modalities.join(","), photoUrl }),
     });
 
     const data = await res.json();
@@ -130,6 +131,32 @@ export default function RegisterPage() {
               <option value="COLETIVA">Coletiva</option>
               <option value="PARTICULAR">Particular</option>
             </Select>
+
+            <div>
+              <label className="block text-sm font-medium text-zinc-300 mb-2">Modalidades</label>
+              <div className="flex flex-col gap-2">
+                {[
+                  { value: "GRAPPLING", label: "Grappling / Jiu-Jitsu" },
+                  { value: "MMA", label: "MMA / Boxe" },
+                ].map((m) => (
+                  <label key={m.value} className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={modalities.includes(m.value)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setModalities((prev) => [...prev, m.value]);
+                        } else if (modalities.length > 1) {
+                          setModalities((prev) => prev.filter((v) => v !== m.value));
+                        }
+                      }}
+                      className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-orange-500 focus:ring-orange-500"
+                    />
+                    <span className="text-sm text-zinc-200">{m.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
 
             {error && (
               <p className="text-sm text-red-400 text-center">{error}</p>

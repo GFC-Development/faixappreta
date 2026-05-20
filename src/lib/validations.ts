@@ -10,6 +10,7 @@ export const registerSchema = z.object({
   email: z.string().email("Email inválido"),
   password: z.string().min(6, "Senha deve ter no mínimo 6 caracteres"),
   studentType: z.enum(["PARTICULAR", "COLETIVA"]),
+  modalities: z.string().optional(),
   photoUrl: z.string().optional().nullable(),
 });
 
@@ -52,6 +53,7 @@ export const updateStudentSchema = z.object({
   studentType: z.enum(["PARTICULAR", "COLETIVA"]).optional(),
   belt: z.enum(["BRANCA", "AZUL", "ROXA", "MARROM", "PRETA"]).optional(),
   degrees: z.number().min(0).max(4).optional(),
+  modalities: z.string().optional(),
   initialCheckins: z.number().min(0).optional(),
   photoUrl: z.string().optional().nullable(),
   monthlyDueDay: z.number().min(1).max(31).optional().nullable(),
