@@ -94,6 +94,7 @@ export default function StudentHome() {
   const [degreeRequirements, setDegreeRequirements] = useState<DegreeRequirementData[]>([]);
   const [initialCheckins, setInitialCheckins] = useState(0);
   const [lastGraduationDate, setLastGraduationDate] = useState<string | null>(null);
+  const [lastBeltChangeDate, setLastBeltChangeDate] = useState<string | null>(null);
   const [currentWeekStart, setCurrentWeekStart] = useState(
     startOfWeek(new Date(), { weekStartsOn: 1 })
   );
@@ -113,6 +114,7 @@ export default function StudentHome() {
       .then((data) => {
         if (data.initialCheckins) setInitialCheckins(data.initialCheckins);
         if (data.lastGraduationDate) setLastGraduationDate(data.lastGraduationDate);
+        if (data.lastBeltChangeDate) setLastBeltChangeDate(data.lastBeltChangeDate);
       })
       .catch(() => {});
   }, []);
@@ -249,6 +251,12 @@ export default function StudentHome() {
   const hasGrappling = (user.modalities || "GRAPPLING").includes("GRAPPLING");
   const nextBelt = getNextBelt(user.belt, user.isKids);
   const nextBeltReq = nextBelt ? requirements.find((r) => r.belt === nextBelt) : null;
+  const checkinsSinceBeltChange = lastBeltChangeDate
+    ? bookings.filter((b) => b.checkedIn && b.date > lastBeltChangeDate.split("T")[0]).length
+    : checkins;
+  const checkinsSinceGraduation = lastGraduationDate
+    ? bookings.filter((b) => b.checkedIn && b.date > lastGraduationDate.split("T")[0]).length
+    : checkins;
   const nextDegree = user.degrees < 4 ? user.degrees + 1 : null;
   const degreeReq = nextDegree
     ? degreeRequirements.find((r) => r.belt === user.belt && r.degree === nextDegree)
@@ -308,9 +316,14 @@ export default function StudentHome() {
           <div className="mb-1">
             <BeltVisual belt={user.belt} degrees={user.degrees} width={320} />
           </div>
-          <p className="text-sm text-zinc-400 mt-3">
-            Plano: {user.studentType === "PARTICULAR" ? "Particular + Coletiva" : "Coletiva"}
-          </p>
+          <div className="flex items-center justify-between mt-3">
+            <p className="text-sm text-zinc-400">
+              Plano: {user.studentType === "PARTICULAR" ? "Particular + Coletiva" : "Coletiva"}
+            </p>
+            <p className="text-sm text-zinc-400">
+              Total: <span className="font-semibold text-zinc-200">{checkins} presenças</span>
+            </p>
+          </div>
 
           {lastGraduationDate && (
             <p className="text-xs text-zinc-500 mt-1">
@@ -320,7 +333,7 @@ export default function StudentHome() {
 
           {degreeReq && (
             <DegreeProgress
-              checkins={checkins}
+              checkins={checkinsSinceGraduation}
               belt={user.belt}
               nextDegree={nextDegree!}
               requiredClasses={degreeReq.requiredClasses}
@@ -329,7 +342,7 @@ export default function StudentHome() {
 
           {nextBelt && nextBeltReq && nextBeltReq.requiredClasses > 0 ? (
             <BeltProgress
-              checkins={checkins}
+              checkins={checkinsSinceBeltChange}
               nextBelt={nextBelt}
               requiredClasses={nextBeltReq.requiredClasses}
               width={320}

@@ -15,6 +15,7 @@ export async function GET() {
       initialCheckins: true,
       modalities: true,
       lastGraduationDate: true,
+      lastBeltChangeDate: true,
       lastPaymentDate: true,
       monthlyDueDay: true,
     },

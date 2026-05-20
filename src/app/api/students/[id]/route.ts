@@ -29,6 +29,7 @@ export async function GET(
       monthlyDueDay: true,
       lastPaymentDate: true,
       lastGraduationDate: true,
+      lastBeltChangeDate: true,
       createdAt: true,
       bookings: {
         orderBy: { date: "desc" },
@@ -83,6 +84,15 @@ export async function PATCH(
     data.lastGraduationDate = new Date(data.lastGraduationDate as string);
   }
 
+  // Auto-update lastBeltChangeDate when belt actually changes
+  if (
+    current &&
+    result.data.belt !== undefined &&
+    result.data.belt !== current.belt
+  ) {
+    data.lastBeltChangeDate = new Date();
+  }
+
   // Only auto-update lastGraduationDate when degrees actually increases
   if (
     current &&
@@ -109,6 +119,7 @@ export async function PATCH(
       monthlyDueDay: true,
       lastPaymentDate: true,
       lastGraduationDate: true,
+      lastBeltChangeDate: true,
     },
   });
 

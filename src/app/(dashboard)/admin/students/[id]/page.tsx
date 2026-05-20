@@ -38,6 +38,7 @@ interface Student {
   monthlyDueDay: number | null;
   lastPaymentDate: string | null;
   lastGraduationDate: string | null;
+  lastBeltChangeDate: string | null;
   createdAt: string;
   bookings: Booking[];
 }
@@ -147,7 +148,12 @@ export default function StudentProfilePage() {
     ? Math.round((checkins.length / totalBookings) * 100)
     : 0;
 
-  // Degree progress: resets when degree increases (counts since last graduation)
+  // Belt progress: counts since last belt change, or total if never changed
+  const checkinsSinceBeltChange = student.lastBeltChangeDate
+    ? checkins.filter((b) => b.date > student.lastBeltChangeDate!.split("T")[0]).length
+    : totalCheckins;
+
+  // Degree progress: counts since last graduation, or total if no graduation yet
   const checkinsSinceGraduation = student.lastGraduationDate
     ? checkins.filter((b) => b.date > student.lastGraduationDate!.split("T")[0]).length
     : totalCheckins;
@@ -280,7 +286,7 @@ export default function StudentProfilePage() {
           {/* Belt progress */}
           {nextBelt && nextBeltReq && nextBeltReq.requiredClasses > 0 ? (
             <BeltProgress
-              checkins={totalCheckins}
+              checkins={checkinsSinceBeltChange}
               nextBelt={nextBelt}
               requiredClasses={nextBeltReq.requiredClasses}
               width={320}

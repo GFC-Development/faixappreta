@@ -41,6 +41,8 @@ export default function EditStudentPage() {
   const [lastPaymentDate, setLastPaymentDate] = useState<string>("");
   const [modalities, setModalities] = useState<string[]>(["GRAPPLING"]);
   const [isKids, setIsKids] = useState(false);
+  const [originalBelt, setOriginalBelt] = useState("");
+  const [originalDegrees, setOriginalDegrees] = useState(0);
   const [resetPassword, setResetPassword] = useState("");
 
   useEffect(() => {
@@ -51,7 +53,9 @@ export default function EditStudentPage() {
           setStudent(data);
           setStudentType(data.studentType || "COLETIVA");
           setBelt(data.belt);
+          setOriginalBelt(data.belt);
           setDegrees(data.degrees);
+          setOriginalDegrees(data.degrees);
           setPhotoUrl(data.photoUrl);
           setModalities((data.modalities || "GRAPPLING").split(","));
           setIsKids(data.isKids || false);
@@ -256,6 +260,11 @@ export default function EditStudentPage() {
                 <option key={b} value={b}>{b}</option>
               ))}
             </Select>
+            {belt !== originalBelt && (
+              <p className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-md px-3 py-2">
+                Trocar a faixa reseta o progresso para a próxima faixa.
+              </p>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-zinc-300 mb-2">
@@ -277,6 +286,11 @@ export default function EditStudentPage() {
                   </button>
                 ))}
               </div>
+              {degrees !== originalDegrees && belt === originalBelt && (
+                <p className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-md px-3 py-2 mt-2">
+                  Alterar o grau reseta o progresso para o próximo grau.
+                </p>
+              )}
             </div>
 
           </form>
