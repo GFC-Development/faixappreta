@@ -75,6 +75,21 @@ export async function POST(req: NextRequest) {
 
   const data = { ...result.data, userId: result.data.userId || null };
 
+  // Check for duplicate slot (same day + time)
+  const existing = await prisma.privateSlot.findFirst({
+    where: {
+      dayOfWeek: data.dayOfWeek,
+      startTime: data.startTime,
+      endTime: data.endTime,
+    },
+  });
+  if (existing) {
+    return NextResponse.json(
+      { error: "Já existe um horário neste dia e horário" },
+      { status: 409 }
+    );
+  }
+
   const slot = await prisma.privateSlot.create({
     data,
     include: { user: { select: { id: true, name: true } } },
