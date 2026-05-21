@@ -85,21 +85,19 @@ export async function PATCH(
   }
 
   // Auto-update lastBeltChangeDate when belt actually changes
-  if (
-    current &&
-    result.data.belt !== undefined &&
-    result.data.belt !== current.belt
-  ) {
+  if (current && result.data.belt !== undefined && result.data.belt !== current.belt) {
     data.lastBeltChangeDate = new Date();
+    // Belt change also resets degree tracking
+    data.lastGraduationDate = null;
   }
 
-  // Only auto-update lastGraduationDate when degrees actually increases
-  if (
-    current &&
-    result.data.degrees !== undefined &&
-    result.data.degrees > current.degrees
-  ) {
-    data.lastGraduationDate = new Date();
+  // Auto-update lastGraduationDate when degrees change
+  if (current && result.data.degrees !== undefined) {
+    if (result.data.degrees > current.degrees) {
+      data.lastGraduationDate = new Date();
+    } else if (result.data.degrees < current.degrees) {
+      data.lastGraduationDate = null;
+    }
   }
 
   const user = await prisma.user.update({
