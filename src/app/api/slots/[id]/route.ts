@@ -13,9 +13,19 @@ export async function PATCH(
   }
 
   const body = await req.json();
+
+  // Only allow safe fields to be updated
+  const allowed: Record<string, unknown> = {};
+  if (body.dayOfWeek !== undefined) allowed.dayOfWeek = Number(body.dayOfWeek);
+  if (body.startTime !== undefined) allowed.startTime = body.startTime;
+  if (body.endTime !== undefined) allowed.endTime = body.endTime;
+  if (body.isAvailable !== undefined) allowed.isAvailable = body.isAvailable;
+  if (body.userId !== undefined) allowed.userId = body.userId || null;
+
   const slot = await prisma.privateSlot.update({
     where: { id: params.id },
-    data: body,
+    data: allowed,
+    include: { user: { select: { id: true, name: true } } },
   });
 
   return NextResponse.json(slot);
