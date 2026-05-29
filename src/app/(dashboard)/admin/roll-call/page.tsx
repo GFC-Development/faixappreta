@@ -46,7 +46,8 @@ export default function RollCallPage() {
     fetch(`/api/bookings/pending?date=${selectedDate}`)
       .then((r) => r.json())
       .then((data) => {
-        if (Array.isArray(data)) setBookings(data);
+        const bookingsData = Array.isArray(data) ? data : data.bookings || [];
+        setBookings(bookingsData);
       })
       .finally(() => setLoading(false));
   }, [selectedDate]);

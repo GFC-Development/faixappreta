@@ -25,6 +25,7 @@ export async function GET(
       belt: true,
       degrees: true,
       initialCheckins: true,
+      monthlyCredits: true,
       photoUrl: true,
       monthlyDueDay: true,
       lastPaymentDate: true,
@@ -37,6 +38,9 @@ export async function GET(
           privateSlot: true,
           groupClass: true,
         },
+      },
+      graduationLogs: {
+        orderBy: { createdAt: "desc" },
       },
     },
   });
@@ -96,6 +100,12 @@ export async function PATCH(
     delete data.resetDegreeProgress;
   }
 
+  // Fetch current values before update to detect belt/degree changes
+  const current = await prisma.user.findUnique({
+    where: { id: params.id },
+    select: { belt: true, degrees: true },
+  });
+
   const user = await prisma.user.update({
     where: { id: params.id },
     data,
@@ -109,6 +119,7 @@ export async function PATCH(
       belt: true,
       degrees: true,
       initialCheckins: true,
+      monthlyCredits: true,
       photoUrl: true,
       monthlyDueDay: true,
       lastPaymentDate: true,
@@ -116,6 +127,18 @@ export async function PATCH(
       lastBeltChangeDate: true,
     },
   });
+
+  // Create graduation log if belt or degrees changed
+  if (current && user.belt !== current.belt) {
+    await prisma.graduationLog.create({
+      data: { userId: params.id, belt: user.belt, degrees: user.degrees, type: "BELT" },
+    });
+  }
+  if (current && user.degrees !== current.degrees && user.belt === current.belt) {
+    await prisma.graduationLog.create({
+      data: { userId: params.id, belt: user.belt, degrees: user.degrees, type: "DEGREE" },
+    });
+  }
 
   return NextResponse.json(user);
 }

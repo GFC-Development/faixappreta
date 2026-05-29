@@ -12,7 +12,7 @@ export async function GET() {
   }
 
   const students = await prisma.user.findMany({
-    where: { role: "STUDENT" },
+    where: { role: "STUDENT", status: "APPROVED" },
     select: {
       id: true,
       name: true,
@@ -58,8 +58,12 @@ export async function POST(req: NextRequest) {
 
   const passwordHash = await bcrypt.hash(password, 10);
 
+  // Admin creating student → auto-approve; self-registration → pending
+  const session = await getServerSession(authOptions);
+  const status = session?.user.role === "ADMIN" ? "APPROVED" : "PENDING";
+
   const user = await prisma.user.create({
-    data: { name, email, passwordHash, studentType, modalities: modalities || "GRAPPLING", isKids: isKids || false, photoUrl: photoUrl || null },
+    data: { name, email, passwordHash, studentType, modalities: modalities || "GRAPPLING", isKids: isKids || false, photoUrl: photoUrl || null, status },
     select: { id: true, name: true, email: true },
   });
 

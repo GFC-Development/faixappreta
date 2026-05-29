@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -11,7 +10,6 @@ import Link from "next/link";
 import Image from "next/image";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -24,6 +22,7 @@ export default function RegisterPage() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [registered, setRegistered] = useState(false);
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -67,7 +66,38 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push("/login");
+    setRegistered(true);
+  }
+
+  if (registered) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#09090b] px-4">
+        <div className="w-full max-w-md">
+          <Card>
+            <div className="flex flex-col items-center text-center">
+              <Image src="/logo.png" alt="PQ" width={72} height={72} />
+              <h1 className="text-3xl font-bold text-zinc-50 tracking-tight font-teko uppercase mt-3">
+                PQ <span className="text-accent">FIGHTERS</span>
+              </h1>
+              <div className="mt-6 mb-4">
+                <div className="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-3xl">⏳</span>
+                </div>
+                <h2 className="text-lg font-semibold text-zinc-50 mb-2">Cadastro enviado!</h2>
+                <p className="text-sm text-zinc-400">
+                  Seu cadastro foi recebido e está aguardando aprovação do professor. Você receberá acesso assim que for aprovado.
+                </p>
+              </div>
+              <Link href="/login">
+                <Button variant="secondary" size="sm">
+                  Voltar para o login
+                </Button>
+              </Link>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -25,8 +25,10 @@ import {
   Trash2,
   CalendarCheck,
   CalendarDays,
+  RefreshCw,
 } from "lucide-react";
 import { DAY_NAMES, getBeltsForType } from "@/lib/utils";
+import { Trophy } from "lucide-react";
 
 interface BeltRequirement {
   belt: string;
@@ -100,12 +102,23 @@ export default function StudentHome() {
   );
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [credits, setCredits] = useState<{ monthlyCredits: number; used: number; remaining: number } | null>(null);
+  const [rescheduleInfo, setRescheduleInfo] = useState<{ bookingId: string | null; slotId: string; originalDate: string } | null>(null);
+  const [rescheduleDate, setRescheduleDate] = useState("");
+  const [rescheduleSlots, setRescheduleSlots] = useState<PrivateSlot[]>([]);
+  const [rescheduleLoading, setRescheduleLoading] = useState(false);
+  const [showOnlyMine, setShowOnlyMine] = useState(false);
+  const [rankPosition, setRankPosition] = useState<{ position: number; total: number; presences: number } | null>(null);
 
   useEffect(() => {
     fetch("/api/bookings").then((r) => r.json()).then(setBookings);
     fetch("/api/group-classes").then((r) => r.json()).then(setGroupClasses);
     fetch("/api/events").then((r) => r.json()).then(setEvents);
     fetch("/api/belt-requirements").then((r) => r.json()).then(setRequirements);
+    if (session?.user.studentType === "PARTICULAR") {
+      fetch("/api/credits").then((r) => r.json()).then(setCredits);
+    }
+    fetch("/api/ranking/my-position").then((r) => r.json()).then(setRankPosition).catch(() => {});
     fetch("/api/belt-requirements?type=degree")
       .then((r) => r.json())
       .then((data) => { if (Array.isArray(data)) setDegreeRequirements(data); });
@@ -117,6 +130,7 @@ export default function StudentHome() {
         if (data.lastBeltChangeDate) setLastBeltChangeDate(data.lastBeltChangeDate);
       })
       .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkins = bookings.filter((b) => b.checkedIn).length + initialCheckins;
@@ -133,6 +147,20 @@ export default function StudentHome() {
   useEffect(() => {
     fetch(`/api/slots?date=${selectedDateStr}`).then((r) => r.json()).then(setMySlots);
   }, [selectedDateStr]);
+
+  // Fetch available slots when reschedule date changes
+  useEffect(() => {
+    if (rescheduleDate) {
+      fetch(`/api/slots?date=${rescheduleDate}`)
+        .then((r) => r.json())
+        .then((slots: PrivateSlot[]) => {
+          const dayOfWeek = new Date(rescheduleDate + "T12:00:00").getDay();
+          setRescheduleSlots(slots.filter((s) => !s.userId && s.dayOfWeek === dayOfWeek));
+        });
+    } else {
+      setRescheduleSlots([]);
+    }
+  }, [rescheduleDate]);
 
   const userIsKids = session?.user.isKids || false;
   const dayClasses = groupClasses.filter((gc) => gc.dayOfWeek === selectedDayOfWeek && gc.isKids === userIsKids);
@@ -227,6 +255,42 @@ export default function StudentHome() {
     }
   }
 
+  async function handleReschedule(newSlotId: string) {
+    if (!rescheduleInfo || !rescheduleDate) return;
+    setRescheduleLoading(true);
+    try {
+      const res = await fetch("/api/reschedule", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          originalSlotId: rescheduleInfo.slotId,
+          originalDate: rescheduleInfo.originalDate,
+          newSlotId,
+          newDate: rescheduleDate,
+        }),
+      });
+      if (res.ok) {
+        const newBooking = await res.json();
+        setBookings((prev) => [
+          ...prev.filter((b) => b.id !== rescheduleInfo.bookingId),
+          newBooking,
+        ]);
+        setRescheduleInfo(null);
+        setRescheduleDate("");
+        fetch(`/api/slots?date=${selectedDateStr}`).then((r) => r.json()).then(setMySlots);
+        if (session?.user.studentType === "PARTICULAR") {
+          fetch("/api/credits").then((r) => r.json()).then(setCredits);
+        }
+      } else {
+        const data = await res.json();
+        alert(data.error || "Erro ao remarcar");
+      }
+    } catch {
+      alert("Erro de conexão ao remarcar");
+    }
+    setRescheduleLoading(false);
+  }
+
   async function handleCancel(bookingId: string) {
     if (!confirm("Cancelar este agendamento?")) return;
     setActionLoading(bookingId);
@@ -313,16 +377,25 @@ export default function StudentHome() {
       {/* Belt card (only for Grappling students) */}
       {hasGrappling ? (
         <Card className="mb-6">
-          <div className="mb-1">
-            <BeltVisual belt={user.belt} degrees={user.degrees} width={320} />
-          </div>
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-sm text-zinc-400">
-              Plano: {user.studentType === "PARTICULAR" ? "Particular + Coletiva" : "Coletiva"}
-            </p>
-            <p className="text-sm text-zinc-400">
-              Total: <span className="font-semibold text-zinc-200">{checkins} presenças</span>
-            </p>
+          <div className="flex flex-col sm:flex-row items-start gap-3">
+            <div className="flex-1 w-full">
+              <div className="mb-1">
+                <BeltVisual belt={user.belt} degrees={user.degrees} width={320} />
+              </div>
+              <div className="mt-3">
+                <p className="text-sm text-zinc-400">
+                  Plano: {user.studentType === "PARTICULAR" ? "Particular + Coletiva" : "Coletiva"}
+                </p>
+              </div>
+            </div>
+            {rankPosition && rankPosition.position > 0 && (
+              <div className="shrink-0 flex sm:flex-col items-center gap-2 sm:gap-0 bg-zinc-800 rounded-lg px-4 py-2.5 sm:py-3 border border-zinc-700 w-full sm:w-auto">
+                <Trophy size={18} className="text-yellow-400 sm:mb-1" />
+                <p className="text-xl sm:text-2xl font-bold text-zinc-50">{rankPosition.position}°</p>
+                <p className="text-[10px] text-zinc-500 uppercase tracking-wider hidden sm:block">ranking</p>
+                <p className="text-xs text-zinc-400 sm:mt-0.5">{rankPosition.presences} presenças</p>
+              </div>
+            )}
           </div>
 
           {lastGraduationDate && (
@@ -337,16 +410,29 @@ export default function StudentHome() {
               belt={user.belt}
               nextDegree={nextDegree!}
               requiredClasses={degreeReq.requiredClasses}
+              showCount={false}
             />
           )}
 
           {nextBelt && nextBeltReq && nextBeltReq.requiredClasses > 0 ? (
-            <BeltProgress
-              checkins={checkinsSinceBeltChange}
-              nextBelt={nextBelt}
-              requiredClasses={nextBeltReq.requiredClasses}
-              width={320}
-            />
+            <>
+              <BeltProgress
+                checkins={checkinsSinceBeltChange}
+                nextBelt={nextBelt}
+                requiredClasses={nextBeltReq.requiredClasses}
+                width={320}
+                showCount={false}
+              />
+              <div className={`mt-3 p-3 rounded-lg text-sm ${
+                checkinsSinceBeltChange >= nextBeltReq.requiredClasses
+                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                  : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+              }`}>
+                {checkinsSinceBeltChange >= nextBeltReq.requiredClasses
+                  ? "Apto para promoção de faixa"
+                  : "Ainda não apto para promoção de faixa"}
+              </div>
+            </>
           ) : nextBelt && (!nextBeltReq || nextBeltReq.requiredClasses === 0) ? (
             <p className="text-xs text-zinc-400 border-t border-zinc-800 pt-3 mt-3">
               Requisito para faixa {nextBelt} não configurado.
@@ -367,7 +453,14 @@ export default function StudentHome() {
       )}
 
       {/* Agenda - Week navigation */}
-      <h2 className="text-lg font-semibold mb-3 text-zinc-50">Minha Agenda</h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg font-semibold text-zinc-50">Minha Agenda</h2>
+        {credits && credits.monthlyCredits > 0 && (
+          <Badge variant={credits.remaining > 0 ? "success" : "danger"}>
+            Créditos: {credits.remaining}/{credits.monthlyCredits}
+          </Badge>
+        )}
+      </div>
 
       <Card className="mb-6">
         <div className="flex items-center justify-between mb-4">
@@ -428,9 +521,28 @@ export default function StudentHome() {
 
       {/* Day details */}
       <div className="space-y-3">
-        <h3 className="text-base font-semibold text-zinc-50">
-          {format(selectedDate, "d 'de' MMMM, EEEE", { locale: ptBR })}
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm sm:text-base font-semibold text-zinc-50">
+            {format(selectedDate, "d 'de' MMMM, EEEE", { locale: ptBR })}
+          </h3>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[10px] sm:text-xs text-zinc-400">Meus horários</span>
+            <button
+              role="switch"
+              aria-checked={showOnlyMine}
+              onClick={() => setShowOnlyMine((v) => !v)}
+              className={`relative inline-flex h-5 w-9 sm:h-6 sm:w-11 shrink-0 items-center rounded-full transition-colors ${
+                showOnlyMine ? "bg-orange-500" : "bg-zinc-700"
+              }`}
+            >
+              <span
+                className={`inline-block h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-white shadow transition-transform ${
+                  showOnlyMine ? "translate-x-4 sm:translate-x-6" : "translate-x-0.5 sm:translate-x-1"
+                }`}
+              />
+            </button>
+          </div>
+        </div>
 
         {/* Events on this day */}
         {dayEvents.map((event) => (
@@ -444,7 +556,10 @@ export default function StudentHome() {
         ))}
 
         {/* Group classes (only for Grappling students) */}
-        {hasGrappling && dayClasses.map((gc) => {
+        {hasGrappling && dayClasses.filter((gc) => {
+          if (!showOnlyMine) return true;
+          return !!getBookingForClass(gc.id);
+        }).map((gc) => {
           const booking = getBookingForClass(gc.id);
           const isBooked = !!booking;
           const isCheckedIn = booking?.checkedIn || false;
@@ -542,7 +657,7 @@ export default function StudentHome() {
           );
         })}
 
-        {/* Bound private slots (read-only) */}
+        {/* Bound private slots */}
         {privateSlotCards.map(({ slot, booking }) => {
           const label = booking ? getCheckinLabel(booking) : null;
           return (
@@ -572,21 +687,37 @@ export default function StudentHome() {
                         <CheckCircle size={14} />
                         {label}
                       </span>
-                    ) : (
+                    ) : booking ? (
                       <span className="flex items-center gap-1 text-orange-500 text-xs font-medium">
                         <CalendarCheck size={14} />
                         Agendado
                       </span>
+                    ) : (
+                      <span className="text-xs text-zinc-500">Sua aula</span>
                     )}
                   </div>
                 </div>
+                {!label && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => setRescheduleInfo({
+                      bookingId: booking?.id || null,
+                      slotId: slot.id,
+                      originalDate: selectedDateStr,
+                    })}
+                  >
+                    <RefreshCw size={14} className="mr-1.5" />
+                    Remarcar
+                  </Button>
+                )}
               </div>
             </Card>
           );
         })}
 
         {/* Open private slots (bookable) */}
-        {openSlotCards.map(({ slot, booking }) => {
+        {openSlotCards.filter(({ booking }) => !showOnlyMine || !!booking).map(({ slot, booking }) => {
           const label = booking ? getCheckinLabel(booking) : null;
           const isBooked = !!booking;
           const loading = actionLoading === slot.id || actionLoading === booking?.id;
@@ -632,7 +763,7 @@ export default function StudentHome() {
                   {!isBooked && !label && (
                     <Button
                       size="sm"
-                      disabled={loading}
+                      disabled={loading || (credits !== null && credits.monthlyCredits > 0 && credits.remaining <= 0)}
                       onClick={() => handleBookPrivate(slot.id)}
                     >
                       {loading ? "..." : (
@@ -659,16 +790,106 @@ export default function StudentHome() {
         })}
 
         {/* Empty state */}
-        {dayClasses.length === 0 && privateSlotCards.length === 0 && openSlotCards.length === 0 && dayEvents.length === 0 && (
-          <Card className="!p-8">
-            <p className="text-zinc-400 text-sm text-center">
-              {DAY_NAMES[selectedDayOfWeek] === "Domingo" || DAY_NAMES[selectedDayOfWeek] === "Sábado"
-                ? "Sem treinos programados para o fim de semana"
-                : "Nenhum treino programado para este dia"}
-            </p>
-          </Card>
-        )}
+        {(() => {
+          const hasGroupClasses = showOnlyMine
+            ? dayClasses.some((gc) => !!getBookingForClass(gc.id))
+            : dayClasses.length > 0;
+          const hasOpenSlots = showOnlyMine
+            ? openSlotCards.some(({ booking }) => !!booking)
+            : openSlotCards.length > 0;
+          const hasContent = hasGroupClasses || privateSlotCards.length > 0 || hasOpenSlots || dayEvents.length > 0;
+          if (!hasContent) return (
+            <Card className="!p-8">
+              <p className="text-zinc-400 text-sm text-center">
+                {showOnlyMine
+                  ? "Nenhum horário agendado para este dia"
+                  : DAY_NAMES[selectedDayOfWeek] === "Domingo" || DAY_NAMES[selectedDayOfWeek] === "Sábado"
+                  ? "Sem treinos programados para o fim de semana"
+                  : "Nenhum treino programado para este dia"}
+              </p>
+            </Card>
+          );
+          return null;
+        })()}
       </div>
+
+      {/* Reschedule modal */}
+      {rescheduleInfo && (
+        <div
+          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+          onClick={() => { setRescheduleInfo(null); setRescheduleDate(""); }}
+        >
+          <div
+            className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 w-full max-w-md max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <RefreshCw size={18} className="text-orange-500" />
+              <h2 className="text-lg font-semibold text-zinc-50">Remarcar Aula</h2>
+            </div>
+            <p className="text-sm text-zinc-400 mb-4">
+              Selecione uma nova data e horário para sua aula.
+            </p>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-zinc-300 mb-2">Nova data</label>
+              <input
+                type="date"
+                min={today}
+                value={rescheduleDate}
+                onChange={(e) => setRescheduleDate(e.target.value)}
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-50 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+
+            {rescheduleDate && (
+              <div className="mb-4">
+                <p className="text-sm text-zinc-400 mb-3">
+                  Horários disponíveis — {DAY_NAMES[new Date(rescheduleDate + "T12:00:00").getDay()]}
+                </p>
+                {rescheduleSlots.length === 0 ? (
+                  <p className="text-sm text-zinc-500 text-center py-4">
+                    Nenhum horário disponível nesta data
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {rescheduleSlots.map((slot) => (
+                      <div
+                        key={slot.id}
+                        className="flex items-center justify-between p-3 bg-zinc-800 rounded-lg"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Clock size={14} className="text-zinc-400" />
+                          <span className="text-sm font-medium text-zinc-50">
+                            {slot.startTime} - {slot.endTime}
+                          </span>
+                        </div>
+                        <Button
+                          size="sm"
+                          disabled={rescheduleLoading}
+                          onClick={() => handleReschedule(slot.id)}
+                        >
+                          {rescheduleLoading ? "..." : "Selecionar"}
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="flex justify-end">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => { setRescheduleInfo(null); setRescheduleDate(""); }}
+              >
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

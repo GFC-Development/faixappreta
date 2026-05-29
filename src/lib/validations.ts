@@ -18,7 +18,7 @@ export const registerSchema = z.object({
 export const slotSchema = z.object({
   dayOfWeek: z.number().min(0).max(6),
   startTime: z.string().regex(/^\d{2}:\d{2}$/),
-  endTime: z.string().regex(/^\d{2}:\d{2}$/),
+  endTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
   isAvailable: z.boolean().optional(),
   userId: z.string().min(1).optional().nullable(),
 });
@@ -67,6 +67,7 @@ export const updateStudentSchema = z.object({
   modalities: z.string().optional(),
   isKids: z.boolean().optional(),
   initialCheckins: z.number().min(0).optional(),
+  monthlyCredits: z.number().min(0).optional(),
   photoUrl: z.string().optional().nullable(),
   monthlyDueDay: z.number().min(1).max(31).optional().nullable(),
   lastPaymentDate: z.string().optional().nullable(),

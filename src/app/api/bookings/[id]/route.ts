@@ -14,7 +14,7 @@ export async function DELETE(
 
   const booking = await prisma.booking.findUnique({
     where: { id: params.id },
-    include: { privateSlot: true },
+    include: { privateSlot: true, groupClass: true },
   });
 
   if (!booking) {
@@ -33,7 +33,7 @@ export async function DELETE(
 
   // Students cancelling private bookings: must be 12h before class time
   if (session.user.role !== "ADMIN" && booking.type === "PRIVATE" && booking.privateSlot) {
-    const classDateTime = new Date(`${booking.date}T${booking.privateSlot.startTime}:00`);
+    const classDateTime = new Date(`${booking.date}T${booking.privateSlot.startTime}:00-03:00`);
     const now = new Date();
     const hoursUntilClass = (classDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
 
@@ -45,10 +45,22 @@ export async function DELETE(
     }
   }
 
-  // Students cannot cancel bound private slots (admin-controlled)
+  // Students cancelling GROUP bookings: must be 1h before
+  if (session.user.role !== "ADMIN" && booking.type === "GROUP" && booking.groupClass) {
+    const classDateTime = new Date(`${booking.date}T${booking.groupClass.startTime}:00-03:00`);
+    const hoursUntilClass = (classDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
+    if (hoursUntilClass < 1) {
+      return NextResponse.json(
+        { error: "Cancelamento de aula coletiva permitido até 1 hora antes" },
+        { status: 403 }
+      );
+    }
+  }
+
+  // Students cannot cancel bound private slots directly (must use reschedule flow)
   if (session.user.role !== "ADMIN" && booking.type === "PRIVATE" && booking.privateSlot?.userId) {
     return NextResponse.json(
-      { error: "Aulas particulares vinculadas são controladas pelo professor" },
+      { error: "Use a opção de remarcar para alterar aulas vinculadas" },
       { status: 403 }
     );
   }

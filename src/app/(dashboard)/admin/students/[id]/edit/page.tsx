@@ -49,6 +49,7 @@ export default function EditStudentPage() {
   const [resetBeltProgress, setResetBeltProgress] = useState(false);
   const [resetDegreeProgress, setResetDegreeProgress] = useState(false);
   const [resetPassword, setResetPassword] = useState("");
+  const [monthlyCredits, setMonthlyCredits] = useState<string>("0");
 
   useEffect(() => {
     fetch(`/api/students/${id}`)
@@ -65,6 +66,7 @@ export default function EditStudentPage() {
           setModalities((data.modalities || "GRAPPLING").split(","));
           setIsKids(data.isKids || false);
           setInitialCheckins(String(data.initialCheckins || 0));
+          setMonthlyCredits(String(data.monthlyCredits || 0));
           setMonthlyDueDay(data.monthlyDueDay ? String(data.monthlyDueDay) : "");
           setLastPaymentDate(
             data.lastPaymentDate
@@ -114,7 +116,7 @@ export default function EditStudentPage() {
       newPhotoUrl = uploadData.url;
     }
 
-    const body: Record<string, unknown> = { studentType, belt, degrees, photoUrl: newPhotoUrl, modalities: modalities.join(","), isKids, initialCheckins: Number(initialCheckins) || 0 };
+    const body: Record<string, unknown> = { studentType, belt, degrees, photoUrl: newPhotoUrl, modalities: modalities.join(","), isKids, initialCheckins: Number(initialCheckins) || 0, monthlyCredits: Number(monthlyCredits) || 0 };
     if (resetBeltProgress) body.resetBeltProgress = true;
     if (resetDegreeProgress) body.resetDegreeProgress = true;
     if (monthlyDueDay) {
@@ -343,6 +345,23 @@ export default function EditStudentPage() {
               Estas datas controlam a contagem de presenças para progressão. Deixe em branco para contar desde o início.
             </p>
           </div>
+        </Card>
+      )}
+
+      {/* Créditos Mensais (only PARTICULAR) */}
+      {studentType === "PARTICULAR" && (
+        <Card className="mb-6">
+          <h2 className="text-lg font-semibold mb-4 text-zinc-50">Créditos Mensais</h2>
+          <p className="text-sm text-zinc-400 mb-4">
+            Aulas particulares por mês. 0 = sem limite.
+          </p>
+          <Input
+            label="Quantidade de créditos"
+            type="number"
+            min="0"
+            value={monthlyCredits}
+            onChange={(e) => setMonthlyCredits(e.target.value)}
+          />
         </Card>
       )}
 

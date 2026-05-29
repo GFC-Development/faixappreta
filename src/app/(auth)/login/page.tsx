@@ -21,6 +21,19 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
+    // Check if account is pending approval
+    const checkRes = await fetch("/api/auth/check-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const checkData = await checkRes.json();
+    if (checkData.status === "PENDING") {
+      setError("Seu cadastro está aguardando aprovação do professor.");
+      setLoading(false);
+      return;
+    }
+
     const result = await signIn("credentials", {
       email,
       password,

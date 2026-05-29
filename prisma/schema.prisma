@@ -13,10 +13,12 @@ model User {
   email              String    @unique
   passwordHash       String
   role               String    @default("STUDENT") // ADMIN | STUDENT
+  status             String    @default("PENDING") // PENDING | APPROVED
   studentType        String    @default("COLETIVA") // PARTICULAR | COLETIVA
   belt               String    @default("BRANCA")
   degrees            Int       @default(0)
   initialCheckins    Int       @default(0)
+  monthlyCredits     Int       @default(0)
   modalities         String    @default("GRAPPLING") // GRAPPLING, MMA, ou GRAPPLING,MMA
   isKids             Boolean   @default(false)
   photoUrl           String?
@@ -31,6 +33,8 @@ model User {
   createdEvents     Event[]
   createdNotifs     Notification[]
   notificationReads NotificationRead[]
+  rescheduleLogs    RescheduleLog[]
+  graduationLogs    GraduationLog[]
 }
 
 model PrivateSlot {
@@ -41,8 +45,10 @@ model PrivateSlot {
   isAvailable Boolean @default(true)
   userId      String?
 
-  user     User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bookings Booking[]
+  user              User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookings          Booking[]
+  rescheduleLogs    RescheduleLog[] @relation("originalSlot")
+  rescheduleNewLogs RescheduleLog[] @relation("newSlot")
 }
 
 model GroupClass {
@@ -72,8 +78,6 @@ model Booking {
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   privateSlot PrivateSlot? @relation(fields: [privateSlotId], references: [id], onDelete: SetNull)
   groupClass  GroupClass?  @relation(fields: [groupClassId], references: [id], onDelete: SetNull)
-
-  @@unique([privateSlotId, date])
 }
 
 model Event {
@@ -123,4 +127,30 @@ model NotificationRead {
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([notificationId, userId])
+}
+
+model GraduationLog {
+  id        String   @id @default(cuid())
+  userId    String
+  belt      String
+  degrees   Int
+  type      String   // BELT | DEGREE
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RescheduleLog {
+  id               String       @id @default(cuid())
+  type             String       @default("RESCHEDULE") // RESCHEDULE | BOOKING
+  userId           String
+  privateSlotId    String
+  date             String
+  newPrivateSlotId String?
+  newDate          String?
+  readByAdmin      Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  privateSlot      PrivateSlot  @relation("originalSlot", fields: [privateSlotId], references: [id], onDelete: Cascade)
+  newPrivateSlot   PrivateSlot? @relation("newSlot", fields: [newPrivateSlotId], references: [id], onDelete: Cascade)
+  @@unique([privateSlotId, date, type])
 }

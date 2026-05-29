@@ -351,25 +351,27 @@ export default function AgendaPage() {
 
       {/* Day details */}
       <div className="space-y-3">
-        <div className="flex items-center gap-3">
-          <h2 className="text-lg font-semibold text-zinc-50">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm sm:text-lg font-semibold text-zinc-50">
             {format(selectedDate, "d 'de' MMMM, EEEE", { locale: ptBR })}
           </h2>
-          <button
-            role="switch"
-            aria-checked={showOnlyMine}
-            onClick={() => setShowOnlyMine((v) => !v)}
-            className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-              showOnlyMine ? "bg-orange-500" : "bg-zinc-700"
-            }`}
-          >
-            <span
-              className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${
-                showOnlyMine ? "translate-x-6" : "translate-x-1"
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-[10px] sm:text-xs text-zinc-400">Meus horários</span>
+            <button
+              role="switch"
+              aria-checked={showOnlyMine}
+              onClick={() => setShowOnlyMine((v) => !v)}
+              className={`relative inline-flex h-5 w-9 sm:h-6 sm:w-11 shrink-0 items-center rounded-full transition-colors ${
+                showOnlyMine ? "bg-orange-500" : "bg-zinc-700"
               }`}
-            />
-          </button>
-          <span className="text-xs text-zinc-400 whitespace-nowrap">Meus horários</span>
+            >
+              <span
+                className={`inline-block h-3.5 w-3.5 sm:h-4 sm:w-4 rounded-full bg-white shadow transition-transform ${
+                  showOnlyMine ? "translate-x-4 sm:translate-x-6" : "translate-x-0.5 sm:translate-x-1"
+                }`}
+              />
+            </button>
+          </div>
         </div>
 
         {/* Events */}

@@ -5,17 +5,19 @@ export function DegreeProgress({
   belt,
   nextDegree,
   requiredClasses,
+  showCount = true,
 }: {
   checkins: number;
   belt: string;
   nextDegree: number;
   requiredClasses: number;
+  showCount?: boolean;
 }) {
   if (requiredClasses <= 0) return null;
 
   const progress = Math.min(1, checkins / requiredClasses);
   const color = BELT_COLORS[belt] || KIDS_BELT_COLORS[belt]?.[0] || "#FFF";
-  const height = 6;
+  const height = showCount ? 6 : 14;
   const fillWidth = `${Math.round(progress * 100)}%`;
 
   return (
@@ -24,12 +26,14 @@ export function DegreeProgress({
         <span className="text-xs text-zinc-500">
           Progresso para <span className="font-semibold text-zinc-300">{nextDegree}° grau</span>
         </span>
-        <span className="text-xs font-medium text-zinc-400">
-          {checkins} / {requiredClasses}
-        </span>
+        {showCount && (
+          <span className="text-xs font-medium text-zinc-400">
+            {checkins} / {requiredClasses} · {Math.round(progress * 100)}%
+          </span>
+        )}
       </div>
       <div
-        className="w-full rounded-full overflow-hidden"
+        className="relative w-full rounded-full overflow-hidden"
         style={{ height, backgroundColor: "#27272a" }}
       >
         <div
@@ -39,12 +43,22 @@ export function DegreeProgress({
             backgroundColor: color === "#FFFFFF" ? "#a3a3a3" : color,
           }}
         />
+        {!showCount && (
+          <span
+            className="absolute inset-0 flex items-center justify-center text-[9px] font-bold leading-none"
+            style={{ color: progress > 0.45 ? (belt === "BRANCA" ? "#000" : "#fff") : "#a1a1aa" }}
+          >
+            {Math.round(progress * 100)}%
+          </span>
+        )}
       </div>
-      <p className="text-xs text-zinc-400 mt-1.5">
-        {checkins >= requiredClasses
-          ? `Meta atingida! Aluno apto para o ${nextDegree}° grau.`
-          : `Faltam ${requiredClasses - checkins} aulas para o ${nextDegree}° grau.`}
-      </p>
+      {showCount && (
+        <p className="text-xs text-zinc-400 mt-1.5">
+          {checkins >= requiredClasses
+            ? `Meta atingida! Aluno apto para o ${nextDegree}° grau.`
+            : `Faltam ${requiredClasses - checkins} aulas para o ${nextDegree}° grau.`}
+        </p>
+      )}
     </div>
   );
 }

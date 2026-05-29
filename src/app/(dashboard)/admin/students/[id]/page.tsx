@@ -87,6 +87,7 @@ export default function StudentProfilePage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [addCount, setAddCount] = useState(1);
   const [saving, setSaving] = useState(false);
+  const [promoting, setPromoting] = useState(false);
 
   async function addManualCheckins() {
     if (addCount < 1) return;
@@ -117,6 +118,54 @@ export default function StudentProfilePage() {
         return { ...prev, bookings: prev.bookings.filter((b) => b.id !== bookingId) };
       });
     }
+  }
+
+  async function promoteBelt(isApto: boolean) {
+    if (!student || !nextBelt) return;
+    if (!isApto) {
+      if (!confirm(`ATENÇÃO: ${student.name} ainda não preencheu os requisitos mínimos para promoção de faixa. Deseja promover mesmo assim?`)) return;
+    } else {
+      if (!confirm(`Promover ${student.name} para faixa ${nextBelt}?`)) return;
+    }
+    setPromoting(true);
+    const res = await fetch(`/api/students/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        belt: nextBelt,
+        degrees: 0,
+        resetBeltProgress: true,
+        resetDegreeProgress: true,
+      }),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setStudent((prev) => prev ? { ...prev, ...updated } : prev);
+    }
+    setPromoting(false);
+  }
+
+  async function promoteDegree(isApto: boolean) {
+    if (!student || !nextDegree) return;
+    if (!isApto) {
+      if (!confirm(`ATENÇÃO: ${student.name} ainda não preencheu os requisitos mínimos para o ${nextDegree}° grau. Deseja promover mesmo assim?`)) return;
+    } else {
+      if (!confirm(`Promover ${student.name} para ${nextDegree}° grau?`)) return;
+    }
+    setPromoting(true);
+    const res = await fetch(`/api/students/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        degrees: nextDegree,
+        resetDegreeProgress: true,
+      }),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setStudent((prev) => prev ? { ...prev, ...updated } : prev);
+    }
+    setPromoting(false);
   }
 
   useEffect(() => {
@@ -275,22 +324,62 @@ export default function StudentProfilePage() {
 
           {/* Degree progress */}
           {degreeReq && (
-            <DegreeProgress
-              checkins={checkinsSinceGraduation}
-              belt={student.belt}
-              nextDegree={nextDegree!}
-              requiredClasses={degreeReq.requiredClasses}
-            />
+            <>
+              <DegreeProgress
+                checkins={checkinsSinceGraduation}
+                belt={student.belt}
+                nextDegree={nextDegree!}
+                requiredClasses={degreeReq.requiredClasses}
+              />
+              <div className={`flex items-center justify-between p-3 rounded-lg text-sm ${
+                checkinsSinceGraduation >= degreeReq.requiredClasses
+                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                  : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+              }`}>
+                <span>
+                  {checkinsSinceGraduation >= degreeReq.requiredClasses
+                    ? `Apto para ${nextDegree}° grau`
+                    : `Ainda não apto para ${nextDegree}° grau`}
+                </span>
+                <Button
+                  size="sm"
+                  disabled={promoting}
+                  onClick={() => promoteDegree(checkinsSinceGraduation >= degreeReq.requiredClasses)}
+                >
+                  {promoting ? "..." : "Promover"}
+                </Button>
+              </div>
+            </>
           )}
 
           {/* Belt progress */}
           {nextBelt && nextBeltReq && nextBeltReq.requiredClasses > 0 ? (
-            <BeltProgress
-              checkins={checkinsSinceBeltChange}
-              nextBelt={nextBelt}
-              requiredClasses={nextBeltReq.requiredClasses}
-              width={320}
-            />
+            <>
+              <BeltProgress
+                checkins={checkinsSinceBeltChange}
+                nextBelt={nextBelt}
+                requiredClasses={nextBeltReq.requiredClasses}
+                width={320}
+              />
+              <div className={`flex items-center justify-between p-3 rounded-lg text-sm mt-2 ${
+                checkinsSinceBeltChange >= nextBeltReq.requiredClasses
+                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                  : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+              }`}>
+                <span>
+                  {checkinsSinceBeltChange >= nextBeltReq.requiredClasses
+                    ? `Apto para faixa ${nextBelt}`
+                    : `Ainda não apto para faixa ${nextBelt}`}
+                </span>
+                <Button
+                  size="sm"
+                  disabled={promoting}
+                  onClick={() => promoteBelt(checkinsSinceBeltChange >= nextBeltReq.requiredClasses)}
+                >
+                  {promoting ? "..." : "Promover"}
+                </Button>
+              </div>
+            </>
           ) : nextBelt && (!nextBeltReq || nextBeltReq.requiredClasses === 0) ? (
             <p className="text-xs text-zinc-400 border-t border-zinc-800 pt-3 mt-3">
               Requisito para faixa {nextBelt} não configurado.{" "}

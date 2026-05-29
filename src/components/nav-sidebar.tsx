@@ -18,6 +18,9 @@ import {
   Award,
   ArrowLeft,
   UserCog,
+  UserCheck,
+  Trophy,
+  Timer,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StudentAvatar } from "./student-avatar";
@@ -33,11 +36,15 @@ const adminLinks = [
   { href: "/admin/roll-call", label: "Chamada", icon: ClipboardList },
   { href: "/admin/attendance", label: "Presenças", icon: ClipboardCheck },
   { href: "/admin/belt-requirements", label: "Requisitos de Faixa", icon: Award },
+  { href: "/admin/ranking", label: "Ranking", icon: Trophy },
+  { href: "/admin/timer", label: "Timer", icon: Timer },
+  { href: "/admin/approvals", label: "Aprovações", icon: UserCheck },
 ];
 
 const studentLinks = [
   { href: "/student", label: "Início", icon: Home },
   { href: "/student/agenda", label: "Minha Agenda", icon: CalendarDays },
+  { href: "/student/graduations", label: "Graduações", icon: Award },
   { href: "/student/account", label: "Minha Conta", icon: UserCog },
 ];
 

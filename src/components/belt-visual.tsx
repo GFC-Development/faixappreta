@@ -174,11 +174,13 @@ export function BeltProgress({
   nextBelt,
   requiredClasses,
   width = 280,
+  showCount = true,
 }: {
   checkins: number;
   nextBelt: string | null;
   requiredClasses: number;
   width?: number;
+  showCount?: boolean;
 }) {
   if (!nextBelt || requiredClasses <= 0) return null;
 
@@ -196,12 +198,14 @@ export function BeltProgress({
         <span className="text-xs text-zinc-500">
           Progresso para <span className="font-semibold" style={{ color: nextColor }}>{nextLabel}</span>
         </span>
-        <span className="text-xs font-medium">
-          {checkins} / {requiredClasses}
-        </span>
+        {showCount && (
+          <span className="text-xs font-medium">
+            {checkins} / {requiredClasses} · {Math.round(progress * 100)}%
+          </span>
+        )}
       </div>
       <div
-        className="w-full rounded-full overflow-hidden"
+        className="relative w-full rounded-full overflow-hidden"
         style={{ height, backgroundColor: "#27272a" }}
       >
         <div
@@ -211,12 +215,22 @@ export function BeltProgress({
             backgroundColor: nextColor,
           }}
         />
+        {!showCount && (
+          <span
+            className="absolute inset-0 flex items-center justify-center text-[9px] font-bold leading-none"
+            style={{ color: progress > 0.45 ? (nextBelt === "BRANCA" ? "#000" : "#fff") : "#a1a1aa" }}
+          >
+            {Math.round(progress * 100)}%
+          </span>
+        )}
       </div>
-      <p className="text-xs text-zinc-400 mt-1.5">
-        {checkins >= requiredClasses
-          ? "Meta atingida! Aluno apto para promoção de faixa."
-          : `Faltam ${requiredClasses - checkins} aulas para atingir a meta.`}
-      </p>
+      {showCount && (
+        <p className="text-xs text-zinc-400 mt-1.5">
+          {checkins >= requiredClasses
+            ? "Meta atingida! Aluno apto para promoção de faixa."
+            : `Faltam ${requiredClasses - checkins} aulas para atingir a meta.`}
+        </p>
+      )}
     </div>
   );
 }

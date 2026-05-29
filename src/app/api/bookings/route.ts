@@ -74,6 +74,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Check monthly credits for students
+    if (session.user.role !== "ADMIN") {
+      const student = await prisma.user.findUnique({
+        where: { id: bookingUserId },
+        select: { monthlyCredits: true },
+      });
+      if (student && student.monthlyCredits > 0) {
+        const bookingMonth = date.substring(0, 7); // "YYYY-MM"
+        const monthStart = bookingMonth + "-01";
+        const nextMonth = new Date(date + "T12:00:00");
+        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        const monthEnd = nextMonth.toISOString().substring(0, 10);
+        const usedCredits = await prisma.booking.count({
+          where: {
+            userId: bookingUserId,
+            type: "PRIVATE",
+            date: { gte: monthStart, lt: monthEnd },
+          },
+        });
+        if (usedCredits >= student.monthlyCredits) {
+          return NextResponse.json(
+            { error: "Limite de créditos mensais atingido" },
+            { status: 403 }
+          );
+        }
+      }
+    }
+
     // Check slot exists and is available
     const slot = await prisma.privateSlot.findUnique({
       where: { id: privateSlotId },
@@ -85,12 +113,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Students can only book unbound slots (userId is null)
+    // Students can only book unbound slots or rescheduled slots
     if (session.user.role !== "ADMIN" && slot.userId) {
-      return NextResponse.json(
-        { error: "Este horário é vinculado a um aluno específico" },
-        { status: 403 }
-      );
+      const isRescheduled = await prisma.rescheduleLog.findUnique({
+        where: { privateSlotId_date_type: { privateSlotId, date, type: "RESCHEDULE" } },
+      });
+      if (!isRescheduled) {
+        return NextResponse.json(
+          { error: "Este horário é vinculado a um aluno específico" },
+          { status: 403 }
+        );
+      }
     }
 
     // Check date matches day of week
@@ -102,21 +135,47 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Check advance booking time (6h for students)
+    if (session.user.role !== "ADMIN") {
+      const classDateTime = new Date(`${date}T${slot.startTime}:00-03:00`);
+      const hoursUntilClass = (classDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
+      if (hoursUntilClass < 6) {
+        return NextResponse.json(
+          { error: "Agendamento de aula particular permitido até 6 horas antes" },
+          { status: 403 }
+        );
+      }
+    }
+
     // Check if slot is already booked on this date
-    const existingBooking = await prisma.booking.findFirst({
+    const existingBookings = await prisma.booking.findMany({
       where: { privateSlotId, date },
     });
-    if (existingBooking) {
-      if (existingBooking.userId === bookingUserId) {
+
+    // Check if this student is already booked
+    if (existingBookings.some((b) => b.userId === bookingUserId)) {
+      return NextResponse.json(
+        { error: "Este aluno já está agendado neste horário" },
+        { status: 409 }
+      );
+    }
+
+    if (session.user.role === "ADMIN") {
+      // Admin can book up to 4 students per private slot
+      if (existingBookings.length >= 4) {
         return NextResponse.json(
-          { error: "Este aluno já está agendado neste horário" },
+          { error: "Limite de 4 alunos por aula particular atingido" },
           { status: 409 }
         );
       }
-      return NextResponse.json(
-        { error: "Este horário já foi reservado por outro aluno nesta data" },
-        { status: 409 }
-      );
+    } else {
+      // Students can only book if no one else has booked (1 per open slot)
+      if (existingBookings.length > 0) {
+        return NextResponse.json(
+          { error: "Este horário já foi reservado por outro aluno nesta data" },
+          { status: 409 }
+        );
+      }
     }
 
     const booking = await prisma.booking.create({
@@ -128,6 +187,19 @@ export async function POST(req: NextRequest) {
       },
       include: { privateSlot: true, user: { select: { id: true, name: true } } },
     });
+
+    // Create admin alert when student books an open slot
+    if (session.user.role !== "ADMIN" && !slot.userId) {
+      await prisma.rescheduleLog.create({
+        data: {
+          type: "BOOKING",
+          userId: bookingUserId,
+          privateSlotId,
+          date,
+        },
+      });
+    }
+
     return NextResponse.json(booking, { status: 201 });
   }
 
@@ -167,6 +239,18 @@ export async function POST(req: NextRequest) {
       { error: "Aula lotada" },
       { status: 409 }
     );
+  }
+
+  // Check advance booking time (1h for students)
+  if (session.user.role !== "ADMIN") {
+    const classDateTime = new Date(`${date}T${groupClass.startTime}:00-03:00`);
+    const hoursUntilClass = (classDateTime.getTime() - Date.now()) / (1000 * 60 * 60);
+    if (hoursUntilClass < 1) {
+      return NextResponse.json(
+        { error: "Agendamento de aula coletiva permitido até 1 hora antes" },
+        { status: 403 }
+      );
+    }
   }
 
   // Check if already booked

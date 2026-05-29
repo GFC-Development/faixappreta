@@ -35,6 +35,7 @@ export default function BookingPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [credits, setCredits] = useState<{ monthlyCredits: number; used: number; remaining: number } | null>(null);
 
   const isParticular = session?.user.studentType === "PARTICULAR";
   const hasGrappling = (session?.user.modalities || "GRAPPLING").includes("GRAPPLING");
@@ -44,6 +45,7 @@ export default function BookingPage() {
       fetch("/api/slots")
         .then((r) => r.json())
         .then((data: Slot[]) => setSlots(data.filter((s) => s.isAvailable && !s.userId)));
+      fetch("/api/credits").then((r) => r.json()).then(setCredits);
     }
     fetch("/api/group-classes")
       .then((r) => r.json())
@@ -147,9 +149,16 @@ export default function BookingPage() {
         <>
           {isParticular && (
             <div className="mb-6">
-              <h2 className="text-lg font-semibold mb-3 text-zinc-50">
-                Aulas Particulares
-              </h2>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-semibold text-zinc-50">
+                  Aulas Particulares
+                </h2>
+                {credits && credits.monthlyCredits > 0 && (
+                  <Badge variant={credits.remaining > 0 ? "success" : "danger"}>
+                    Créditos: {credits.remaining}/{credits.monthlyCredits}
+                  </Badge>
+                )}
+              </div>
               {filteredSlots.length === 0 ? (
                 <p className="text-zinc-400 text-sm">
                   Nenhum horário particular disponível neste dia
@@ -168,7 +177,7 @@ export default function BookingPage() {
                         <Button
                           size="sm"
                           onClick={() => bookPrivate(slot.id)}
-                          disabled={loading}
+                          disabled={loading || (credits !== null && credits.monthlyCredits > 0 && credits.remaining <= 0)}
                         >
                           Agendar
                         </Button>

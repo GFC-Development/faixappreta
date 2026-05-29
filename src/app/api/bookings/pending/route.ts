@@ -24,8 +24,21 @@ export async function GET(req: NextRequest) {
       where: { dayOfWeek, isAvailable: true, userId: { not: null } },
     });
 
+    // Don't recreate bookings for rescheduled slots
+    const rescheduledSlotIds = new Set(
+      (await prisma.rescheduleLog.findMany({
+        where: { date, type: "RESCHEDULE" },
+        select: { privateSlotId: true },
+      })).map(r => r.privateSlotId)
+    );
+
     for (const slot of activeSlots) {
-      try {
+      if (rescheduledSlotIds.has(slot.id)) continue;
+      // Check if booking already exists for this student+slot+date
+      const exists = await prisma.booking.findFirst({
+        where: { userId: slot.userId!, privateSlotId: slot.id, date },
+      });
+      if (!exists) {
         await prisma.booking.create({
           data: {
             userId: slot.userId!,
@@ -34,8 +47,6 @@ export async function GET(req: NextRequest) {
             date,
           },
         });
-      } catch {
-        // Unique constraint violation — booking already exists
       }
     }
   }
@@ -50,5 +61,14 @@ export async function GET(req: NextRequest) {
     orderBy: [{ date: "desc" }, { createdAt: "asc" }],
   });
 
-  return NextResponse.json(bookings);
+  // Include rescheduled slot IDs so the frontend can hide them from "Pendente"
+  if (date) {
+    const rescheduleLogs = await prisma.rescheduleLog.findMany({
+      where: { date, type: "RESCHEDULE" },
+      select: { privateSlotId: true, userId: true },
+    });
+    return NextResponse.json({ bookings, rescheduleLogs });
+  }
+
+  return NextResponse.json({ bookings, rescheduleLogs: [] });
 }

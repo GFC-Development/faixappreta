@@ -27,6 +27,7 @@ export async function GET(req: NextRequest) {
     });
 
     // If date provided, hide open slots already booked by another student
+    // and show rescheduled slots from other students
     if (date) {
       const takenBookings = await prisma.booking.findMany({
         where: {
@@ -39,7 +40,39 @@ export async function GET(req: NextRequest) {
         select: { privateSlotId: true },
       });
       const takenSlotIds = new Set(takenBookings.map((b) => b.privateSlotId));
-      return NextResponse.json(slots.filter((s) => !takenSlotIds.has(s.id)));
+
+      // Find own rescheduled slots for this date (should not show as "Sua aula")
+      const ownRescheduled = await prisma.rescheduleLog.findMany({
+        where: { userId: session.user.id, date, type: "RESCHEDULE" },
+        select: { privateSlotId: true },
+      });
+      const ownRescheduledIds = new Set(ownRescheduled.map((r) => r.privateSlotId));
+
+      const filtered = slots.filter((s) => !takenSlotIds.has(s.id) && !ownRescheduledIds.has(s.id));
+
+      // Find rescheduled slots from other students available on this date
+      if (isParticular) {
+        const dayOfWeek = new Date(date + "T12:00:00").getDay();
+        const rescheduledSlots = await prisma.privateSlot.findMany({
+          where: {
+            dayOfWeek,
+            isAvailable: true,
+            userId: { not: null },
+            NOT: { userId: session.user.id },
+            rescheduleLogs: { some: { date, type: "RESCHEDULE" } },
+            bookings: { none: { date } },
+          },
+        });
+        // Add rescheduled slots as if they were open (hide bound user info)
+        for (const rs of rescheduledSlots) {
+          if (!filtered.some((s) => s.id === rs.id)) {
+            filtered.push({ ...rs, userId: null, user: null });
+          }
+        }
+        filtered.sort((a, b) => a.dayOfWeek - b.dayOfWeek || a.startTime.localeCompare(b.startTime));
+      }
+
+      return NextResponse.json(filtered);
     }
 
     return NextResponse.json(slots);
@@ -73,26 +106,54 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const data = { ...result.data, userId: result.data.userId || null };
+  // Auto-calculate endTime as startTime + 1 hour if not provided
+  let endTime = result.data.endTime;
+  if (!endTime) {
+    const [h, m] = result.data.startTime.split(":").map(Number);
+    endTime = `${String(h + 1).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  }
+  const data = { ...result.data, endTime, userId: result.data.userId || null };
 
-  // Check for duplicate slot (same day + time)
-  const existing = await prisma.privateSlot.findFirst({
+  // Support creating multiple slots for the same time with different students
+  const userIds: (string | null)[] = Array.isArray(body.userIds) ? body.userIds : [];
+  if (userIds.length === 0 && data.userId) userIds.push(data.userId);
+  if (userIds.length === 0) userIds.push(null);
+
+  // Check for duplicates (same day+time+user)
+  const existingSlots = await prisma.privateSlot.findMany({
     where: {
       dayOfWeek: data.dayOfWeek,
       startTime: data.startTime,
       endTime: data.endTime,
     },
   });
-  if (existing) {
+
+  const existingUserIds = new Set(existingSlots.map((s) => s.userId));
+
+  // If creating an open slot, check if one already exists
+  if (userIds.length === 1 && userIds[0] === null && existingUserIds.has(null)) {
     return NextResponse.json(
-      { error: "Já existe um horário neste dia e horário" },
+      { error: "Já existe um horário aberto neste dia e horário" },
       { status: 409 }
     );
   }
 
-  const slot = await prisma.privateSlot.create({
-    data,
-    include: { user: { select: { id: true, name: true } } },
-  });
-  return NextResponse.json(slot, { status: 201 });
+  const duplicateUsers = userIds.filter((uid) => uid && existingUserIds.has(uid));
+  if (duplicateUsers.length > 0) {
+    return NextResponse.json(
+      { error: "Um ou mais alunos já possuem horário neste dia e horário" },
+      { status: 409 }
+    );
+  }
+
+  const created = [];
+  for (const uid of userIds) {
+    const slot = await prisma.privateSlot.create({
+      data: { ...data, userId: uid },
+      include: { user: { select: { id: true, name: true } } },
+    });
+    created.push(slot);
+  }
+
+  return NextResponse.json(created.length === 1 ? created[0] : created, { status: 201 });
 }

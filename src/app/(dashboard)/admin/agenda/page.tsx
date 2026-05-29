@@ -23,7 +23,6 @@ import {
   RefreshCw,
   X,
   Search,
-  CalendarPlus,
   Trash2,
 } from "lucide-react";
 import { DAY_NAMES } from "@/lib/utils";
@@ -70,8 +69,14 @@ interface Student {
   photoUrl: string | null;
 }
 
+interface RescheduleLog {
+  privateSlotId: string;
+  userId: string;
+}
+
 export default function AdminAgendaPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [rescheduleLogs, setRescheduleLogs] = useState<RescheduleLog[]>([]);
   const [groupClasses, setGroupClasses] = useState<GroupClass[]>([]);
   const [slots, setSlots] = useState<PrivateSlot[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
@@ -82,7 +87,7 @@ export default function AdminAgendaPage() {
   const [loading, setLoading] = useState(false);
 
   // Modal state
-  const [modalTarget, setModalTarget] = useState<{ type: "PRIVATE"; slot: PrivateSlot } | { type: "GROUP"; groupClass: GroupClass } | null>(null);
+  const [modalTarget, setModalTarget] = useState<{ type: "PRIVATE"; slot: PrivateSlot; slotGroup?: PrivateSlot[] } | { type: "GROUP"; groupClass: GroupClass } | null>(null);
   const [modalSearch, setModalSearch] = useState("");
   const [bookingStudent, setBookingStudent] = useState<string | null>(null);
 
@@ -101,7 +106,8 @@ export default function AdminAgendaPage() {
     fetch(`/api/bookings/pending?date=${selectedDateStr}`)
       .then((r) => r.json())
       .then((data) => {
-        setBookings(data);
+        setBookings(data.bookings || data);
+        setRescheduleLogs(data.rescheduleLogs || []);
         setLoading(false);
       });
   }, [selectedDateStr]);
@@ -121,8 +127,8 @@ export default function AdminAgendaPage() {
     return dayBookings.filter((b) => b.groupClassId === classId);
   }
 
-  function getBookingForSlot(slotId: string): Booking | undefined {
-    return dayBookings.find((b) => b.privateSlotId === slotId);
+  function getBookingsForSlot(slotId: string): Booking[] {
+    return dayBookings.filter((b) => b.privateSlotId === slotId);
   }
 
   function hasItems(date: Date) {
@@ -148,7 +154,8 @@ export default function AdminAgendaPage() {
     fetch(`/api/bookings/pending?date=${selectedDateStr}`)
       .then((r) => r.json())
       .then((data) => {
-        setBookings(data);
+        setBookings(data.bookings || data);
+        setRescheduleLogs(data.rescheduleLogs || []);
         setLoading(false);
       });
   }
@@ -174,8 +181,6 @@ export default function AdminAgendaPage() {
         body: JSON.stringify(body),
       });
       if (res.ok) {
-        setModalTarget(null);
-        setModalSearch("");
         refetchBookings();
       } else {
         const data = await res.json();
@@ -328,90 +333,77 @@ export default function AdminAgendaPage() {
               );
             })}
 
-            {/* Private slots (bound) */}
-            {daySlots.filter((s) => s.userId).map((slot) => {
-              const booking = getBookingForSlot(slot.id);
-              return (
-                <Card key={slot.id} className="!p-4 border-l-4 border-l-emerald-500">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock size={14} className="text-zinc-400" />
-                    <span className="text-sm font-semibold text-zinc-50">
-                      {slot.startTime} - {slot.endTime}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <p className="font-medium text-zinc-50">Aula Particular</p>
-                    <Badge variant="success">Particular</Badge>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-zinc-300 flex items-center gap-1.5">
-                      <User size={12} />
-                      {slot.user?.name}
-                    </span>
-                    {booking ? statusBadge(booking) : (
-                      <Badge variant="default">Pendente</Badge>
-                    )}
-                  </div>
-                  {booking && (
-                    <div className="mt-2">
-                      <button
-                        onClick={() => handleDeleteBooking(booking.id)}
-                        className="text-xs text-red-400 hover:text-red-300 transition-colors"
-                      >
-                        Remover agendamento
-                      </button>
-                    </div>
-                  )}
-                </Card>
-              );
-            })}
+            {/* Private slots — grouped by time */}
+            {(() => {
+              const slotGroups: Record<string, PrivateSlot[]> = {};
+              for (const s of daySlots) {
+                const key = `${s.startTime}-${s.endTime}`;
+                if (!slotGroups[key]) slotGroups[key] = [];
+                slotGroups[key].push(s);
+              }
+              return Object.entries(slotGroups).map(([key, groupSlots]) => {
+                const first = groupSlots[0];
+                const allBookings = groupSlots.flatMap((s) => getBookingsForSlot(s.id));
+                // Show bound students that have no booking yet (excluding rescheduled)
+                const bookedUserIds = new Set(allBookings.map((b) => b.user?.id));
+                const rescheduledKey = new Set(rescheduleLogs.map((r) => `${r.privateSlotId}:${r.userId}`));
+                const pendingSlots = groupSlots.filter((s) => s.userId && !bookedUserIds.has(s.userId) && !rescheduledKey.has(`${s.id}:${s.userId}`));
+                // Effective bound: bound students that haven't rescheduled for this date
+                const effectiveBound = groupSlots.some((s) => s.userId && !rescheduledKey.has(`${s.id}:${s.userId}`));
+                const hasActivity = effectiveBound || allBookings.length > 0;
 
-            {/* Private slots (open) */}
-            {daySlots.filter((s) => !s.userId).map((slot) => {
-              const booking = getBookingForSlot(slot.id);
-              return (
-                <Card key={slot.id} className="!p-4 border-l-4 border-l-yellow-500">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock size={14} className="text-zinc-400" />
-                    <span className="text-sm font-semibold text-zinc-50">
-                      {slot.startTime} - {slot.endTime}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <p className="font-medium text-zinc-50">Aula Particular</p>
-                    <Badge variant="warning">Aberto</Badge>
-                  </div>
-                  {booking ? (
-                    <div>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-zinc-300 flex items-center gap-1.5">
-                          <User size={12} />
-                          {booking.user?.name}
-                        </span>
-                        {statusBadge(booking)}
-                      </div>
-                      <div className="mt-2">
-                        <button
-                          onClick={() => handleDeleteBooking(booking.id)}
-                          className="text-xs text-red-400 hover:text-red-300 transition-colors"
-                        >
-                          Remover agendamento
-                        </button>
-                      </div>
+                return (
+                  <Card key={key} className={`!p-4 border-l-4 ${hasActivity ? "border-l-emerald-500" : "border-l-yellow-500"}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Clock size={14} className="text-zinc-400" />
+                      <span className="text-sm font-semibold text-zinc-50">
+                        {first.startTime} - {first.endTime}
+                      </span>
                     </div>
-                  ) : (
+                    <div className="flex items-center gap-2 mb-3">
+                      <p className="font-medium text-zinc-50">Aula Particular</p>
+                      <Badge variant={hasActivity ? "success" : "warning"}>
+                        {hasActivity ? "Particular" : "Aberto"}
+                      </Badge>
+                      <span className="text-xs text-zinc-400 flex items-center gap-1">
+                        <Users size={12} />
+                        {allBookings.length + pendingSlots.length}/4
+                      </span>
+                    </div>
+                    {(allBookings.length > 0 || pendingSlots.length > 0) && (
+                      <div className="space-y-1.5 mb-3">
+                        {allBookings.map((b) => (
+                          <div key={b.id} className="flex items-center justify-between text-sm">
+                            <span className="text-zinc-300 flex items-center gap-1.5">
+                              <User size={12} />
+                              {b.user?.name}
+                            </span>
+                            {statusBadge(b)}
+                          </div>
+                        ))}
+                        {pendingSlots.map((s) => (
+                          <div key={s.id} className="flex items-center justify-between text-sm">
+                            <span className="text-zinc-300 flex items-center gap-1.5">
+                              <User size={12} />
+                              {s.user?.name}
+                            </span>
+                            <Badge variant="default">Pendente</Badge>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                     <Button
                       size="sm"
                       variant="secondary"
-                      onClick={() => { setModalTarget({ type: "PRIVATE", slot }); setModalSearch(""); }}
+                      onClick={() => { setModalTarget({ type: "PRIVATE", slot: first, slotGroup: groupSlots }); setModalSearch(""); }}
                     >
-                      <CalendarPlus size={14} className="mr-1.5" />
-                      Agendar Aluno
+                      <Users size={14} className="mr-1.5" />
+                      Gerenciar Alunos
                     </Button>
-                  )}
-                </Card>
-              );
-            })}
+                  </Card>
+                );
+              });
+            })()}
 
             {/* Empty state */}
             {dayClasses.length === 0 && daySlots.length === 0 && (
@@ -431,10 +423,11 @@ export default function AdminAgendaPage() {
       {modalTarget && (() => {
         const modalBookings = modalTarget.type === "GROUP"
           ? getBookingsForClass(modalTarget.groupClass.id)
-          : (() => { const b = getBookingForSlot(modalTarget.slot.id); return b ? [b] : []; })();
+          : (modalTarget.slotGroup || [modalTarget.slot]).flatMap((s) => getBookingsForSlot(s.id));
         const bookedStudentIds = new Set(modalBookings.map((b) => b.user?.id).filter(Boolean));
         const availableStudents = filteredStudents.filter((s) => !bookedStudentIds.has(s.id));
-        const isFull = modalTarget.type === "GROUP" && modalBookings.length >= modalTarget.groupClass.capacity;
+        const capacity = modalTarget.type === "GROUP" ? modalTarget.groupClass.capacity : 4;
+        const isFull = modalBookings.length >= capacity;
 
         return (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setModalTarget(null)}>
@@ -464,7 +457,7 @@ export default function AdminAgendaPage() {
                 {modalBookings.length > 0 && (
                   <div className="p-3 border-b border-zinc-800">
                     <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide mb-2">
-                      Agendados ({modalBookings.length}{modalTarget.type === "GROUP" ? `/${modalTarget.groupClass.capacity}` : ""})
+                      Agendados ({modalBookings.length}/{capacity})
                     </p>
                     <div className="space-y-2">
                       {modalBookings.map((b) => (
