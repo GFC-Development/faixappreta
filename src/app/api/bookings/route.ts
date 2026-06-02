@@ -221,6 +221,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Rule: SEMI_PRIVATE classes can only be booked by Pro/Premium students
+  if (groupClass.classType === "SEMI_PRIVATE" && session.user.role !== "ADMIN" && session.user.studentType === "ESSENCIAL") {
+    return NextResponse.json(
+      { error: "Aulas semi-particulares são exclusivas para alunos dos planos Pro e Premium" },
+      { status: 403 }
+    );
+  }
+
   // Check date matches day of week
   const bookingDate = new Date(date + "T12:00:00");
   if (bookingDate.getDay() !== groupClass.dayOfWeek) {

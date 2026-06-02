@@ -19,6 +19,7 @@ interface GroupClass {
   endTime: string;
   capacity: number;
   isKids: boolean;
+  classType: string;
 }
 
 const emptyForm = {
@@ -28,6 +29,7 @@ const emptyForm = {
   endTime: "09:00",
   capacity: 20,
   isKids: false,
+  classType: "GROUP" as string,
 };
 
 export default function GroupClassesPage() {
@@ -68,6 +70,7 @@ export default function GroupClassesPage() {
       endTime: gc.endTime,
       capacity: gc.capacity,
       isKids: gc.isKids,
+      classType: gc.classType || "GROUP",
     });
     setEditModalOpen(true);
   }
@@ -135,6 +138,14 @@ export default function GroupClassesPage() {
         }
         required
       />
+      <Select
+        label="Tipo de Aula"
+        value={form.classType}
+        onChange={(e) => setForm({ ...form, classType: e.target.value, capacity: e.target.value === "SEMI_PRIVATE" ? 4 : form.capacity })}
+      >
+        <option value="GROUP">Coletiva</option>
+        <option value="SEMI_PRIVATE">Semi-Particular</option>
+      </Select>
       <label className="flex items-center gap-3 cursor-pointer">
         <input
           type="checkbox"
@@ -150,7 +161,7 @@ export default function GroupClassesPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-zinc-50">Aulas Coletivas</h1>
+        <h1 className="text-2xl font-bold text-zinc-50">Aulas</h1>
         <Button onClick={() => { setForm(emptyForm); setCreateModalOpen(true); }}>Nova Aula</Button>
       </div>
 
@@ -177,9 +188,12 @@ export default function GroupClassesPage() {
                   </td>
                   <td className="py-2 px-2 text-zinc-50">{gc.capacity} alunos</td>
                   <td className="py-2 px-2">
-                    <Badge variant={gc.isKids ? "warning" : "default"}>
-                      {gc.isKids ? "Kids" : "Adulto"}
-                    </Badge>
+                    <div className="flex items-center gap-1">
+                      <Badge variant={(gc.classType || "GROUP") === "SEMI_PRIVATE" ? "warning" : "default"}>
+                        {(gc.classType || "GROUP") === "SEMI_PRIVATE" ? "Semi-Particular" : "Coletiva"}
+                      </Badge>
+                      {gc.isKids && <Badge variant="warning">Kids</Badge>}
+                    </div>
                   </td>
                   <td className="py-2 px-2">
                     <div className="flex items-center gap-2">
@@ -214,7 +228,7 @@ export default function GroupClassesPage() {
       <Modal
         open={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        title="Nova Aula Coletiva"
+        title="Nova Aula"
       >
         <form onSubmit={handleCreate} className="space-y-4">
           {formFields}
@@ -227,7 +241,7 @@ export default function GroupClassesPage() {
       <Modal
         open={editModalOpen}
         onClose={() => { setEditModalOpen(false); setEditingId(null); }}
-        title="Editar Aula Coletiva"
+        title="Editar Aula"
       >
         <form onSubmit={handleEdit} className="space-y-4">
           {formFields}

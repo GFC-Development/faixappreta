@@ -25,6 +25,7 @@ interface GroupClass {
   endTime: string;
   capacity: number;
   isKids: boolean;
+  classType: string;
 }
 
 export default function BookingPage() {
@@ -65,7 +66,10 @@ export default function BookingPage() {
 
   const userIsKids = session?.user.isKids || false;
   const filteredClasses = selectedDay !== null
-    ? groupClasses.filter((gc) => gc.dayOfWeek === selectedDay && gc.isKids === userIsKids)
+    ? groupClasses.filter((gc) => gc.dayOfWeek === selectedDay && gc.isKids === userIsKids && gc.classType === "GROUP")
+    : [];
+  const filteredSemiPrivate = selectedDay !== null && isParticular
+    ? groupClasses.filter((gc) => gc.dayOfWeek === selectedDay && gc.classType === "SEMI_PRIVATE" && !gc.isKids)
     : [];
 
   async function bookPrivate(slotId: string) {
@@ -220,6 +224,34 @@ export default function BookingPage() {
               </div>
             )}
           </div>}
+
+          {filteredSemiPrivate.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold mb-3 text-zinc-50">Aulas Semi-Particulares</h2>
+              <div className="grid gap-3">
+                {filteredSemiPrivate.map((gc) => (
+                  <Card key={gc.id} className="!p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-zinc-50">{gc.name}</p>
+                        <p className="text-sm text-zinc-400">
+                          {gc.startTime} - {gc.endTime}
+                        </p>
+                        <Badge variant="warning">Semi-Particular - {gc.capacity} vagas</Badge>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => bookGroup(gc.id)}
+                        disabled={loading}
+                      >
+                        Agendar
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

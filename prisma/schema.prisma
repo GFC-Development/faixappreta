@@ -60,6 +60,7 @@ model GroupClass {
   endTime   String
   capacity  Int
   isKids    Boolean @default(false)
+  classType String  @default("GROUP") // GROUP | SEMI_PRIVATE
 
   bookings Booking[]
 }

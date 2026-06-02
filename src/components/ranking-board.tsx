@@ -95,7 +95,7 @@ export function RankingBoard({ compact = false }: { compact?: boolean }) {
                     <p className={`${compact ? "text-xs" : "text-lg"} font-bold text-zinc-50 truncate`}>{student.name}</p>
                   </div>
                   <p className={`${compact ? "text-[10px]" : "text-xs"} ${presColor(pos)} font-semibold mt-0.5`}>
-                    {student.presences} presenças
+                    {student.presences} {student.presences === 1 ? "presença" : "presenças"}
                   </p>
                 </div>
               </div>
@@ -119,7 +119,7 @@ export function RankingBoard({ compact = false }: { compact?: boolean }) {
                 </div>
                 <p className={`font-semibold ${compact ? "text-[11px]" : "text-sm"} text-zinc-50 truncate w-full`}>{student.name}</p>
                 <p className={`${compact ? "text-[10px]" : "text-xs"} ${presColor(pos)} font-semibold`}>
-                  {student.presences} presenças
+                  {student.presences} {student.presences === 1 ? "presença" : "presenças"}
                 </p>
               </div>
             </Card>

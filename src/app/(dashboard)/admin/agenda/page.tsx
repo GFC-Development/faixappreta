@@ -48,6 +48,7 @@ interface GroupClass {
   endTime: string;
   capacity: number;
   isKids: boolean;
+  classType: string;
 }
 
 interface PrivateSlot {
@@ -304,7 +305,9 @@ export default function AdminAgendaPage() {
                   </div>
                   <div className="flex items-center gap-2 mb-3">
                     <p className="font-medium text-zinc-50">{gc.name}</p>
-                    <Badge>Coletiva</Badge>
+                    <Badge variant={(gc.classType || "GROUP") === "SEMI_PRIVATE" ? "warning" : "default"}>
+                      {(gc.classType || "GROUP") === "SEMI_PRIVATE" ? "Semi-Particular" : "Coletiva"}
+                    </Badge>
                     {gc.isKids && <Badge variant="warning">Kids</Badge>}
                     <span className="text-xs text-zinc-400 flex items-center gap-1">
                       <Users size={12} />

@@ -393,7 +393,7 @@ export default function StudentHome() {
                 <Trophy size={18} className="text-yellow-400 sm:mb-1" />
                 <p className="text-xl sm:text-2xl font-bold text-zinc-50">{rankPosition.position}°</p>
                 <p className="text-[10px] text-zinc-500 uppercase tracking-wider hidden sm:block">ranking</p>
-                <p className="text-xs text-zinc-400 sm:mt-0.5">{rankPosition.presences} presenças</p>
+                <p className="text-xs text-zinc-400 sm:mt-0.5">{rankPosition.presences} {rankPosition.presences === 1 ? "presença" : "presenças"}</p>
               </div>
             )}
           </div>
@@ -448,7 +448,7 @@ export default function StudentHome() {
           <p className="text-sm text-zinc-400">
             Plano: {getPlanLabel(user.studentType)}
           </p>
-          <p className="text-2xl font-bold text-zinc-50 mt-2">{checkins} presenças</p>
+          <p className="text-2xl font-bold text-zinc-50 mt-2">{checkins} {checkins === 1 ? "presença" : "presenças"}</p>
         </Card>
       )}
 

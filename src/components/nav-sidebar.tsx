@@ -30,7 +30,7 @@ import { useState } from "react";
 const adminLinks = [
   { href: "/admin", label: "Dashboard", icon: Home },
   { href: "/admin/slots", label: "Horários Particulares", icon: Clock },
-  { href: "/admin/group-classes", label: "Aulas Coletivas", icon: BookOpen },
+  { href: "/admin/group-classes", label: "Aulas", icon: BookOpen },
   { href: "/admin/events", label: "Eventos", icon: CalendarDays },
   { href: "/admin/notifications", label: "Notificações", icon: Bell },
   { href: "/admin/agenda", label: "Agenda do Dia", icon: CalendarDays },

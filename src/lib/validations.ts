@@ -30,6 +30,7 @@ export const groupClassSchema = z.object({
   endTime: z.string().regex(/^\d{2}:\d{2}$/),
   capacity: z.number().min(1),
   isKids: z.boolean().optional(),
+  classType: z.enum(["GROUP", "SEMI_PRIVATE"]).optional(),
 });
 
 export const bookingSchema = z.object({
