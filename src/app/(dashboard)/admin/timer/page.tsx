@@ -35,10 +35,56 @@ function badgeClass(position: number): string {
   }
 }
 
+let sharedAudioCtx: AudioContext | null = null;
+
+function getAudioContext(): AudioContext {
+  if (!sharedAudioCtx || sharedAudioCtx.state === "closed") {
+    sharedAudioCtx = new AudioContext();
+  }
+  if (sharedAudioCtx.state === "suspended") {
+    sharedAudioCtx.resume();
+  }
+  return sharedAudioCtx;
+}
+
+function playBeeps(
+  pattern: { freq: number; duration: number; gap: number }[]
+): number {
+  try {
+    const ctx = getAudioContext();
+    let t = ctx.currentTime + 0.05;
+    for (const { freq, duration, gap } of pattern) {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "square";
+      osc.frequency.value = freq;
+      gain.gain.value = 0.5;
+      osc.start(t);
+      osc.stop(t + duration);
+      t += duration + gap;
+    }
+    return t - ctx.currentTime;
+  } catch {
+    return 0;
+  }
+}
+
+const START_BEEPS = [
+  { freq: 660, duration: 0.15, gap: 0.85 },
+  { freq: 660, duration: 0.15, gap: 0.85 },
+  { freq: 660, duration: 0.15, gap: 0.85 },
+  { freq: 880, duration: 0.5, gap: 0 },
+];
+
+const FINISH_BEEPS = [{ freq: 880, duration: 1, gap: 0 }];
+
 export default function TimerPage() {
   const router = useRouter();
   const [remaining, setRemaining] = useState(0);
   const [running, setRunning] = useState(false);
+  const [countingDown, setCountingDown] = useState(false);
   const [finished, setFinished] = useState(false);
   const [blinkVisible, setBlinkVisible] = useState(true);
   const [ranking, setRanking] = useState<RankedStudent[]>([]);
@@ -102,32 +148,21 @@ export default function TimerPage() {
     setBlinkVisible(true);
   }, []);
 
+  const remainingRef = useRef(0);
+
   const tick = useCallback(() => {
-    setRemaining((prev) => {
-      if (prev <= 1) {
-        stop();
-        setFinished(true);
-        startBlink();
-        try {
-          const ctx = new AudioContext();
-          const totalBeeps = 10;
-          for (let i = 0; i < totalBeeps; i++) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.type = "square";
-            osc.frequency.value = i % 2 === 0 ? 880 : 660;
-            gain.gain.value = 0.5;
-            const start = ctx.currentTime + i * 0.3;
-            osc.start(start);
-            osc.stop(start + 0.2);
-          }
-        } catch {}
-        return 0;
-      }
-      return prev - 1;
-    });
+    const prev = remainingRef.current;
+    if (prev <= 1) {
+      setRemaining(0);
+      remainingRef.current = 0;
+      stop();
+      setFinished(true);
+      startBlink();
+      playBeeps(FINISH_BEEPS);
+    } else {
+      setRemaining(prev - 1);
+      remainingRef.current = prev - 1;
+    }
   }, [stop, startBlink]);
 
   function addTime(seconds: number) {
@@ -136,11 +171,25 @@ export default function TimerPage() {
     setRemaining((prev) => {
       const next = prev + seconds;
       lastConfigRef.current = next;
+      remainingRef.current = next;
       return next;
     });
   }
 
+  function startTimer() {
+    setCountingDown(false);
+    intervalRef.current = setInterval(tick, 1000);
+    setRunning(true);
+  }
+
+  function playAndStart() {
+    setCountingDown(true);
+    const delay = playBeeps(START_BEEPS);
+    setTimeout(startTimer, delay * 1000);
+  }
+
   function togglePlay() {
+    if (countingDown) return;
     if (running) {
       stop();
       return;
@@ -149,21 +198,22 @@ export default function TimerPage() {
     // If finished or at 0, restart with last configured time
     if (remaining === 0 && lastConfigRef.current > 0) {
       setRemaining(lastConfigRef.current);
+      remainingRef.current = lastConfigRef.current;
       setFinished(false);
-      intervalRef.current = setInterval(tick, 1000);
-      setRunning(true);
+      playAndStart();
       return;
     }
     if (remaining === 0) return;
     setFinished(false);
-    intervalRef.current = setInterval(tick, 1000);
-    setRunning(true);
+    playAndStart();
   }
 
   function reset() {
     stop();
     stopBlink();
+    setCountingDown(false);
     setRemaining(0);
+    remainingRef.current = 0;
     setFinished(false);
     lastConfigRef.current = 0;
   }
@@ -188,7 +238,7 @@ export default function TimerPage() {
     ? "0 0 40px rgba(16,185,129,0.5), 0 0 80px rgba(16,185,129,0.25)"
     : "none";
 
-  const canPlay = remaining > 0 || lastConfigRef.current > 0;
+  const canPlay = !countingDown && (remaining > 0 || lastConfigRef.current > 0);
 
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center overflow-hidden">
