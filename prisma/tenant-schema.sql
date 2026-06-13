@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS "User" (
     "lastPaymentDate" DATETIME,
     "lastGraduationDate" DATETIME,
     "lastBeltChangeDate" DATETIME,
+    "isOwner" INTEGER NOT NULL DEFAULT 0,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE UNIQUE INDEX IF NOT EXISTS "User_email_key" ON "User"("email");
@@ -30,7 +31,9 @@ CREATE TABLE IF NOT EXISTS "PrivateSlot" (
     "endTime" TEXT NOT NULL,
     "isAvailable" INTEGER NOT NULL DEFAULT 1,
     "userId" TEXT,
-    CONSTRAINT "PrivateSlot_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    "instructorId" TEXT,
+    CONSTRAINT "PrivateSlot_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT "PrivateSlot_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS "GroupClass" (
@@ -41,7 +44,9 @@ CREATE TABLE IF NOT EXISTS "GroupClass" (
     "endTime" TEXT NOT NULL,
     "capacity" INTEGER NOT NULL,
     "isKids" INTEGER NOT NULL DEFAULT 0,
-    "classType" TEXT NOT NULL DEFAULT 'GROUP'
+    "classType" TEXT NOT NULL DEFAULT 'GROUP',
+    "instructorId" TEXT,
+    CONSTRAINT "GroupClass_instructorId_fkey" FOREIGN KEY ("instructorId") REFERENCES "User" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS "Booking" (

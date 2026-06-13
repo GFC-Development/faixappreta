@@ -24,6 +24,7 @@ export async function PATCH(
   if (body.endTime !== undefined) allowed.endTime = body.endTime;
   if (body.isAvailable !== undefined) allowed.isAvailable = body.isAvailable;
   if (body.userId !== undefined) allowed.userId = body.userId || null;
+  if (body.instructorId !== undefined) allowed.instructorId = body.instructorId || null;
 
   const slot = await prisma.privateSlot.update({
     where: { id: params.id },

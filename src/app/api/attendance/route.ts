@@ -19,6 +19,26 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Parâmetros 'from' e 'to' são obrigatórios" }, { status: 400 });
   }
 
+  // Build booking filter for non-owner professors
+  const bookingWhere: Record<string, unknown> = {
+    date: { gte: from, lte: to },
+    checkedIn: true,
+  };
+  const totalBookingWhere: Record<string, unknown> = {
+    date: { gte: from, lte: to },
+  };
+
+  if (!session.user.isOwner) {
+    const instructorFilter = {
+      OR: [
+        { groupClass: { instructorId: session.user.id } },
+        { privateSlot: { instructorId: session.user.id } },
+      ],
+    };
+    Object.assign(bookingWhere, instructorFilter);
+    Object.assign(totalBookingWhere, instructorFilter);
+  }
+
   // Get all students with their bookings in the period
   const students = await prisma.user.findMany({
     where: { role: "STUDENT" },
@@ -30,10 +50,7 @@ export async function GET(req: NextRequest) {
       initialCheckins: true,
       photoUrl: true,
       bookings: {
-        where: {
-          date: { gte: from, lte: to },
-          checkedIn: true,
-        },
+        where: bookingWhere,
         select: { id: true, date: true },
       },
     },
@@ -42,9 +59,7 @@ export async function GET(req: NextRequest) {
 
   // Count total classes in period (all bookings, not just checked-in)
   const totalBookingsInPeriod = await prisma.booking.count({
-    where: {
-      date: { gte: from, lte: to },
-    },
+    where: totalBookingWhere,
   });
 
   const studentsData = students.map((s) => ({

@@ -14,6 +14,7 @@ model User {
   passwordHash       String
   role               String    @default("STUDENT") // ADMIN | STUDENT
   status             String    @default("PENDING") // PENDING | APPROVED
+  isOwner            Boolean   @default(false)
   studentType        String    @default("ESSENCIAL") // ESSENCIAL | PRO | PREMIUM
   belt               String    @default("BRANCA")
   degrees            Int       @default(0)
@@ -30,6 +31,8 @@ model User {
 
   bookings          Booking[]
   privateSlots      PrivateSlot[]
+  instructorClasses GroupClass[]   @relation("instructorClasses")
+  instructorSlots   PrivateSlot[]  @relation("instructorSlots")
   createdEvents     Event[]
   createdNotifs     Notification[]
   notificationReads NotificationRead[]
@@ -39,30 +42,34 @@ model User {
 }
 
 model PrivateSlot {
-  id          String  @id @default(cuid())
-  dayOfWeek   Int // 0=domingo, 1=segunda...6=sabado
-  startTime   String // "HH:mm"
-  endTime     String // "HH:mm"
-  isAvailable Boolean @default(true)
-  userId      String?
+  id           String  @id @default(cuid())
+  dayOfWeek    Int // 0=domingo, 1=segunda...6=sabado
+  startTime    String // "HH:mm"
+  endTime      String // "HH:mm"
+  isAvailable  Boolean @default(true)
+  userId       String?
+  instructorId String?
 
   user              User?            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instructor        User?            @relation("instructorSlots", fields: [instructorId], references: [id], onDelete: SetNull)
   bookings          Booking[]
   rescheduleLogs    RescheduleLog[] @relation("originalSlot")
   rescheduleNewLogs RescheduleLog[] @relation("newSlot")
 }
 
 model GroupClass {
-  id        String @id @default(cuid())
-  name      String
-  dayOfWeek Int
-  startTime String
-  endTime   String
-  capacity  Int
-  isKids    Boolean @default(false)
-  classType String  @default("GROUP") // GROUP | SEMI_PRIVATE
+  id           String  @id @default(cuid())
+  name         String
+  dayOfWeek    Int
+  startTime    String
+  endTime      String
+  capacity     Int
+  isKids       Boolean @default(false)
+  classType    String  @default("GROUP") // GROUP | SEMI_PRIVATE
+  instructorId String?
 
-  bookings Booking[]
+  instructor User?     @relation("instructorClasses", fields: [instructorId], references: [id], onDelete: SetNull)
+  bookings   Booking[]
 }
 
 model Booking {

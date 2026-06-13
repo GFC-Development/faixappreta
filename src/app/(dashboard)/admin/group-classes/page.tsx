@@ -11,6 +11,11 @@ import { Modal } from "@/components/ui/modal";
 import { DAY_NAMES } from "@/lib/utils";
 import { Trash2, Pencil } from "lucide-react";
 
+interface Instructor {
+  id: string;
+  name: string;
+}
+
 interface GroupClass {
   id: string;
   name: string;
@@ -20,6 +25,14 @@ interface GroupClass {
   capacity: number;
   isKids: boolean;
   classType: string;
+  instructorId: string | null;
+  instructor: Instructor | null;
+}
+
+interface Professor {
+  id: string;
+  name: string;
+  isOwner: boolean;
 }
 
 const emptyForm = {
@@ -30,10 +43,12 @@ const emptyForm = {
   capacity: 20,
   isKids: false,
   classType: "GROUP" as string,
+  instructorId: "" as string,
 };
 
 export default function GroupClassesPage() {
   const [classes, setClasses] = useState<GroupClass[]>([]);
+  const [professors, setProfessors] = useState<Professor[]>([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -41,6 +56,9 @@ export default function GroupClassesPage() {
 
   useEffect(() => {
     loadClasses();
+    fetch("/api/professors")
+      .then((r) => r.json())
+      .then(setProfessors);
   }, []);
 
   function loadClasses() {
@@ -51,10 +69,11 @@ export default function GroupClassesPage() {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
+    const submitData = { ...form, instructorId: form.instructorId || undefined };
     await fetch("/api/group-classes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(submitData),
     });
     setCreateModalOpen(false);
     setForm(emptyForm);
@@ -71,6 +90,7 @@ export default function GroupClassesPage() {
       capacity: gc.capacity,
       isKids: gc.isKids,
       classType: gc.classType || "GROUP",
+      instructorId: gc.instructorId || "",
     });
     setEditModalOpen(true);
   }
@@ -78,10 +98,11 @@ export default function GroupClassesPage() {
   async function handleEdit(e: React.FormEvent) {
     e.preventDefault();
     if (!editingId) return;
+    const submitData = { ...form, instructorId: form.instructorId || null };
     await fetch(`/api/group-classes/${editingId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(submitData),
     });
     setEditModalOpen(false);
     setEditingId(null);
@@ -155,6 +176,20 @@ export default function GroupClassesPage() {
         />
         <span className="text-sm text-content-primary">Aula Kids</span>
       </label>
+      {professors.length > 1 && (
+        <Select
+          label="Professor"
+          value={form.instructorId}
+          onChange={(e) => setForm({ ...form, instructorId: e.target.value })}
+        >
+          <option value="">Auto (eu mesmo)</option>
+          {professors.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.name}{p.isOwner ? " (Dono)" : ""}
+            </option>
+          ))}
+        </Select>
+      )}
     </>
   );
 
@@ -175,6 +210,9 @@ export default function GroupClassesPage() {
                 <th className="text-left py-2 px-2 text-content-secondary">Horário</th>
                 <th className="text-left py-2 px-2 text-content-secondary">Capacidade</th>
                 <th className="text-left py-2 px-2 text-content-secondary">Tipo</th>
+                {professors.length > 1 && (
+                  <th className="text-left py-2 px-2 text-content-secondary">Professor</th>
+                )}
                 <th className="text-left py-2 px-2"></th>
               </tr>
             </thead>
@@ -195,6 +233,11 @@ export default function GroupClassesPage() {
                       {gc.isKids && <Badge variant="warning">Kids</Badge>}
                     </div>
                   </td>
+                  {professors.length > 1 && (
+                    <td className="py-2 px-2 text-content-primary">
+                      {gc.instructor?.name || "-"}
+                    </td>
+                  )}
                   <td className="py-2 px-2">
                     <div className="flex items-center gap-2">
                       <button
@@ -215,7 +258,7 @@ export default function GroupClassesPage() {
               ))}
               {classes.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-content-muted">
+                  <td colSpan={professors.length > 1 ? 7 : 6} className="py-8 text-center text-content-muted">
                     Nenhuma aula cadastrada
                   </td>
                 </tr>

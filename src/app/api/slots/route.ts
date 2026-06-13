@@ -87,7 +87,10 @@ export async function GET(req: NextRequest) {
 
   const slots = await prisma.privateSlot.findMany({
     where,
-    include: { user: { select: { id: true, name: true } } },
+    include: {
+      user: { select: { id: true, name: true } },
+      instructor: { select: { id: true, name: true } },
+    },
     orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
   });
   return NextResponse.json(slots);
@@ -118,7 +121,7 @@ export async function POST(req: NextRequest) {
     const [h, m] = result.data.startTime.split(":").map(Number);
     endTime = `${String(h + 1).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
   }
-  const data = { ...result.data, endTime, userId: result.data.userId || null };
+  const data = { ...result.data, endTime, userId: result.data.userId || null, instructorId: result.data.instructorId || session.user.id };
 
   // Support creating multiple slots for the same time with different students
   const userIds: (string | null)[] = Array.isArray(body.userIds) ? body.userIds : [];

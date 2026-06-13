@@ -50,6 +50,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name,
             email: user.email,
             role: user.role,
+            isOwner: user.isOwner,
             studentType: user.studentType,
             modalities: user.modalities,
             belt: user.belt,
@@ -71,6 +72,7 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.isOwner = user.isOwner;
         token.studentType = user.studentType;
         token.modalities = user.modalities;
         token.belt = user.belt;
@@ -84,6 +86,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       session.user.id = token.id;
       session.user.role = token.role;
+      session.user.isOwner = token.isOwner;
       session.user.studentType = token.studentType;
       session.user.modalities = token.modalities;
       session.user.belt = token.belt;

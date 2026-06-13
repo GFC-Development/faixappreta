@@ -21,6 +21,7 @@ export const slotSchema = z.object({
   endTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
   isAvailable: z.boolean().optional(),
   userId: z.string().min(1).optional().nullable(),
+  instructorId: z.string().optional().nullable(),
 });
 
 export const groupClassSchema = z.object({
@@ -31,6 +32,7 @@ export const groupClassSchema = z.object({
   capacity: z.number().min(1),
   isKids: z.boolean().optional(),
   classType: z.enum(["GROUP", "SEMI_PRIVATE"]).optional(),
+  instructorId: z.string().optional().nullable(),
 });
 
 export const bookingSchema = z.object({

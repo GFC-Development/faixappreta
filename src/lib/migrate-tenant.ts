@@ -34,7 +34,7 @@ export async function migrateTenantDatabase(
   const adminId = createId();
 
   await client.execute({
-    sql: `INSERT INTO "User" ("id", "name", "email", "passwordHash", "role", "status") VALUES (?, ?, ?, ?, 'ADMIN', 'APPROVED')`,
+    sql: `INSERT INTO "User" ("id", "name", "email", "passwordHash", "role", "status", "isOwner") VALUES (?, ?, ?, ?, 'ADMIN', 'APPROVED', 1)`,
     args: [adminId, admin.name, admin.email, passwordHash],
   });
 

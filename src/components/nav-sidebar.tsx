@@ -22,6 +22,7 @@ import {
   Trophy,
   Timer,
   ArrowUpCircle,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StudentAvatar } from "./student-avatar";
@@ -29,19 +30,20 @@ import { useState } from "react";
 import { useTenantInfo } from "./tenant-theme";
 
 const adminLinks = [
-  { href: "/admin", label: "Dashboard", icon: Home },
-  { href: "/admin/slots", label: "Horarios Particulares", icon: Clock },
-  { href: "/admin/group-classes", label: "Aulas", icon: BookOpen },
-  { href: "/admin/events", label: "Eventos", icon: CalendarDays },
-  { href: "/admin/notifications", label: "Notificacoes", icon: Bell },
-  { href: "/admin/agenda", label: "Agenda do Dia", icon: CalendarDays },
-  { href: "/admin/roll-call", label: "Chamada", icon: ClipboardList },
-  { href: "/admin/attendance", label: "Presencas", icon: ClipboardCheck },
-  { href: "/admin/belt-requirements", label: "Requisitos de Faixa", icon: Award },
-  { href: "/admin/ranking", label: "Ranking", icon: Trophy },
-  { href: "/admin/timer", label: "Timer", icon: Timer },
-  { href: "/admin/approvals", label: "Aprovacoes", icon: UserCheck },
-  { href: "/admin/plan-upgrades", label: "Solicitacoes de Plano", icon: ArrowUpCircle },
+  { href: "/admin", label: "Dashboard", icon: Home, ownerOnly: false },
+  { href: "/admin/professors", label: "Professores", icon: Users, ownerOnly: true },
+  { href: "/admin/slots", label: "Horarios Particulares", icon: Clock, ownerOnly: false },
+  { href: "/admin/group-classes", label: "Aulas", icon: BookOpen, ownerOnly: false },
+  { href: "/admin/events", label: "Eventos", icon: CalendarDays, ownerOnly: false },
+  { href: "/admin/notifications", label: "Notificacoes", icon: Bell, ownerOnly: false },
+  { href: "/admin/agenda", label: "Agenda do Dia", icon: CalendarDays, ownerOnly: false },
+  { href: "/admin/roll-call", label: "Chamada", icon: ClipboardList, ownerOnly: false },
+  { href: "/admin/attendance", label: "Presencas", icon: ClipboardCheck, ownerOnly: false },
+  { href: "/admin/belt-requirements", label: "Requisitos de Faixa", icon: Award, ownerOnly: false },
+  { href: "/admin/ranking", label: "Ranking", icon: Trophy, ownerOnly: false },
+  { href: "/admin/timer", label: "Timer", icon: Timer, ownerOnly: false },
+  { href: "/admin/approvals", label: "Aprovacoes", icon: UserCheck, ownerOnly: false },
+  { href: "/admin/plan-upgrades", label: "Solicitacoes de Plano", icon: ArrowUpCircle, ownerOnly: false },
 ];
 
 const studentLinks = [
@@ -61,7 +63,10 @@ export function NavSidebar() {
   if (!session) return null;
 
   const isAdmin = session.user.role === "ADMIN";
-  const links = isAdmin ? adminLinks : studentLinks;
+  const isOwner = session.user.isOwner;
+  const links = isAdmin
+    ? adminLinks.filter((l) => !l.ownerOnly || isOwner)
+    : studentLinks;
   const homePath = isAdmin ? "/admin" : "/student";
   const isHome = pathname === homePath;
   const tenantLogoUrl = tenantInfo?.logoUrl || null;

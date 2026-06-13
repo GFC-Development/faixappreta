@@ -54,12 +54,21 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // Non-owner professors only see bookings for their own classes/slots
+  if (!session.user.isOwner) {
+    const instructorId = session.user.id;
+    where.OR = [
+      { groupClass: { instructorId } },
+      { privateSlot: { instructorId } },
+    ];
+  }
+
   const bookings = await prisma.booking.findMany({
     where,
     include: {
       user: { select: { id: true, name: true, belt: true, degrees: true, photoUrl: true } },
-      privateSlot: true,
-      groupClass: true,
+      privateSlot: { include: { instructor: { select: { id: true, name: true } } } },
+      groupClass: { include: { instructor: { select: { id: true, name: true } } } },
     },
     orderBy: [{ date: "desc" }, { createdAt: "asc" }],
   });

@@ -14,6 +14,7 @@ export async function GET() {
   if (!prisma) return NextResponse.json({ error: "Tenant não encontrado" }, { status: 404 });
 
   const classes = await prisma.groupClass.findMany({
+    include: { instructor: { select: { id: true, name: true } } },
     orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
   });
   return NextResponse.json(classes);
@@ -38,6 +39,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const groupClass = await prisma.groupClass.create({ data: { ...result.data, isKids: result.data.isKids || false, classType: result.data.classType || "GROUP" } });
+  const groupClass = await prisma.groupClass.create({
+    data: {
+      ...result.data,
+      isKids: result.data.isKids || false,
+      classType: result.data.classType || "GROUP",
+      instructorId: result.data.instructorId || session.user.id,
+    },
+  });
   return NextResponse.json(groupClass, { status: 201 });
 }
