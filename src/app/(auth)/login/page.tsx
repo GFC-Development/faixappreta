@@ -28,6 +28,14 @@ export default function LoginPage() {
       body: JSON.stringify({ email }),
     });
     const checkData = await checkRes.json();
+    if (checkData.status === "UNVERIFIED") {
+      setError("Seu e-mail ainda não foi verificado. Redirecionando para verificação...");
+      setLoading(false);
+      setTimeout(() => {
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      }, 2000);
+      return;
+    }
     if (checkData.status === "PENDING") {
       setError("Seu cadastro está aguardando aprovação do professor.");
       setLoading(false);
@@ -105,13 +113,12 @@ export default function LoginPage() {
           </p>
           <p className="text-center text-sm text-zinc-600 mt-3">
             Esqueceu sua senha?{" "}
-            <button
-              type="button"
-              onClick={() => alert("Entre em contato com o professor para redefinir sua senha.")}
+            <Link
+              href="/forgot-password"
               className="text-zinc-400 hover:text-zinc-300 underline transition-colors"
             >
               Clique aqui
-            </button>
+            </Link>
           </p>
         </Card>
       </div>
