@@ -14,7 +14,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "storage.googleapis.com",
-        pathname: "/pqfighters-uploads/**",
+        pathname: "/faixappreta-uploads/**",
       },
     ],
   },

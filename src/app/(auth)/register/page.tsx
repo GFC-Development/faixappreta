@@ -3,7 +3,6 @@
 import { Suspense, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
 import { StudentAvatar } from "@/components/student-avatar";
 import Link from "next/link";
@@ -17,9 +16,7 @@ function RegisterForm() {
     name: "",
     email: "",
     password: "",
-    studentType: "ESSENCIAL",
   });
-  const [modalities, setModalities] = useState<string[]>(["GRAPPLING"]);
   const [isKids, setIsKids] = useState(false);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -60,7 +57,7 @@ function RegisterForm() {
     setError("");
 
     if (!tenantSlug) {
-      setError("Tenant nao identificado.");
+      setError("Tenant não identificado.");
       return;
     }
 
@@ -84,7 +81,7 @@ function RegisterForm() {
     const res = await fetch("/api/students", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, modalities: modalities.join(","), isKids, photoUrl, tenantSlug }),
+      body: JSON.stringify({ ...form, modalities: "GRAPPLING", isKids, photoUrl, tenantSlug }),
     });
 
     const data = await res.json();
@@ -134,7 +131,7 @@ function RegisterForm() {
                 </div>
                 <h2 className="text-lg font-semibold text-content-primary mb-2">Cadastro enviado!</h2>
                 <p className="text-sm text-content-secondary">
-                  Seu cadastro foi recebido e esta aguardando aprovacao do professor. Voce recebera acesso assim que for aprovado.
+                  Seu cadastro foi recebido e está aguardando aprovação do professor. Você receberá acesso assim que for aprovado.
                 </p>
               </div>
               <Link href={`/login?tenant=${tenantSlug}`}>
@@ -205,18 +202,6 @@ function RegisterForm() {
               required
               minLength={6}
             />
-            <Select
-              label="Tipo de Aula"
-              value={form.studentType}
-              onChange={(e) =>
-                setForm({ ...form, studentType: e.target.value })
-              }
-            >
-              <option value="ESSENCIAL">Essencial</option>
-              <option value="PRO">Pro</option>
-              <option value="PREMIUM">Premium</option>
-            </Select>
-
             <div>
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
@@ -227,32 +212,6 @@ function RegisterForm() {
                 />
                 <span className="text-sm font-medium text-content-secondary">Aluno Kids</span>
               </label>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-content-secondary mb-2">Modalidades</label>
-              <div className="flex flex-col gap-2">
-                {[
-                  { value: "GRAPPLING", label: "Grappling / Jiu-Jitsu" },
-                  { value: "MMA", label: "MMA / Boxe" },
-                ].map((m) => (
-                  <label key={m.value} className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={modalities.includes(m.value)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setModalities((prev) => [...prev, m.value]);
-                        } else if (modalities.length > 1) {
-                          setModalities((prev) => prev.filter((v) => v !== m.value));
-                        }
-                      }}
-                      className="w-4 h-4 rounded border-border bg-surface-primary text-accent focus:ring-accent"
-                    />
-                    <span className="text-sm text-content-primary">{m.label}</span>
-                  </label>
-                ))}
-              </div>
             </div>
 
             {error && (

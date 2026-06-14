@@ -3,13 +3,13 @@ import { hashSync } from "bcryptjs";
 
 function createClient(): PrismaClient {
   if (process.env.MASTER_TURSO_DATABASE_URL) {
-    const { createClient } = require("@libsql/client");
     const { PrismaLibSql } = require("@prisma/adapter-libsql");
-    const libsql = createClient({
-      url: process.env.MASTER_TURSO_DATABASE_URL,
-      authToken: process.env.MASTER_TURSO_AUTH_TOKEN,
+    return new PrismaClient({
+      adapter: new PrismaLibSql({
+        url: process.env.MASTER_TURSO_DATABASE_URL,
+        authToken: process.env.MASTER_TURSO_AUTH_TOKEN,
+      }),
     });
-    return new PrismaClient({ adapter: new PrismaLibSql(libsql) });
   }
 
   const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");

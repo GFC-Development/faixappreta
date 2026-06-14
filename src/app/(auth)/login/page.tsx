@@ -43,7 +43,7 @@ function LoginForm() {
     setError("");
 
     if (!tenantSlug) {
-      setError("Tenant nao identificado. Use o link fornecido pelo seu CT.");
+      setError("Tenant não identificado. Use o link fornecido pelo seu CT.");
       return;
     }
 
@@ -56,7 +56,7 @@ function LoginForm() {
     });
     const checkData = await checkRes.json();
     if (checkData.status === "PENDING") {
-      setError("Seu cadastro esta aguardando aprovacao do professor.");
+      setError("Seu cadastro está aguardando aprovação do professor.");
       setLoading(false);
       return;
     }
@@ -69,7 +69,7 @@ function LoginForm() {
     });
 
     if (result?.error) {
-      setError("Email ou senha invalidos");
+      setError("Email ou senha inválidos");
       setLoading(false);
       return;
     }
@@ -138,7 +138,7 @@ function LoginForm() {
           </form>
 
           <p className="text-center text-sm text-content-muted mt-6">
-            Nao tem conta?{" "}
+            Não tem conta?{" "}
             <Link href={`/register?tenant=${tenantSlug}`} className="text-accent hover:text-accent-dark transition-colors">
               Cadastre-se
             </Link>

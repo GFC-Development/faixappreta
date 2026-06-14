@@ -10,7 +10,6 @@ import { BeltVisual, BeltProgress } from "@/components/belt-visual";
 import { DegreeProgress } from "@/components/degree-progress";
 import { getBeltsForType } from "@/lib/utils";
 import { ArrowLeft, CheckCircle, XCircle, Clock, Pencil, Plus, Trash2 } from "lucide-react";
-import { getPlanLabel, isPremiumOrPro } from "@/lib/utils";
 import Link from "next/link";
 
 interface Booking {
@@ -29,15 +28,12 @@ interface Student {
   id: string;
   name: string;
   email: string;
-  studentType: string;
   modalities: string;
   isKids: boolean;
   belt: string;
   degrees: number;
   initialCheckins: number;
   photoUrl: string | null;
-  monthlyDueDay: number | null;
-  lastPaymentDate: string | null;
   lastGraduationDate: string | null;
   lastBeltChangeDate: string | null;
   createdAt: string;
@@ -60,22 +56,6 @@ function getNextBelt(current: string, isKids: boolean): string | null {
   const idx = belts.indexOf(current);
   if (idx === -1 || idx >= belts.length - 1) return null;
   return belts[idx + 1];
-}
-
-function getPaymentStatus(
-  monthlyDueDay: number | null,
-  lastPaymentDate: string | null
-): { label: string; variant: "green" | "warning" | "danger" } | null {
-  if (!monthlyDueDay) return null;
-  const now = new Date();
-  const currentMonth = now.getFullYear() * 12 + now.getMonth();
-  if (!lastPaymentDate) return { label: "Atrasado", variant: "danger" };
-  const payment = new Date(lastPaymentDate);
-  const paymentMonth = payment.getFullYear() * 12 + payment.getMonth();
-  const diff = currentMonth - paymentMonth;
-  if (diff <= 0) return { label: "Em dia", variant: "green" };
-  if (diff === 1) return { label: "Pendente", variant: "warning" };
-  return { label: "Atrasado", variant: "danger" };
 }
 
 export default function StudentProfilePage() {
@@ -213,8 +193,6 @@ export default function StudentProfilePage() {
     ? requirements.find((r) => r.belt === nextBelt)
     : null;
 
-  const paymentStatus = getPaymentStatus(student.monthlyDueDay, student.lastPaymentDate);
-
   // Degree progress
   const nextDegree = student.degrees < 4 ? student.degrees + 1 : null;
   const degreeReq = nextDegree
@@ -257,12 +235,9 @@ export default function StudentProfilePage() {
             <p className="font-medium text-content-primary">{student.email}</p>
           </div>
           <div>
-            <p className="text-content-secondary">Tipo de Plano</p>
+            <p className="text-content-secondary">Kids</p>
             <div className="flex items-center gap-2">
-              <Badge variant={isPremiumOrPro(student.studentType) ? "success" : "default"}>
-                {getPlanLabel(student.studentType)}
-              </Badge>
-              {student.isKids && <Badge variant="warning">Kids</Badge>}
+              {student.isKids ? <Badge variant="warning">Kids</Badge> : <span className="font-medium text-content-primary">Não</span>}
             </div>
           </div>
           <div>
@@ -274,43 +249,8 @@ export default function StudentProfilePage() {
         </div>
       </Card>
 
-      {/* Pagamento */}
+      {/* Graduação */}
       <Card className="mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-content-primary">Pagamento</h2>
-        {student.monthlyDueDay ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
-            <div>
-              <p className="text-content-secondary">Dia de vencimento</p>
-              <p className="font-medium text-content-primary">Dia {student.monthlyDueDay}</p>
-            </div>
-            <div>
-              <p className="text-content-secondary">Último pagamento</p>
-              <p className="font-medium text-content-primary">
-                {student.lastPaymentDate
-                  ? new Date(student.lastPaymentDate).toLocaleDateString("pt-BR")
-                  : "Nenhum"}
-              </p>
-            </div>
-            <div>
-              <p className="text-content-secondary">Status</p>
-              {paymentStatus && (
-                <Badge variant={paymentStatus.variant}>{paymentStatus.label}</Badge>
-              )}
-            </div>
-          </div>
-        ) : (
-          <p className="text-sm text-content-muted">
-            Vencimento não configurado.{" "}
-            <Link href={`/admin/students/${id}/edit`} className="text-accent underline">
-              Configurar
-            </Link>
-          </p>
-        )}
-      </Card>
-
-      {/* Graduação (only for Grappling students) */}
-      {(student.modalities || "GRAPPLING").includes("GRAPPLING") && (
-        <Card className="mb-6">
           <h2 className="text-lg font-semibold mb-4 text-content-primary">Graduação</h2>
 
           <div className="mb-2">
@@ -394,7 +334,6 @@ export default function StudentProfilePage() {
             </p>
           )}
         </Card>
-      )}
 
       {/* Frequência */}
       <Card className="mb-6">

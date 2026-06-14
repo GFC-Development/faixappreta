@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { BeltIcon } from "@/components/belt-icon";
 import { StudentAvatar } from "@/components/student-avatar";
 import { Button } from "@/components/ui/button";
-import { Users, CheckCircle, Calendar, Pencil, RefreshCw, Check, UserPlus, ArrowUpCircle } from "lucide-react";
+import { Users, CheckCircle, Calendar, Pencil, RefreshCw, Check, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { DAY_NAMES, getPlanLabel, isPremiumOrPro } from "@/lib/utils";
+import { DAY_NAMES } from "@/lib/utils";
 
 interface RescheduleLog {
   id: string;
@@ -27,38 +27,13 @@ interface Student {
   id: string;
   name: string;
   email: string;
-  studentType: string;
   modalities: string;
   isKids: boolean;
   belt: string;
   degrees: number;
   photoUrl: string | null;
-  monthlyDueDay: number | null;
-  lastPaymentDate: string | null;
   initialCheckins: number;
   _count: { bookings: number };
-}
-
-function getPaymentStatus(
-  monthlyDueDay: number | null,
-  lastPaymentDate: string | null
-): { label: string; variant: "green" | "warning" | "danger" } | null {
-  if (!monthlyDueDay) return null;
-
-  const now = new Date();
-  const currentMonth = now.getFullYear() * 12 + now.getMonth();
-
-  if (!lastPaymentDate) {
-    return { label: "Atrasado", variant: "danger" };
-  }
-
-  const payment = new Date(lastPaymentDate);
-  const paymentMonth = payment.getFullYear() * 12 + payment.getMonth();
-  const diff = currentMonth - paymentMonth;
-
-  if (diff <= 0) return { label: "Em dia", variant: "green" };
-  if (diff === 1) return { label: "Pendente", variant: "warning" };
-  return { label: "Atrasado", variant: "danger" };
 }
 
 export default function AdminDashboard() {
@@ -94,9 +69,6 @@ export default function AdminDashboard() {
   }
 
   const totalStudents = students.length;
-  const particular = students.filter(
-    (s) => isPremiumOrPro(s.studentType)
-  ).length;
   const totalCheckins = students.reduce(
     (sum, s) => sum + s._count.bookings + s.initialCheckins,
     0
@@ -110,7 +82,7 @@ export default function AdminDashboard() {
     <div className="min-w-0 overflow-hidden">
       <h1 className="text-2xl font-bold mb-6 text-content-primary">Dashboard</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <Card>
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-lg bg-accent/10">
@@ -119,17 +91,6 @@ export default function AdminDashboard() {
             <div>
               <p className="text-sm text-content-secondary">Total Alunos</p>
               <p className="text-2xl font-bold text-content-primary">{totalStudents}</p>
-            </div>
-          </div>
-        </Card>
-        <Card>
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-emerald-500/10">
-              <Calendar size={22} className="text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-sm text-content-secondary">Particulares</p>
-              <p className="text-2xl font-bold text-content-primary">{particular}</p>
             </div>
           </div>
         </Card>
@@ -297,7 +258,6 @@ export default function AdminDashboard() {
               <tr className="border-b border-border">
                 <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium">Aluno</th>
                 <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium hidden sm:table-cell">Tipo</th>
-                <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium hidden sm:table-cell">Modalidades</th>
                 <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium">Faixa</th>
                 <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium hidden sm:table-cell">Check-ins</th>
                 <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium hidden sm:table-cell">Pagamento</th>
@@ -333,13 +293,6 @@ export default function AdminDashboard() {
                       >
                         {getPlanLabel(s.studentType)}
                       </Badge>
-                    </td>
-                    <td className="py-3 px-2 sm:px-3 hidden sm:table-cell">
-                      <span className="text-xs text-content-secondary">
-                        {(s.modalities || "GRAPPLING").split(",").map((m: string) =>
-                          m === "GRAPPLING" ? "Grappling/JJ" : "MMA/Boxe"
-                        ).join(", ")}
-                      </span>
                     </td>
                     <td className="py-3 px-2 sm:px-3">
                       <div className="flex items-center gap-1 sm:gap-2">
@@ -377,7 +330,7 @@ export default function AdminDashboard() {
               {students.length === 0 && (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={6}
                     className="py-8 text-center text-content-muted"
                   >
                     Nenhum aluno cadastrado

@@ -31,18 +31,14 @@ export default function EditStudentPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [studentType, setStudentType] = useState("ESSENCIAL");
   const [belt, setBelt] = useState("");
   const [degrees, setDegrees] = useState(0);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [initialCheckins, setInitialCheckins] = useState<string>("0");
-  const [monthlyDueDay, setMonthlyDueDay] = useState<string>("");
-  const [lastPaymentDate, setLastPaymentDate] = useState<string>("");
   const [lastGraduationDate, setLastGraduationDate] = useState<string>("");
   const [lastBeltChangeDate, setLastBeltChangeDate] = useState<string>("");
-  const [modalities, setModalities] = useState<string[]>(["GRAPPLING"]);
   const [isKids, setIsKids] = useState(false);
   const [originalBelt, setOriginalBelt] = useState("");
   const [originalDegrees, setOriginalDegrees] = useState(0);
@@ -57,22 +53,14 @@ export default function EditStudentPage() {
       .then((data) => {
         if (!data.error) {
           setStudent(data);
-          setStudentType(data.studentType || "ESSENCIAL");
           setBelt(data.belt);
           setOriginalBelt(data.belt);
           setDegrees(data.degrees);
           setOriginalDegrees(data.degrees);
           setPhotoUrl(data.photoUrl);
-          setModalities((data.modalities || "GRAPPLING").split(","));
           setIsKids(data.isKids || false);
           setInitialCheckins(String(data.initialCheckins || 0));
           setMonthlyCredits(String(data.monthlyCredits || 0));
-          setMonthlyDueDay(data.monthlyDueDay ? String(data.monthlyDueDay) : "");
-          setLastPaymentDate(
-            data.lastPaymentDate
-              ? new Date(data.lastPaymentDate).toISOString().split("T")[0]
-              : ""
-          );
           setLastGraduationDate(
             data.lastGraduationDate
               ? new Date(data.lastGraduationDate).toISOString().split("T")[0]
@@ -116,19 +104,9 @@ export default function EditStudentPage() {
       newPhotoUrl = uploadData.url;
     }
 
-    const body: Record<string, unknown> = { studentType, belt, degrees, photoUrl: newPhotoUrl, modalities: modalities.join(","), isKids, initialCheckins: Number(initialCheckins) || 0, monthlyCredits: Number(monthlyCredits) || 0 };
+    const body: Record<string, unknown> = { belt, degrees, photoUrl: newPhotoUrl, modalities: "GRAPPLING", isKids, initialCheckins: Number(initialCheckins) || 0, monthlyCredits: Number(monthlyCredits) || 0 };
     if (resetBeltProgress) body.resetBeltProgress = true;
     if (resetDegreeProgress) body.resetDegreeProgress = true;
-    if (monthlyDueDay) {
-      body.monthlyDueDay = Number(monthlyDueDay);
-    } else {
-      body.monthlyDueDay = null;
-    }
-    if (lastPaymentDate) {
-      body.lastPaymentDate = lastPaymentDate;
-    } else {
-      body.lastPaymentDate = null;
-    }
     body.lastGraduationDate = lastGraduationDate || null;
     body.lastBeltChangeDate = lastBeltChangeDate || null;
 
@@ -146,20 +124,6 @@ export default function EditStudentPage() {
     }
 
     router.push(`/admin/students/${id}`);
-  }
-
-  async function handleRegisterPayment() {
-    setSaving(true);
-    const today = new Date().toISOString().split("T")[0];
-    const res = await fetch(`/api/students/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ lastPaymentDate: today }),
-    });
-    if (res.ok) {
-      setLastPaymentDate(today);
-    }
-    setSaving(false);
   }
 
   async function handleDelete() {
@@ -209,19 +173,10 @@ export default function EditStudentPage() {
         </div>
       </Card>
 
-      {/* Plano */}
+      {/* Kids */}
       <Card className="mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-content-primary">Plano</h2>
-        <Select
-          label="Tipo de Aula"
-          value={studentType}
-          onChange={(e) => setStudentType(e.target.value)}
-        >
-          <option value="ESSENCIAL">Essencial</option>
-          <option value="PRO">Pro</option>
-          <option value="PREMIUM">Premium</option>
-        </Select>
-        <label className="flex items-center gap-3 cursor-pointer mt-4">
+        <h2 className="text-lg font-semibold mb-4 text-content-primary">Configurações</h2>
+        <label className="flex items-center gap-3 cursor-pointer">
           <input
             type="checkbox"
             checked={isKids}
@@ -236,36 +191,8 @@ export default function EditStudentPage() {
         </label>
       </Card>
 
-      {/* Modalidades */}
+      {/* Graduação */}
       <Card className="mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-content-primary">Modalidades</h2>
-        <div className="flex flex-col gap-3">
-          {[
-            { value: "GRAPPLING", label: "Grappling / Jiu-Jitsu" },
-            { value: "MMA", label: "MMA / Boxe" },
-          ].map((m) => (
-            <label key={m.value} className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={modalities.includes(m.value)}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setModalities((prev) => [...prev, m.value]);
-                  } else {
-                    setModalities((prev) => prev.filter((v) => v !== m.value));
-                  }
-                }}
-                className="w-4 h-4 rounded border-border bg-surface-tertiary text-accent focus:ring-accent"
-              />
-              <span className="text-sm text-content-primary">{m.label}</span>
-            </label>
-          ))}
-        </div>
-      </Card>
-
-      {/* Graduação (only for Grappling students) */}
-      {modalities.includes("GRAPPLING") && (
-        <Card className="mb-6">
           <h2 className="text-lg font-semibold mb-4 text-content-primary">Graduação</h2>
 
           <div className="mb-5 p-4 bg-surface-tertiary rounded-lg">
@@ -347,24 +274,6 @@ export default function EditStudentPage() {
             </p>
           </div>
         </Card>
-      )}
-
-      {/* Créditos Mensais (PRO e PREMIUM) */}
-      {(studentType === "PREMIUM" || studentType === "PRO") && (
-        <Card className="mb-6">
-          <h2 className="text-lg font-semibold mb-4 text-content-primary">Créditos Mensais</h2>
-          <p className="text-sm text-content-secondary mb-4">
-            Aulas particulares por mês. 0 = sem limite.
-          </p>
-          <Input
-            label="Quantidade de créditos"
-            type="number"
-            min="0"
-            value={monthlyCredits}
-            onChange={(e) => setMonthlyCredits(e.target.value)}
-          />
-        </Card>
-      )}
 
       {/* Presenças Iniciais */}
       <Card className="mb-6">
@@ -379,37 +288,6 @@ export default function EditStudentPage() {
           value={initialCheckins}
           onChange={(e) => setInitialCheckins(e.target.value)}
         />
-      </Card>
-
-      {/* Pagamento */}
-      <Card className="mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-content-primary">Pagamento</h2>
-        <div className="space-y-4">
-          <Input
-            label="Dia de vencimento (1-31)"
-            type="number"
-            min="1"
-            max="31"
-            value={monthlyDueDay}
-            onChange={(e) => setMonthlyDueDay(e.target.value)}
-            placeholder="Ex: 10"
-          />
-          <Input
-            label="Data do último pagamento"
-            type="date"
-            value={lastPaymentDate}
-            onChange={(e) => setLastPaymentDate(e.target.value)}
-          />
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            onClick={handleRegisterPayment}
-            disabled={saving}
-          >
-            Registrar pagamento hoje
-          </Button>
-        </div>
       </Card>
 
       {error && <p className="text-sm text-red-500 mb-4">{error}</p>}

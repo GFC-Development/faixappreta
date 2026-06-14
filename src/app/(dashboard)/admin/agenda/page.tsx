@@ -204,12 +204,6 @@ export default function AdminAgendaPage() {
     s.name.toLowerCase().includes(modalSearch.toLowerCase())
   );
 
-  function modalityLabel(modalities: string) {
-    return (modalities || "GRAPPLING").split(",").map((m) =>
-      m === "GRAPPLING" ? "Grappling/JJ" : "MMA/Boxe"
-    ).join(", ");
-  }
-
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -305,9 +299,7 @@ export default function AdminAgendaPage() {
                   </div>
                   <div className="flex items-center gap-2 mb-3">
                     <p className="font-medium text-content-primary">{gc.name}</p>
-                    <Badge variant={(gc.classType || "GROUP") === "SEMI_PRIVATE" ? "warning" : "default"}>
-                      {(gc.classType || "GROUP") === "SEMI_PRIVATE" ? "Semi-Particular" : "Coletiva"}
-                    </Badge>
+                    <Badge variant="default">Coletiva</Badge>
                     {gc.isKids && <Badge variant="warning">Kids</Badge>}
                     <span className="text-xs text-content-secondary flex items-center gap-1">
                       <Users size={12} />
@@ -522,7 +514,6 @@ export default function AdminAgendaPage() {
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-medium text-content-primary truncate">{s.name}</p>
                               <div className="flex items-center gap-2 mt-0.5">
-                                <span className="text-xs text-content-secondary">{modalityLabel(s.modalities)}</span>
                                 <Badge variant={isPremiumOrPro(s.studentType) ? "success" : "default"}>
                                   {getPlanLabel(s.studentType)}
                                 </Badge>

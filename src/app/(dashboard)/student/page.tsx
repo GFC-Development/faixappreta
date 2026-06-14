@@ -27,7 +27,7 @@ import {
   CalendarDays,
   RefreshCw,
 } from "lucide-react";
-import { DAY_NAMES, getBeltsForType, getPlanLabel, isPremiumOrPro } from "@/lib/utils";
+import { DAY_NAMES, getBeltsForType, isPremiumOrPro } from "@/lib/utils";
 import { Trophy } from "lucide-react";
 
 interface BeltRequirement {
@@ -382,12 +382,7 @@ export default function StudentHome() {
               <div className="mb-1">
                 <BeltVisual belt={user.belt} degrees={user.degrees} width={320} />
               </div>
-              <div className="mt-3">
-                <p className="text-sm text-content-secondary">
-                  Plano: {getPlanLabel(user.studentType)}
-                </p>
               </div>
-            </div>
             {rankPosition && rankPosition.position > 0 && (
               <div className="shrink-0 flex sm:flex-col items-center gap-2 sm:gap-0 bg-surface-tertiary rounded-lg px-4 py-2.5 sm:py-3 border border-border w-full sm:w-auto">
                 <Trophy size={18} className="text-yellow-400 sm:mb-1" />
@@ -445,10 +440,7 @@ export default function StudentHome() {
         </Card>
       ) : (
         <Card className="mb-6">
-          <p className="text-sm text-content-secondary">
-            Plano: {getPlanLabel(user.studentType)}
-          </p>
-          <p className="text-2xl font-bold text-content-primary mt-2">{checkins} {checkins === 1 ? "presença" : "presenças"}</p>
+          <p className="text-2xl font-bold text-content-primary">{checkins} {checkins === 1 ? "presença" : "presenças"}</p>
         </Card>
       )}
 

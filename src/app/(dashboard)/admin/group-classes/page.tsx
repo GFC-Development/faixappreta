@@ -162,10 +162,9 @@ export default function GroupClassesPage() {
       <Select
         label="Tipo de Aula"
         value={form.classType}
-        onChange={(e) => setForm({ ...form, classType: e.target.value, capacity: e.target.value === "SEMI_PRIVATE" ? 4 : form.capacity })}
+        onChange={(e) => setForm({ ...form, classType: e.target.value })}
       >
         <option value="GROUP">Coletiva</option>
-        <option value="SEMI_PRIVATE">Semi-Particular</option>
       </Select>
       <label className="flex items-center gap-3 cursor-pointer">
         <input
@@ -227,9 +226,7 @@ export default function GroupClassesPage() {
                   <td className="py-2 px-2 text-content-primary">{gc.capacity} alunos</td>
                   <td className="py-2 px-2">
                     <div className="flex items-center gap-1">
-                      <Badge variant={(gc.classType || "GROUP") === "SEMI_PRIVATE" ? "warning" : "default"}>
-                        {(gc.classType || "GROUP") === "SEMI_PRIVATE" ? "Semi-Particular" : "Coletiva"}
-                      </Badge>
+                      <Badge variant="default">Coletiva</Badge>
                       {gc.isKids && <Badge variant="warning">Kids</Badge>}
                     </div>
                   </td>

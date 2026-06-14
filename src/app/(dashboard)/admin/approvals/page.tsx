@@ -6,13 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { StudentAvatar } from "@/components/student-avatar";
 import { Check, X } from "lucide-react";
-import { getPlanLabel, isPremiumOrPro } from "@/lib/utils";
-
 interface PendingStudent {
   id: string;
   name: string;
   email: string;
-  studentType: string;
   modalities: string;
   isKids: boolean;
   photoUrl: string | null;
@@ -80,11 +77,6 @@ export default function ApprovalsPage() {
                       {getPlanLabel(s.studentType)}
                     </Badge>
                     {s.isKids && <Badge variant="warning">Kids</Badge>}
-                    <span className="text-xs text-content-muted">
-                      {(s.modalities || "GRAPPLING").split(",").map((m) =>
-                        m === "GRAPPLING" ? "Grappling" : "MMA"
-                      ).join(", ")}
-                    </span>
                   </div>
                   <p className="text-xs text-content-muted mt-1">
                     Cadastrado em {new Date(s.createdAt).toLocaleDateString("pt-BR")}
