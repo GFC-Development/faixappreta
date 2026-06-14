@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { BeltIcon } from "@/components/belt-icon";
 import { StudentAvatar } from "@/components/student-avatar";
 import { Button } from "@/components/ui/button";
-import { Users, CheckCircle, Calendar, Pencil, RefreshCw, Check, UserPlus } from "lucide-react";
+import { Users, CheckCircle, Pencil, RefreshCw, Check, UserPlus, ArrowUpCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DAY_NAMES } from "@/lib/utils";
