@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Users, CheckCircle, Calendar, Pencil, RefreshCw, Check, UserPlus, ArrowUpCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { DAY_NAMES, isPremiumOrPro, getPlanLabel } from "@/lib/utils";
+import { DAY_NAMES, getPlanLabel, isPremiumOrPro } from "@/lib/utils";
 
 interface RescheduleLog {
   id: string;

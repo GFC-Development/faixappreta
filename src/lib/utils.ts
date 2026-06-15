@@ -78,34 +78,3 @@ export function getPlanLabel(studentType: string): string {
 export function isPremiumOrPro(studentType: string): boolean {
   return studentType === "PREMIUM" || studentType === "PRO";
 }
-
-export function getPaymentStatus(
-  monthlyDueDay: number | null,
-  lastPaymentDate: string | Date | null
-): { label: string; variant: "success" | "danger" | "warning" | "default" } | null {
-  if (monthlyDueDay === null || monthlyDueDay === undefined) return null;
-
-  if (!lastPaymentDate) {
-    return { label: "Pendente", variant: "warning" };
-  }
-
-  const lastPay = new Date(lastPaymentDate);
-  const now = new Date();
-
-  // Check if they paid in the current calendar month and year
-  const paidThisMonth =
-    lastPay.getMonth() === now.getMonth() && lastPay.getFullYear() === now.getFullYear();
-
-  if (paidThisMonth) {
-    return { label: "Em dia", variant: "success" };
-  }
-
-  // If they paid in the past, check if we're past the due day of this month
-  const dueThisMonth = new Date(now.getFullYear(), now.getMonth(), monthlyDueDay);
-  if (now > dueThisMonth) {
-    return { label: "Atrasado", variant: "danger" };
-  }
-
-  return { label: "Pendente", variant: "warning" };
-}
-
