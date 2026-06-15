@@ -114,7 +114,7 @@ export default function CreateTenantPage() {
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
               className="w-full px-4 py-2.5 rounded-lg bg-surface-secondary border border-border text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent"
-              placeholder="Ex: Gracie Barra"
+              placeholder="Ex: CT Exemplo"
               required
             />
             {slug && (
@@ -133,7 +133,7 @@ export default function CreateTenantPage() {
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
               className="w-full px-4 py-2.5 rounded-lg bg-surface-secondary border border-border text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent"
-              placeholder="gracie-barra"
+              placeholder="ct-exemplo"
               required
             />
           </div>

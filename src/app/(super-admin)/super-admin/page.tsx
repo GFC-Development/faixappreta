@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Power, Building2, LogOut } from "lucide-react";
+import { Plus, Power, Building2, LogOut, Pencil } from "lucide-react";
 
 interface Tenant {
   id: string;
@@ -102,7 +102,7 @@ export default function SuperAdminDashboard() {
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <span
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
                       t.isActive
@@ -113,6 +113,13 @@ export default function SuperAdminDashboard() {
                     <Power className="w-3 h-3" />
                     {t.isActive ? "Ativo" : "Inativo"}
                   </span>
+                  <button
+                    onClick={() => router.push(`/super-admin/${t.id}/edit`)}
+                    className="p-2 text-content-muted hover:text-accent hover:bg-accent/10 rounded-lg transition-colors"
+                    title="Editar CT"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             ))}
