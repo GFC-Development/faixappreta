@@ -94,7 +94,7 @@ function LoginForm() {
           </h1>
         ) : (
           <h1 className="text-3xl font-bold text-content-primary tracking-tight font-teko uppercase mt-3">
-            faix<span className="text-accent font-extrabold">app</span>reta
+            faix<span className="text-red-600 font-extrabold">app</span>reta
           </h1>
         )}
         <p className="text-content-muted text-sm mt-1">

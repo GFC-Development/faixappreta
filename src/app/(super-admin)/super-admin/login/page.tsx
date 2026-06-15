@@ -39,7 +39,7 @@ export default function SuperAdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-primary">
       <div className="w-full max-w-md p-8 bg-surface-secondary rounded-xl border border-border">
-        <h1 className="text-2xl font-bold text-center mb-2">faix<span className="font-extrabold">app</span>reta</h1>
+        <h1 className="text-2xl font-bold text-center mb-2">faix<span className="text-red-600 font-extrabold">app</span>reta</h1>
         <p className="text-content-muted text-center mb-8">Super Admin</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

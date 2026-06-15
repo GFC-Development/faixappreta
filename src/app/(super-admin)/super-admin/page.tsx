@@ -44,7 +44,7 @@ export default function SuperAdminDashboard() {
       <header className="border-b border-border px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Building2 className="w-6 h-6 text-accent" />
-          <h1 className="text-xl font-bold">faix<span className="font-extrabold">app</span>reta - CTs</h1>
+          <h1 className="text-xl font-bold">faix<span className="text-red-600 font-extrabold">app</span>reta - CTs</h1>
         </div>
         <div className="flex items-center gap-3">
           <button

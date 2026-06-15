@@ -12,6 +12,8 @@ import {
   XCircle,
   ArrowRight,
   Star,
+  Palette,
+  Globe,
 } from "lucide-react";
 
 const WHATSAPP_LINK = "https://wa.me/5551997736652?text=Ol%C3%A1%2C%20quero%20conhecer%20o%20faixappreta";
@@ -277,6 +279,51 @@ export default function SitePage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Sua Marca */}
+      <section className="py-24 px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="font-teko text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
+              Não é genérico. É do{" "}
+              <span className="text-red-600">seu CT</span>.
+            </h2>
+            <p className="text-zinc-500 text-lg max-w-2xl mx-auto">
+              Seu aluno não vai ver &ldquo;faixappreta&rdquo;. Vai ver a marca do seu CT — como se fosse um app feito só para ele.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 group hover:border-red-600/30 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-red-600/10 flex items-center justify-center mb-6 text-red-600 group-hover:scale-110 transition-transform">
+                <Palette className="w-6 h-6" />
+              </div>
+              <h3 className="font-teko text-3xl font-bold text-white uppercase mb-3">
+                Sua logo e suas cores
+              </h3>
+              <p className="text-zinc-400 leading-relaxed">
+                O sistema aparece com a identidade visual do seu CT. Logo, cores e nome — tudo personalizado. Seu aluno tem a sensação de um app exclusivo, feito sob medida.
+              </p>
+            </div>
+            <div className="p-8 rounded-3xl bg-zinc-900/50 border border-white/5 group hover:border-red-600/30 transition-all">
+              <div className="w-12 h-12 rounded-2xl bg-red-600/10 flex items-center justify-center mb-6 text-red-600 group-hover:scale-110 transition-transform">
+                <Globe className="w-6 h-6" />
+              </div>
+              <h3 className="font-teko text-3xl font-bold text-white uppercase mb-3">
+                Endereço próprio
+              </h3>
+              <p className="text-zinc-400 leading-relaxed mb-4">
+                Seu CT ganha um endereço exclusivo na internet. Profissional, fácil de lembrar e pronto para compartilhar com seus alunos.
+              </p>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
+                <Globe className="w-4 h-4 text-red-600" />
+                <span className="text-white font-mono text-sm">
+                  <span className="text-red-500">seu-ct</span>.faixappreta.com.br
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </section>

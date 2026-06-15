@@ -103,7 +103,7 @@ function RegisterForm() {
             <div className="flex flex-col items-center text-center">
               <Logo size={72} logoUrl={tenantLogoUrl} />
               <h1 className="text-3xl font-bold text-content-primary tracking-tight font-teko uppercase mt-3">
-                faix<span className="text-accent font-extrabold">app</span>reta
+                faix<span className="text-red-600 font-extrabold">app</span>reta
               </h1>
               <p className="text-sm text-content-secondary mt-4">
                 Use o link fornecido pelo seu Centro de Treinamento para se cadastrar.
@@ -123,7 +123,7 @@ function RegisterForm() {
             <div className="flex flex-col items-center text-center">
               <Logo size={72} logoUrl={tenantLogoUrl} />
               <h1 className="text-3xl font-bold text-content-primary tracking-tight font-teko uppercase mt-3">
-                faix<span className="text-accent font-extrabold">app</span>reta
+                faix<span className="text-red-600 font-extrabold">app</span>reta
               </h1>
               <div className="mt-6 mb-4">
                 <div className="w-16 h-16 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-4">
@@ -158,7 +158,7 @@ function RegisterForm() {
               </h1>
             ) : (
               <h1 className="text-3xl font-bold text-content-primary tracking-tight font-teko uppercase mt-3">
-                faix<span className="text-accent font-extrabold">app</span>reta
+                faix<span className="text-red-600 font-extrabold">app</span>reta
               </h1>
             )}
             <p className="text-content-muted text-sm mt-1">Crie sua conta</p>

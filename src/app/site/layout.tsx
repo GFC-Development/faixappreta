@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Teko, Inter } from "next/font/google";
 import { MessageCircle } from "lucide-react";
 
@@ -18,9 +19,7 @@ function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 bg-red-600 rounded-lg flex items-center justify-center font-teko text-xl sm:text-2xl font-bold text-white">
-            FP
-          </div>
+          <Image src="/faixappreta-logo.png" alt="faixappreta" width={40} height={40} className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg" />
           <span className="font-teko text-2xl sm:text-3xl font-bold uppercase tracking-tight text-white">
             faix<span className="text-red-600">app</span>reta
           </span>
@@ -61,9 +60,7 @@ function Footer() {
         <div className="flex flex-wrap justify-between gap-12 max-w-5xl mx-auto">
           <div className="max-w-xs">
             <a href="/" className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 bg-red-600 rounded-lg flex items-center justify-center font-teko text-xl font-bold text-white">
-                FP
-              </div>
+              <Image src="/faixappreta-logo.png" alt="faixappreta" width={36} height={36} className="w-9 h-9 rounded-lg" />
               <span className="font-teko text-2xl font-bold uppercase tracking-tight text-white">
                 faix<span className="text-red-600">app</span>reta
               </span>
