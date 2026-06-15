@@ -65,7 +65,7 @@ function Footer() {
                 FP
               </div>
               <span className="font-teko text-2xl font-bold uppercase tracking-tight text-white">
-                faix<span className="text-red-600">appreta</span>
+                faix<span className="text-red-600">app</span>reta
               </span>
             </a>
             <p className="text-zinc-500 text-sm leading-relaxed">
