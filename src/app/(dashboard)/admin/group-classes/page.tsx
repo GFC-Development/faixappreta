@@ -82,7 +82,7 @@ export default function GroupClassesPage() {
     fetch("/api/students")
       .then((r) => r.json())
       .then((data) => {
-        if (Array.isArray(data)) setStudents(data.map((s: any) => ({ id: s.id, name: s.name, photoUrl: s.photoUrl })));
+        if (Array.isArray(data)) setStudents(data.map((s: Student) => ({ id: s.id, name: s.name, photoUrl: s.photoUrl })));
       });
   }, []);
 

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Modal } from "@/components/ui/modal";
 import { StudentAvatar } from "@/components/student-avatar";
-import { CreditCard, Plus, Pencil, Trash2, Check, X, ArrowUpCircle } from "lucide-react";
+import { CreditCard, Plus, Pencil, Trash2, Check, X } from "lucide-react";
 import { getPlanLabel } from "@/lib/utils";
 
 interface Plan {
