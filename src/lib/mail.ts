@@ -3,7 +3,7 @@ const EMAIL_FROM = process.env.EMAIL_FROM || "onboarding@resend.dev";
 const APP_URL = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
 async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
-  if (!RESEND_API_KEY || process.env.NODE_ENV !== "production") {
+  if (!RESEND_API_KEY) {
     console.log("\n==================================================");
     console.log(`✉️  [EMAIL FALLBACK] Sent email to: ${to}`);
     console.log(`📂  Subject: ${subject}`);
