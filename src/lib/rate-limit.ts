@@ -82,6 +82,10 @@ export async function checkRateLimits(
     windowMs?: number;
   }
 ) {
+  if (process.env.NODE_ENV !== "production" || process.env.DISABLE_RATE_LIMITS === "true") {
+    return { success: true };
+  }
+
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
 
   // Check IP rate limit
