@@ -154,7 +154,7 @@ function LoginForm() {
           <p className="text-center text-sm text-content-muted mt-3">
             Esqueceu sua senha?{" "}
             <Link
-              href="/forgot-password"
+              href={`/forgot-password${tenantSlug ? `?tenant=${tenantSlug}` : ""}`}
               className="text-content-secondary hover:text-content-primary underline transition-colors"
             >
               Clique aqui

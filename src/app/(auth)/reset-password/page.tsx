@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/components/logo";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -19,6 +19,9 @@ function ResetPasswordForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const [tenantSlug, setTenantSlug] = useState("");
+  const [tenantName, setTenantName] = useState("");
+  const [tenantLogoUrl, setTenantLogoUrl] = useState<string | null>(null);
 
   // Validate token on mount
   useEffect(() => {
@@ -35,6 +38,9 @@ function ResetPasswordForm() {
         
         if (res.ok && data.valid) {
           setIsTokenValid(true);
+          if (data.tenantSlug) {
+            setTenantSlug(data.tenantSlug);
+          }
         } else {
           setError(data.error || "O link de redefinição é inválido ou expirou.");
         }
@@ -47,6 +53,25 @@ function ResetPasswordForm() {
 
     checkToken();
   }, [token]);
+
+  // Load tenant info when slug is resolved
+  useEffect(() => {
+    if (tenantSlug) {
+      fetch(`/api/tenant-info?slug=${encodeURIComponent(tenantSlug)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.name) setTenantName(data.name);
+          if (data.logoUrl) setTenantLogoUrl(data.logoUrl);
+          if (data.primaryColor) {
+            document.documentElement.style.setProperty("--color-accent", data.primaryColor);
+          }
+          if (data.secondaryColor) {
+            document.documentElement.style.setProperty("--color-accent-dark", data.secondaryColor);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [tenantSlug]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -91,8 +116,8 @@ function ResetPasswordForm() {
   if (isValidating) {
     return (
       <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
-        <p className="text-sm text-zinc-400 mt-4">Verificando validade do link...</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto"></div>
+        <p className="text-sm text-content-secondary mt-4">Verificando validade do link...</p>
       </div>
     );
   }
@@ -103,11 +128,11 @@ function ResetPasswordForm() {
         <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
           <span className="text-3xl text-emerald-500">✓</span>
         </div>
-        <h2 className="text-xl font-bold text-zinc-50 mb-2">Senha Redefinida!</h2>
-        <p className="text-sm text-zinc-400 mb-6">
+        <h2 className="text-xl font-bold text-content-primary mb-2">Senha Redefinida!</h2>
+        <p className="text-sm text-content-secondary mb-6">
           Sua senha foi alterada com sucesso. Você já pode fazer login com sua nova senha.
         </p>
-        <Link href="/login">
+        <Link href={`/login${tenantSlug ? `?tenant=${tenantSlug}` : ""}`}>
           <Button className="w-full" size="lg">
             Ir para o login
           </Button>
@@ -122,11 +147,11 @@ function ResetPasswordForm() {
         <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4">
           <span className="text-3xl text-red-500">✕</span>
         </div>
-        <h2 className="text-lg font-bold text-zinc-50 mb-2">Link Inválido</h2>
-        <p className="text-sm text-zinc-400 mb-6">
+        <h2 className="text-lg font-bold text-content-primary mb-2">Link Inválido</h2>
+        <p className="text-sm text-content-secondary mb-6">
           {error}
         </p>
-        <Link href="/forgot-password">
+        <Link href={`/forgot-password${tenantSlug ? `?tenant=${tenantSlug}` : ""}`}>
           <Button className="w-full" size="lg">
             Solicitar novo link
           </Button>
@@ -136,55 +161,63 @@ function ResetPasswordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        label="Nova Senha"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Mínimo 6 caracteres"
-        required
-        minLength={6}
-      />
-      <Input
-        label="Confirmar Nova Senha"
-        type="password"
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        placeholder="Repita a nova senha"
-        required
-        minLength={6}
-      />
+    <>
+      <div className="flex flex-col items-center mb-8">
+        <Logo size={72} logoUrl={tenantLogoUrl} />
+        {tenantName ? (
+          <h1 className="text-2xl font-bold text-content-primary tracking-tight font-teko uppercase mt-3">
+            {tenantName}
+          </h1>
+        ) : (
+          <h1 className="text-3xl font-bold text-content-primary tracking-tight font-teko uppercase mt-3">
+            faix<span className="text-accent font-extrabold">app</span>reta
+          </h1>
+        )}
+        <p className="text-content-muted text-sm mt-1">
+          Redefinir Senha
+        </p>
+      </div>
 
-      {error && (
-        <p className="text-sm text-red-400 text-center">{error}</p>
-      )}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="Nova Senha"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Mínimo 6 caracteres"
+          required
+          minLength={6}
+        />
+        <Input
+          label="Confirmar Nova Senha"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          placeholder="Repita a nova senha"
+          required
+          minLength={6}
+        />
 
-      <Button type="submit" className="w-full" size="lg" disabled={loading}>
-        {loading ? "Redefinindo..." : "Alterar Senha"}
-      </Button>
-    </form>
+        {error && (
+          <p className="text-sm text-red-500 text-center">{error}</p>
+        )}
+
+        <Button type="submit" className="w-full" size="lg" disabled={loading}>
+          {loading ? "Redefinindo..." : "Alterar Senha"}
+        </Button>
+      </form>
+    </>
   );
 }
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#09090b] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-surface-primary px-4">
       <div className="w-full max-w-md">
         <Card>
-          <div className="flex flex-col items-center mb-8">
-            <Image src="/logo.png" alt="PQ" width={72} height={72} />
-            <h1 className="text-3xl font-bold text-zinc-50 tracking-tight font-teko uppercase mt-3">
-              PQ <span className="text-accent">FIGHTERS</span>
-            </h1>
-            <p className="text-zinc-400 text-sm mt-1">
-              Redefinir Senha
-            </p>
-          </div>
-
           <Suspense fallback={
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto"></div>
             </div>
           }>
             <ResetPasswordForm />

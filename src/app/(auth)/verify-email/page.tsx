@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/components/logo";
 
 function VerifyEmailForm() {
   const searchParams = useSearchParams();
   const emailParam = searchParams.get("email") || "";
   const tokenParam = searchParams.get("token") || "";
+  const tenantSlug = searchParams.get("tenant") || "";
 
   const [email, setEmail] = useState(emailParam);
   const [token, setToken] = useState(tokenParam);
@@ -20,6 +21,26 @@ function VerifyEmailForm() {
   const [loading, setLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [isAutoVerifying, setIsAutoVerifying] = useState(false);
+  const [tenantName, setTenantName] = useState("");
+  const [tenantLogoUrl, setTenantLogoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (tenantSlug) {
+      fetch(`/api/tenant-info?slug=${encodeURIComponent(tenantSlug)}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.name) setTenantName(data.name);
+          if (data.logoUrl) setTenantLogoUrl(data.logoUrl);
+          if (data.primaryColor) {
+            document.documentElement.style.setProperty("--color-accent", data.primaryColor);
+          }
+          if (data.secondaryColor) {
+            document.documentElement.style.setProperty("--color-accent-dark", data.secondaryColor);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [tenantSlug]);
 
   // Auto verify if both email and token are in url
   useEffect(() => {
@@ -123,11 +144,11 @@ function VerifyEmailForm() {
   if (isAutoVerifying) {
     return (
       <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500 mx-auto mb-4"></div>
-        <h2 className="text-lg font-medium text-zinc-200">Verificando seu e-mail automaticamente...</h2>
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent mx-auto mb-4"></div>
+        <h2 className="text-lg font-medium text-content-primary">Verificando seu e-mail automaticamente...</h2>
         {error && (
           <div className="mt-4">
-            <p className="text-sm text-red-400 mb-4">{error}</p>
+            <p className="text-sm text-red-500 mb-4">{error}</p>
             <Button onClick={() => setIsAutoVerifying(false)} variant="secondary">
               Inserir código manualmente
             </Button>
@@ -143,11 +164,11 @@ function VerifyEmailForm() {
         <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
           <span className="text-3xl text-emerald-500">✓</span>
         </div>
-        <h2 className="text-xl font-bold text-zinc-50 mb-2">E-mail verificado!</h2>
-        <p className="text-sm text-zinc-400 mb-6 max-w-sm mx-auto">
+        <h2 className="text-xl font-bold text-content-primary mb-2">E-mail verificado!</h2>
+        <p className="text-sm text-content-secondary mb-6 max-w-sm mx-auto">
           {success}
         </p>
-        <Link href="/login">
+        <Link href={`/login${tenantSlug ? `?tenant=${tenantSlug}` : ""}`}>
           <Button className="w-full" size="lg">
             Ir para o login
           </Button>
@@ -157,70 +178,78 @@ function VerifyEmailForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        label="E-mail"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="seu@email.com"
-        required
-        disabled={!!emailParam}
-      />
-      <Input
-        label="Código de Verificação (6 dígitos)"
-        type="text"
-        value={token}
-        onChange={(e) => setToken(e.target.value.substring(0, 6))}
-        placeholder="123456"
-        required
-        maxLength={6}
-        className="text-center tracking-widest font-mono text-lg"
-      />
-
-      {error && (
-        <p className="text-sm text-red-400 text-center">{error}</p>
-      )}
-
-      <Button type="submit" className="w-full" size="lg" disabled={loading}>
-        {loading ? "Verificando..." : "Confirmar E-mail"}
-      </Button>
-
-      <div className="flex justify-between items-center text-sm pt-2">
-        <button
-          type="button"
-          onClick={handleResend}
-          disabled={loading || resendCooldown > 0 || !email}
-          className="text-orange-500 hover:text-orange-400 transition-colors disabled:opacity-50"
-        >
-          {resendCooldown > 0 ? `Reenviar em ${resendCooldown}s` : "Reenviar código"}
-        </button>
-        <Link href="/login" className="text-zinc-400 hover:text-zinc-300">
-          Voltar para login
-        </Link>
+    <>
+      <div className="flex flex-col items-center mb-6">
+        <Logo size={72} logoUrl={tenantLogoUrl} />
+        {tenantName ? (
+          <h1 className="text-2xl font-bold text-content-primary tracking-tight font-teko uppercase mt-3">
+            {tenantName}
+          </h1>
+        ) : (
+          <h1 className="text-3xl font-bold text-content-primary tracking-tight font-teko uppercase mt-3">
+            faix<span className="text-accent font-extrabold">app</span>reta
+          </h1>
+        )}
+        <p className="text-content-muted text-sm mt-1">
+          Verificação de E-mail
+        </p>
       </div>
-    </form>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="E-mail"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="seu@email.com"
+          required
+          disabled={!!emailParam}
+        />
+        <Input
+          label="Código de Verificação (6 dígitos)"
+          type="text"
+          value={token}
+          onChange={(e) => setToken(e.target.value.substring(0, 6))}
+          placeholder="123456"
+          required
+          maxLength={6}
+          className="text-center tracking-widest font-mono text-lg"
+        />
+
+        {error && (
+          <p className="text-sm text-red-500 text-center">{error}</p>
+        )}
+
+        <Button type="submit" className="w-full" size="lg" disabled={loading}>
+          {loading ? "Verificando..." : "Confirmar E-mail"}
+        </Button>
+
+        <div className="flex justify-between items-center text-sm pt-2">
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={loading || resendCooldown > 0 || !email}
+            className="text-accent hover:text-accent-dark transition-colors disabled:opacity-50 font-medium"
+          >
+            {resendCooldown > 0 ? `Reenviar em ${resendCooldown}s` : "Reenviar código"}
+          </button>
+          <Link href={`/login${tenantSlug ? `?tenant=${tenantSlug}` : ""}`} className="text-content-secondary hover:text-content-primary transition-colors">
+            Voltar para login
+          </Link>
+        </div>
+      </form>
+    </>
   );
 }
 
 export default function VerifyEmailPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#09090b] px-4">
+    <div className="min-h-screen flex items-center justify-center bg-surface-primary px-4">
       <div className="w-full max-w-md">
         <Card>
-          <div className="flex flex-col items-center mb-6">
-            <Image src="/logo.png" alt="PQ" width={72} height={72} />
-            <h1 className="text-3xl font-bold text-zinc-50 tracking-tight font-teko uppercase mt-3">
-              PQ <span className="text-accent">FIGHTERS</span>
-            </h1>
-            <p className="text-zinc-400 text-sm mt-1">
-              Verificação de E-mail
-            </p>
-          </div>
-
           <Suspense fallback={
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto"></div>
             </div>
           }>
             <VerifyEmailForm />

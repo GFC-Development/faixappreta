@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { createId } from "@paralleldrive/cuid2";
 import { sendPasswordResetEmail } from "@/lib/mail";
 import { checkRateLimits } from "@/lib/rate-limit";
+import { prismaMaster } from "@/lib/prisma-master";
+import { getTenantPrisma } from "@/lib/tenant-prisma";
 
 export async function POST(req: NextRequest) {
   try {
@@ -21,10 +23,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "E-mail é obrigatório" }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-      select: { name: true },
-    });
+    // Dynamic tenant lookup for the user email
+    const tenants = await prismaMaster.tenant.findMany({ where: { isActive: true } });
+    let user = null;
+    let targetPrisma = prisma;
+
+    for (const tenant of tenants) {
+      const p = await getTenantPrisma(tenant.slug);
+      if (!p) continue;
+      const u = await p.user.findUnique({
+        where: { email },
+        select: { name: true },
+      });
+      if (u) {
+        user = u;
+        targetPrisma = p;
+        break;
+      }
+    }
+
+    if (!user) {
+      // Fallback to default dev.db
+      const u = await prisma.user.findUnique({
+        where: { email },
+        select: { name: true },
+      });
+      if (u) {
+        user = u;
+        targetPrisma = prisma;
+      }
+    }
 
     // To prevent email harvesting, we return success even if user not found, 
     // but in development we can output a log.
@@ -40,10 +68,10 @@ export async function POST(req: NextRequest) {
     const token = createId();
     const expiresAt = new Date(Date.now() + 1 * 60 * 60 * 1000); // 1 hour
 
-    // Clean up old reset tokens
-    await prisma.passwordResetToken.deleteMany({ where: { email } });
+    // Clean up old reset tokens on the correct tenant DB
+    await targetPrisma.passwordResetToken.deleteMany({ where: { email } });
 
-    await prisma.passwordResetToken.create({
+    await targetPrisma.passwordResetToken.create({
       data: {
         email,
         token,

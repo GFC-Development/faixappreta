@@ -93,7 +93,7 @@ function RegisterForm() {
       return;
     }
 
-    router.push(`/verify-email?email=${encodeURIComponent(form.email)}`);
+    router.push(`/verify-email?email=${encodeURIComponent(form.email)}${tenantSlug ? `&tenant=${tenantSlug}` : ""}`);
   }
 
   if (!tenantSlug) {
