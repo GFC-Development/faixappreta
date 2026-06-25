@@ -1,13 +1,14 @@
 "use client";
 
 import { Suspense, useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { StudentAvatar } from "@/components/student-avatar";
-import Link from "next/link";
-import { Logo } from "@/components/logo";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { AuthHero } from "@/components/auth/auth-hero";
+import { AuthInput } from "@/components/auth/auth-input";
+import { AuthButton } from "@/components/auth/auth-button";
+import { BackButton } from "@/components/auth/back-button";
+import { PhotoUpload } from "@/components/auth/photo-upload";
+import { KidsToggle } from "@/components/auth/kids-toggle";
 
 function RegisterForm() {
   const router = useRouter();
@@ -41,7 +42,7 @@ function RegisterForm() {
             document.documentElement.style.setProperty("--color-accent-dark", data.secondaryColor);
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     }
   }, [tenantSlug]);
 
@@ -98,147 +99,114 @@ function RegisterForm() {
 
   if (!tenantSlug) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-primary px-4">
-        <div className="w-full max-w-md">
-          <Card>
-            <div className="flex flex-col items-center text-center">
-              <Logo size={72} logoUrl={tenantLogoUrl} />
-              <h1 className="text-3xl font-bold text-content-primary tracking-tight font-archivo uppercase mt-3">
-                faix<span className="text-red-600 font-extrabold">app</span>reta
-              </h1>
-              <p className="text-sm text-content-secondary mt-4">
-                Use o link fornecido pelo seu Centro de Treinamento para se cadastrar.
-              </p>
-            </div>
-          </Card>
+      <>
+        <AuthHero tenantName="" tenantSlug="" logoUrl={null} />
+        <div className="flex-1 flex flex-col items-center justify-center text-center p-[22px]">
+          <h1 className="font-archivo font-bold text-[21px] mb-2">Cadastro</h1>
+          <p className="text-[13.5px] text-[#82838a]">
+            Use o link fornecido pelo seu Centro de Treinamento para se cadastrar.
+          </p>
         </div>
-      </div>
+      </>
     );
   }
 
   if (registered) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-surface-primary px-4">
-        <div className="w-full max-w-md">
-          <Card>
-            <div className="flex flex-col items-center text-center">
-              <Logo size={72} logoUrl={tenantLogoUrl} />
-              <h1 className="text-3xl font-bold text-content-primary tracking-tight font-archivo uppercase mt-3">
-                faix<span className="text-red-600 font-extrabold">app</span>reta
-              </h1>
-              <div className="mt-6 mb-4">
-                <div className="w-16 h-16 rounded-full bg-amber-50 border border-amber-200 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-3xl">&#9203;</span>
-                </div>
-                <h2 className="text-lg font-semibold text-content-primary mb-2">Cadastro enviado!</h2>
-                <p className="text-sm text-content-secondary">
-                  Seu cadastro foi recebido e está aguardando aprovação do professor. Você receberá acesso assim que for aprovado.
-                </p>
-              </div>
-              <Link href={`/login?tenant=${tenantSlug}`}>
-                <Button variant="secondary" size="sm">
-                  Voltar para o login
-                </Button>
-              </Link>
+      <>
+        <AuthHero tenantName={tenantName} tenantSlug={tenantSlug} logoUrl={tenantLogoUrl} />
+        <div className="flex-1 flex flex-col items-center justify-center text-center p-[22px_22px_28px]">
+          <div className="w-[76px] h-[76px] rounded-3xl bg-[#fbf0dd] flex items-center justify-center mb-5">
+            <span className="w-[30px] h-[30px] rounded-full border-[3px] border-accent border-t-transparent block animate-spin" />
+          </div>
+          <h2 className="font-archivo font-bold text-[22px] mb-2">Quase lá!</h2>
+          <p className="text-sm text-[#5c5d63] leading-relaxed max-w-[300px]">
+            E-mail verificado. Seu cadastro foi enviado para o professor — você poderá entrar assim que ele <strong className="text-[#17181c]">aprovar sua conta</strong>.
+          </p>
+          <div className="bg-white border border-[#e8e8e6] rounded-[14px] p-[14px_16px] mt-6 w-full flex items-center gap-3 text-left">
+            <div className="w-[38px] h-[38px] flex-none rounded-[10px] bg-[#17181c] flex items-center justify-center font-archivo font-extrabold text-[17px] text-accent">
+              {(tenantName || "F").charAt(0).toUpperCase()}
             </div>
-          </Card>
+            <div>
+              <div className="font-semibold text-[13.5px]">{tenantName || "faixappreta"}</div>
+              <div className="text-[11.5px] text-[#9b9ca2]">Você receberá um e-mail ao ser aprovado</div>
+            </div>
+          </div>
+          <Link href={`/login?tenant=${tenantSlug}`} className="w-full mt-[18px]">
+            <AuthButton variant="secondary">Voltar ao login</AuthButton>
+          </Link>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-primary px-4">
-      <div className="w-full max-w-md">
-        <Card>
-          <div className="flex flex-col items-center mb-8">
-            <Logo size={72} logoUrl={tenantLogoUrl} />
-            {tenantName ? (
-              <h1 className="text-2xl font-bold text-content-primary tracking-tight font-archivo uppercase mt-3">
-                {tenantName}
-              </h1>
-            ) : (
-              <h1 className="text-3xl font-bold text-content-primary tracking-tight font-archivo uppercase mt-3">
-                faix<span className="text-red-600 font-extrabold">app</span>reta
-              </h1>
-            )}
-            <p className="text-content-muted text-sm mt-1">Crie sua conta</p>
+    <>
+      <AuthHero tenantName={tenantName} tenantSlug={tenantSlug} logoUrl={tenantLogoUrl} />
+
+      <div className="flex-1 flex flex-col p-[22px_22px_28px]">
+        <BackButton href={`/login?tenant=${tenantSlug}`} />
+
+        <h1 className="font-archivo font-bold text-[21px] mb-1">Criar conta</h1>
+        <p className="text-[13.5px] text-[#82838a] mb-5">
+          Preencha seus dados para treinar{tenantName ? ` na ${tenantName}` : ""}.
+        </p>
+
+        <PhotoUpload preview={photoPreview} onChange={handlePhotoChange} />
+
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <AuthInput
+            label="Nome completo"
+            value={form.name}
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            placeholder="Seu nome"
+            required
+          />
+          <AuthInput
+            label="E-mail"
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            placeholder="voce@email.com"
+            required
+          />
+          <AuthInput
+            label="Senha"
+            type="password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            placeholder="Crie uma senha"
+            required
+            minLength={6}
+          />
+
+          <div className="pt-1">
+            <KidsToggle checked={isKids} onChange={setIsKids} />
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="flex flex-col items-center gap-2">
-              <StudentAvatar name={form.name || "?"} photoUrl={photoPreview} size={64} />
-              <label className="cursor-pointer text-sm text-accent hover:text-accent-dark transition-colors">
-                {photoPreview ? "Alterar foto" : "Adicionar foto"}
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
-                  onChange={handlePhotoChange}
-                />
-              </label>
-            </div>
+          {error && (
+            <p className="text-sm text-red-500 text-center">{error}</p>
+          )}
 
-            <Input
-              label="Nome"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Seu nome completo"
-              required
-            />
-            <Input
-              label="Email"
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              placeholder="seu@email.com"
-              required
-            />
-            <Input
-              label="Senha"
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              placeholder="Minimo 6 caracteres"
-              required
-              minLength={6}
-            />
-            <div>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isKids}
-                  onChange={(e) => setIsKids(e.target.checked)}
-                  className="w-4 h-4 rounded border-border bg-surface-primary text-accent focus:ring-accent"
-                />
-                <span className="text-sm font-medium text-content-secondary">Aluno Kids</span>
-              </label>
-            </div>
+          <div className="pt-2.5">
+            <AuthButton type="submit" disabled={loading}>
+              {loading ? "Cadastrando..." : "Criar conta"}
+            </AuthButton>
+          </div>
+        </form>
 
-            {error && (
-              <p className="text-sm text-red-500 text-center">{error}</p>
-            )}
-
-            <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? "Cadastrando..." : "Cadastrar"}
-            </Button>
-          </form>
-
-          <p className="text-center text-sm text-content-muted mt-6">
-            Ja tem conta?{" "}
-            <Link href={`/login?tenant=${tenantSlug}`} className="text-accent hover:text-accent-dark transition-colors">
-              Entrar
-            </Link>
-          </p>
-        </Card>
+        <p className="text-center text-[11px] text-[#a8a8ad] mt-3.5 leading-relaxed">
+          Ao criar a conta você concorda com os termos da academia.<br />
+          Enviaremos um código de verificação para seu e-mail.
+        </p>
       </div>
-    </div>
+    </>
   );
 }
 
 export default function RegisterPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-surface-primary text-content-muted">Carregando...</div>}>
+    <Suspense fallback={<div className="flex-1 flex items-center justify-center text-content-muted">Carregando...</div>}>
       <RegisterForm />
     </Suspense>
   );

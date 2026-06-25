@@ -2,11 +2,12 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { Logo } from "@/components/logo";
+import { AuthHero } from "@/components/auth/auth-hero";
+import { AuthButton } from "@/components/auth/auth-button";
+import { AuthDivider } from "@/components/auth/auth-divider";
+import { BackButton } from "@/components/auth/back-button";
+import { OtpInput } from "@/components/auth/otp-input";
 
 function VerifyEmailForm() {
   const searchParams = useSearchParams();
@@ -14,8 +15,8 @@ function VerifyEmailForm() {
   const tokenParam = searchParams.get("token") || "";
   const tenantSlug = searchParams.get("tenant") || "";
 
-  const [email, setEmail] = useState(emailParam);
-  const [token, setToken] = useState(tokenParam);
+  const [email] = useState(emailParam);
+  const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [info, setInfo] = useState("");
@@ -25,8 +26,6 @@ function VerifyEmailForm() {
   const [tenantName, setTenantName] = useState("");
   const [tenantLogoUrl, setTenantLogoUrl] = useState<string | null>(null);
 
-
-  // Clean sensitive query parameters from URL to prevent leaking in browser history
   useEffect(() => {
     if ((emailParam || tokenParam) && typeof window !== "undefined") {
       const url = new URL(window.location.href);
@@ -44,8 +43,6 @@ function VerifyEmailForm() {
       }
     }
   }, [emailParam, tokenParam]);
-
-
 
   useEffect(() => {
     if (tenantSlug) {
@@ -65,7 +62,6 @@ function VerifyEmailForm() {
     }
   }, [tenantSlug]);
 
-  // Auto verify if both email and token are in url
   useEffect(() => {
     if (emailParam && tokenParam) {
       setIsAutoVerifying(true);
@@ -73,7 +69,6 @@ function VerifyEmailForm() {
     }
   }, [emailParam, tokenParam]);
 
-  // Resend cooldown countdown
   useEffect(() => {
     if (resendCooldown <= 0) return;
     const timer = setInterval(() => {
@@ -108,8 +103,8 @@ function VerifyEmailForm() {
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleVerify() {
+    if (otp.length !== 6) return;
     setError("");
     setSuccess("");
     setInfo("");
@@ -119,7 +114,7 @@ function VerifyEmailForm() {
       const res = await fetch("/api/auth/verify-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, token: token.trim() }),
+        body: JSON.stringify({ email, token: otp.trim() }),
       });
 
       const data = await res.json();
@@ -160,7 +155,7 @@ function VerifyEmailForm() {
       }
 
       setInfo("Novo código enviado! Verifique sua caixa de entrada.");
-      setResendCooldown(60); // 1 minute cooldown
+      setResendCooldown(60);
     } catch {
       setError("Erro de conexão");
     } finally {
@@ -170,131 +165,116 @@ function VerifyEmailForm() {
 
   if (isAutoVerifying) {
     return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent mx-auto mb-4"></div>
-        <h2 className="text-lg font-medium text-content-primary">Verificando seu e-mail automaticamente...</h2>
-        {error && (
-          <div className="mt-4">
-            <p className="text-sm text-red-500 mb-4">{error}</p>
-            <Button onClick={() => setIsAutoVerifying(false)} variant="secondary">
-              Inserir código manualmente
-            </Button>
-          </div>
-        )}
-      </div>
+      <>
+        <AuthHero tenantName={tenantName} tenantSlug={tenantSlug} logoUrl={tenantLogoUrl} />
+        <div className="flex-1 flex flex-col items-center justify-center text-center p-[22px]">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-accent mb-4" />
+          <h2 className="text-lg font-medium text-content-primary">Verificando seu e-mail...</h2>
+          {error && (
+            <div className="mt-4">
+              <p className="text-sm text-red-500 mb-4">{error}</p>
+              <AuthButton variant="secondary" onClick={() => setIsAutoVerifying(false)}>
+                Inserir código manualmente
+              </AuthButton>
+            </div>
+          )}
+        </div>
+      </>
     );
   }
 
   if (success) {
     return (
-      <div className="text-center py-6">
-        <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-          <span className="text-3xl text-emerald-500">✓</span>
+      <>
+        <AuthHero tenantName={tenantName} tenantSlug={tenantSlug} logoUrl={tenantLogoUrl} />
+        <div className="flex-1 flex flex-col items-center justify-center text-center p-[22px_22px_28px]">
+          <div className="w-[76px] h-[76px] rounded-3xl bg-[#fbf0dd] flex items-center justify-center mb-5">
+            <span className="w-[30px] h-[30px] rounded-full border-[3px] border-accent border-t-transparent block animate-spin" />
+          </div>
+          <h2 className="font-archivo font-bold text-[22px] mb-2">Quase lá!</h2>
+          <p className="text-sm text-[#5c5d63] leading-relaxed max-w-[300px]">
+            E-mail verificado. Seu cadastro foi enviado para o professor — você poderá entrar assim que ele <strong className="text-[#17181c]">aprovar sua conta</strong>.
+          </p>
+          <div className="bg-white border border-[#e8e8e6] rounded-[14px] p-[14px_16px] mt-6 w-full flex items-center gap-3 text-left">
+            <div className="w-[38px] h-[38px] flex-none rounded-[10px] bg-[#17181c] flex items-center justify-center font-archivo font-extrabold text-[17px] text-accent">
+              {(tenantName || "F").charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <div className="font-semibold text-[13.5px]">{tenantName || "faixappreta"}</div>
+              <div className="text-[11.5px] text-[#9b9ca2]">Você receberá um e-mail ao ser aprovado</div>
+            </div>
+          </div>
+          <Link href={`/login${tenantSlug ? `?tenant=${tenantSlug}` : ""}`} className="w-full mt-[18px]">
+            <AuthButton variant="secondary">Voltar ao login</AuthButton>
+          </Link>
         </div>
-        <h2 className="text-xl font-bold text-content-primary mb-2">E-mail verificado!</h2>
-        <p className="text-sm text-content-secondary mb-6 max-w-sm mx-auto">
-          {success}
-        </p>
-        <Link href={`/login${tenantSlug ? `?tenant=${tenantSlug}` : ""}`}>
-          <Button className="w-full" size="lg">
-            Ir para o login
-          </Button>
-        </Link>
-      </div>
+      </>
     );
   }
 
   return (
     <>
-      <div className="flex flex-col items-center mb-6">
-        <Logo size={72} logoUrl={tenantLogoUrl} />
-        {tenantName ? (
-          <h1 className="text-2xl font-bold text-content-primary tracking-tight font-archivo uppercase mt-3">
-            {tenantName}
-          </h1>
-        ) : (
-          <h1 className="text-3xl font-bold text-content-primary tracking-tight font-archivo uppercase mt-3">
-            faix<span className="text-accent font-extrabold">app</span>reta
-          </h1>
-        )}
-        <p className="text-content-muted text-sm mt-1">
-          Verificação de E-mail
-        </p>
-      </div>
+      <AuthHero tenantName={tenantName} tenantSlug={tenantSlug} logoUrl={tenantLogoUrl} />
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
-          label="E-mail"
-          type="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setError("");
-            setInfo("");
-          }}
-          placeholder="seu@email.com"
-          required
-          disabled={!!emailParam}
-        />
-        <Input
-          label="Código de Verificação (6 dígitos)"
-          type="text"
-          value={token}
-          onChange={(e) => {
-            setToken(e.target.value.substring(0, 6));
-            setError("");
-            setInfo("");
-          }}
-          placeholder="123456"
-          required
-          maxLength={6}
-          className="text-center tracking-widest font-mono text-lg"
-        />
+      <div className="flex-1 flex flex-col p-[22px_22px_28px]">
+        <BackButton href={`/register?tenant=${tenantSlug}`} />
+
+        <h1 className="font-archivo font-bold text-[21px] mb-1">Verifique seu e-mail</h1>
+        <p className="text-[13.5px] text-[#82838a] mb-6">
+          Enviamos um código de 6 dígitos para <strong className="text-[#17181c]">{email}</strong>.
+        </p>
+
+        <OtpInput value={otp} onChange={setOtp} disabled={loading} />
 
         {info && (
-          <p className="text-sm text-emerald-500 text-center">{info}</p>
+          <p className="text-sm text-emerald-500 text-center mt-3">{info}</p>
         )}
-
         {error && (
-          <p className="text-sm text-red-500 text-center">{error}</p>
+          <p className="text-sm text-red-500 text-center mt-3">{error}</p>
         )}
 
-        <Button type="submit" className="w-full" size="lg" disabled={loading}>
-          {loading ? "Verificando..." : "Confirmar E-mail"}
-        </Button>
-
-        <div className="flex justify-between items-center text-sm pt-2">
-          <button
-            type="button"
-            onClick={handleResend}
-            disabled={loading || resendCooldown > 0 || !email}
-            className="text-accent hover:text-accent-dark transition-colors disabled:opacity-50 font-medium"
-          >
-            {resendCooldown > 0 ? `Reenviar em ${resendCooldown}s` : "Reenviar código"}
-          </button>
-          <Link href={`/login${tenantSlug ? `?tenant=${tenantSlug}` : ""}`} className="text-content-secondary hover:text-content-primary transition-colors">
-            Voltar para login
-          </Link>
+        <div className="mt-[18px]">
+          <AuthButton onClick={handleVerify} disabled={loading || otp.length !== 6}>
+            {loading ? "Verificando..." : "Verificar"}
+          </AuthButton>
         </div>
-      </form>
+
+        <div className="text-center mt-[18px] text-[13px] text-[#82838a]">
+          {resendCooldown > 0 ? (
+            `Reenviar código em ${resendCooldown}s`
+          ) : (
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={loading || !email}
+              className="text-[#82838a] hover:text-content-primary transition-colors disabled:opacity-50"
+            >
+              Não recebeu? Reenviar código
+            </button>
+          )}
+        </div>
+
+        <AuthDivider />
+
+        <Link
+          href={`/login?tenant=${tenantSlug}`}
+          className="text-center text-[13px] text-accent-dark font-semibold hover:text-accent transition-colors"
+        >
+          Verifiquei pelo link do e-mail →
+        </Link>
+      </div>
     </>
   );
 }
 
 export default function VerifyEmailPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-primary px-4">
-      <div className="w-full max-w-md">
-        <Card>
-          <Suspense fallback={
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto"></div>
-            </div>
-          }>
-            <VerifyEmailForm />
-          </Suspense>
-        </Card>
+    <Suspense fallback={
+      <div className="flex-1 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
       </div>
-    </div>
+    }>
+      <VerifyEmailForm />
+    </Suspense>
   );
 }

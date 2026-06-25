@@ -2,11 +2,11 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { Logo } from "@/components/logo";
+import { AuthHero } from "@/components/auth/auth-hero";
+import { AuthInput } from "@/components/auth/auth-input";
+import { AuthButton } from "@/components/auth/auth-button";
+import { BackButton } from "@/components/auth/back-button";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -23,7 +23,6 @@ function ResetPasswordForm() {
   const [tenantName, setTenantName] = useState("");
   const [tenantLogoUrl, setTenantLogoUrl] = useState<string | null>(null);
 
-  // Clean token from URL to prevent leaking in browser history
   useEffect(() => {
     if (token && typeof window !== "undefined") {
       const url = new URL(window.location.href);
@@ -34,7 +33,6 @@ function ResetPasswordForm() {
     }
   }, [token]);
 
-  // Validate token on mount
   useEffect(() => {
     if (!token) {
       setError("Token de redefinição não fornecido.");
@@ -46,7 +44,7 @@ function ResetPasswordForm() {
       try {
         const res = await fetch(`/api/auth/reset-password?token=${token}`);
         const data = await res.json();
-        
+
         if (res.ok && data.valid) {
           setIsTokenValid(true);
           if (data.tenantSlug) {
@@ -65,7 +63,6 @@ function ResetPasswordForm() {
     checkToken();
   }, [token]);
 
-  // Load tenant info when slug is resolved
   useEffect(() => {
     if (tenantSlug) {
       fetch(`/api/tenant-info?slug=${encodeURIComponent(tenantSlug)}`)
@@ -126,115 +123,109 @@ function ResetPasswordForm() {
 
   if (isValidating) {
     return (
-      <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto"></div>
-        <p className="text-sm text-content-secondary mt-4">Verificando validade do link...</p>
-      </div>
+      <>
+        <AuthHero tenantName={tenantName} tenantSlug={tenantSlug} logoUrl={tenantLogoUrl} />
+        <div className="flex-1 flex flex-col items-center justify-center p-[22px]">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
+          <p className="text-sm text-[#82838a] mt-4">Verificando validade do link...</p>
+        </div>
+      </>
     );
   }
 
   if (success) {
     return (
-      <div className="text-center py-6">
-        <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-          <span className="text-3xl text-emerald-500">✓</span>
+      <>
+        <AuthHero tenantName={tenantName} tenantSlug={tenantSlug} logoUrl={tenantLogoUrl} />
+        <div className="flex-1 flex flex-col items-center justify-center text-center p-[22px_22px_28px]">
+          <div className="w-[76px] h-[76px] rounded-3xl bg-emerald-500/10 flex items-center justify-center mb-5">
+            <span className="text-3xl text-emerald-500">✓</span>
+          </div>
+          <h2 className="font-archivo font-bold text-[22px] mb-2">Senha redefinida!</h2>
+          <p className="text-sm text-[#5c5d63] leading-relaxed max-w-[300px]">
+            Sua senha foi alterada com sucesso. Você já pode fazer login com sua nova senha.
+          </p>
+          <Link href={`/login${tenantSlug ? `?tenant=${tenantSlug}` : ""}`} className="w-full mt-6">
+            <AuthButton>Ir para o login</AuthButton>
+          </Link>
         </div>
-        <h2 className="text-xl font-bold text-content-primary mb-2">Senha Redefinida!</h2>
-        <p className="text-sm text-content-secondary mb-6">
-          Sua senha foi alterada com sucesso. Você já pode fazer login com sua nova senha.
-        </p>
-        <Link href={`/login${tenantSlug ? `?tenant=${tenantSlug}` : ""}`}>
-          <Button className="w-full" size="lg">
-            Ir para o login
-          </Button>
-        </Link>
-      </div>
+      </>
     );
   }
 
   if (!isTokenValid) {
     return (
-      <div className="text-center py-6">
-        <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4">
-          <span className="text-3xl text-red-500">✕</span>
+      <>
+        <AuthHero tenantName={tenantName} tenantSlug={tenantSlug} logoUrl={tenantLogoUrl} />
+        <div className="flex-1 flex flex-col items-center justify-center text-center p-[22px_22px_28px]">
+          <div className="w-[76px] h-[76px] rounded-3xl bg-red-500/10 flex items-center justify-center mb-5">
+            <span className="text-3xl text-red-500">✕</span>
+          </div>
+          <h2 className="font-archivo font-bold text-[22px] mb-2">Link inválido</h2>
+          <p className="text-sm text-[#5c5d63] leading-relaxed max-w-[300px]">{error}</p>
+          <Link href={`/forgot-password${tenantSlug ? `?tenant=${tenantSlug}` : ""}`} className="w-full mt-6">
+            <AuthButton>Solicitar novo link</AuthButton>
+          </Link>
         </div>
-        <h2 className="text-lg font-bold text-content-primary mb-2">Link Inválido</h2>
-        <p className="text-sm text-content-secondary mb-6">
-          {error}
-        </p>
-        <Link href={`/forgot-password${tenantSlug ? `?tenant=${tenantSlug}` : ""}`}>
-          <Button className="w-full" size="lg">
-            Solicitar novo link
-          </Button>
-        </Link>
-      </div>
+      </>
     );
   }
 
   return (
     <>
-      <div className="flex flex-col items-center mb-8">
-        <Logo size={72} logoUrl={tenantLogoUrl} />
-        {tenantName ? (
-          <h1 className="text-2xl font-bold text-content-primary tracking-tight font-archivo uppercase mt-3">
-            {tenantName}
-          </h1>
-        ) : (
-          <h1 className="text-3xl font-bold text-content-primary tracking-tight font-archivo uppercase mt-3">
-            faix<span className="text-accent font-extrabold">app</span>reta
-          </h1>
-        )}
-        <p className="text-content-muted text-sm mt-1">
-          Redefinir Senha
+      <AuthHero tenantName={tenantName} tenantSlug={tenantSlug} logoUrl={tenantLogoUrl} />
+
+      <div className="flex-1 flex flex-col p-[22px_22px_28px]">
+        <BackButton href={`/login${tenantSlug ? `?tenant=${tenantSlug}` : ""}`} label="Login" />
+
+        <h1 className="font-archivo font-bold text-[21px] mb-1">Redefinir senha</h1>
+        <p className="text-[13.5px] text-[#82838a] mb-[22px]">
+          Crie uma nova senha para sua conta.
         </p>
+
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <AuthInput
+            label="Nova senha"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Nova senha"
+            required
+            minLength={6}
+          />
+          <AuthInput
+            label="Confirmar nova senha"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Repita a senha"
+            required
+            minLength={6}
+          />
+
+          {error && (
+            <p className="text-sm text-red-500 text-center">{error}</p>
+          )}
+
+          <div className="pt-2.5">
+            <AuthButton type="submit" disabled={loading}>
+              {loading ? "Redefinindo..." : "Redefinir senha"}
+            </AuthButton>
+          </div>
+        </form>
       </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <Input
-          label="Nova Senha"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Mínimo 6 caracteres"
-          required
-          minLength={6}
-        />
-        <Input
-          label="Confirmar Nova Senha"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          placeholder="Repita a nova senha"
-          required
-          minLength={6}
-        />
-
-        {error && (
-          <p className="text-sm text-red-500 text-center">{error}</p>
-        )}
-
-        <Button type="submit" className="w-full" size="lg" disabled={loading}>
-          {loading ? "Redefinindo..." : "Alterar Senha"}
-        </Button>
-      </form>
     </>
   );
 }
 
 export default function ResetPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-primary px-4">
-      <div className="w-full max-w-md">
-        <Card>
-          <Suspense fallback={
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mx-auto"></div>
-            </div>
-          }>
-            <ResetPasswordForm />
-          </Suspense>
-        </Card>
+    <Suspense fallback={
+      <div className="flex-1 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
       </div>
-    </div>
+    }>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
