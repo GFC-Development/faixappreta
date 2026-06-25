@@ -11,6 +11,7 @@ import { DegreeProgress } from "@/components/degree-progress";
 import { getBeltsForType } from "@/lib/utils";
 import { ArrowLeft, CheckCircle, XCircle, Clock, Pencil, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { StatCard } from "@/components/stat-card";
 
 interface Booking {
   id: string;
@@ -164,11 +165,11 @@ export default function StudentProfilePage() {
   }, [id]);
 
   if (loading) {
-    return <div className="text-center py-8 text-content-muted">Carregando...</div>;
+    return <div className="text-center py-8 text-[#9b9ca2]">Carregando...</div>;
   }
 
   if (!student) {
-    return <div className="text-center py-8 text-content-muted">Aluno não encontrado</div>;
+    return <div className="text-center py-8 text-[#9b9ca2]">Aluno não encontrado</div>;
   }
 
   const checkins = student.bookings.filter((b) => b.checkedIn);
@@ -178,12 +179,10 @@ export default function StudentProfilePage() {
     ? Math.round((checkins.length / totalBookings) * 100)
     : 0;
 
-  // Belt progress: counts since last belt change, or total if never changed
   const checkinsSinceBeltChange = student.lastBeltChangeDate
     ? checkins.filter((b) => b.date > student.lastBeltChangeDate!.split("T")[0]).length
     : totalCheckins;
 
-  // Degree progress: counts since last graduation, or total if no graduation yet
   const checkinsSinceGraduation = student.lastGraduationDate
     ? checkins.filter((b) => b.date > student.lastGraduationDate!.split("T")[0]).length
     : totalCheckins;
@@ -193,26 +192,28 @@ export default function StudentProfilePage() {
     ? requirements.find((r) => r.belt === nextBelt)
     : null;
 
-  // Degree progress
   const nextDegree = student.degrees < 4 ? student.degrees + 1 : null;
   const degreeReq = nextDegree
     ? degreeRequirements.find((r) => r.belt === student.belt && r.degree === nextDegree)
     : null;
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-[700px] mx-auto">
       <button
         onClick={() => router.push("/admin")}
-        className="flex items-center gap-1 text-sm text-content-secondary hover:text-content-primary mb-4"
+        className="flex items-center gap-1 text-[13px] text-[#9b9ca2] hover:text-[#17181c] mb-4 transition-colors"
       >
         <ArrowLeft size={16} />
         Voltar
       </button>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-4">
           <StudentAvatar name={student.name} photoUrl={student.photoUrl} size={56} />
-          <h1 className="text-2xl font-bold text-content-primary">Perfil do Aluno</h1>
+          <div>
+            <h1 className="font-archivo font-bold text-xl text-[#17181c]">{student.name}</h1>
+            <p className="text-[13px] text-[#9b9ca2]">{student.email}</p>
+          </div>
         </div>
         <Link href={`/admin/students/${id}/edit`}>
           <Button size="sm" variant="secondary">
@@ -223,26 +224,26 @@ export default function StudentProfilePage() {
       </div>
 
       {/* Dados Pessoais */}
-      <Card className="mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-content-primary">Dados Pessoais</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+      <Card className="mb-4">
+        <h2 className="font-semibold text-[14px] text-[#17181c] mb-3">Dados Pessoais</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[13px]">
           <div>
-            <p className="text-content-secondary">Nome</p>
-            <p className="font-medium text-content-primary">{student.name}</p>
+            <p className="font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad]">Nome</p>
+            <p className="font-semibold text-[#17181c] mt-0.5">{student.name}</p>
           </div>
           <div>
-            <p className="text-content-secondary">Email</p>
-            <p className="font-medium text-content-primary">{student.email}</p>
+            <p className="font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad]">Email</p>
+            <p className="font-semibold text-[#17181c] mt-0.5">{student.email}</p>
           </div>
           <div>
-            <p className="text-content-secondary">Kids</p>
-            <div className="flex items-center gap-2">
-              {student.isKids ? <Badge variant="warning">Kids</Badge> : <span className="font-medium text-content-primary">Não</span>}
+            <p className="font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad]">Kids</p>
+            <div className="mt-0.5">
+              {student.isKids ? <Badge variant="warning">Kids</Badge> : <span className="font-semibold text-[#17181c]">Não</span>}
             </div>
           </div>
           <div>
-            <p className="text-content-secondary">Cadastrado em</p>
-            <p className="font-medium text-content-primary">
+            <p className="font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad]">Cadastrado em</p>
+            <p className="font-semibold text-[#17181c] mt-0.5">
               {new Date(student.createdAt).toLocaleDateString("pt-BR")}
             </p>
           </div>
@@ -250,117 +251,100 @@ export default function StudentProfilePage() {
       </Card>
 
       {/* Graduação */}
-      <Card className="mb-6">
-          <h2 className="text-lg font-semibold mb-4 text-content-primary">Graduação</h2>
+      <Card className="mb-4">
+        <h2 className="font-semibold text-[14px] text-[#17181c] mb-3">Graduação</h2>
 
-          <div className="mb-2">
-            <BeltVisual belt={student.belt} degrees={student.degrees} width={320} />
-          </div>
+        <div className="mb-2">
+          <BeltVisual belt={student.belt} degrees={student.degrees} width={320} />
+        </div>
 
-          {student.lastGraduationDate && (
-            <p className="text-xs text-content-secondary mb-3">
-              Última graduação: {new Date(student.lastGraduationDate).toLocaleDateString("pt-BR")}
-            </p>
-          )}
+        {student.lastGraduationDate && (
+          <p className="text-[11px] text-[#9b9ca2] mb-3">
+            Última graduação: {new Date(student.lastGraduationDate).toLocaleDateString("pt-BR")}
+          </p>
+        )}
 
-          {/* Degree progress */}
-          {degreeReq && (
-            <>
-              <DegreeProgress
-                checkins={checkinsSinceGraduation}
-                belt={student.belt}
-                nextDegree={nextDegree!}
-                requiredClasses={degreeReq.requiredClasses}
-              />
-              <div className={`flex items-center justify-between p-3 rounded-lg text-sm ${
-                checkinsSinceGraduation >= degreeReq.requiredClasses
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                  : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-              }`}>
-                <span>
-                  {checkinsSinceGraduation >= degreeReq.requiredClasses
-                    ? `Apto para ${nextDegree}° grau`
-                    : `Ainda não apto para ${nextDegree}° grau`}
-                </span>
-                <Button
-                  size="sm"
-                  disabled={promoting}
-                  onClick={() => promoteDegree(checkinsSinceGraduation >= degreeReq.requiredClasses)}
-                >
-                  {promoting ? "..." : "Promover"}
-                </Button>
-              </div>
-            </>
-          )}
+        {degreeReq && (
+          <>
+            <DegreeProgress
+              checkins={checkinsSinceGraduation}
+              belt={student.belt}
+              nextDegree={nextDegree!}
+              requiredClasses={degreeReq.requiredClasses}
+            />
+            <div className={`flex items-center justify-between p-3 rounded-[9px] text-[13px] ${
+              checkinsSinceGraduation >= degreeReq.requiredClasses
+                ? "bg-[#e7f4ec] text-[#0f7a4d] border border-[#b9e2cb]"
+                : "bg-[#fbf0dd] text-[#b45309] border border-[#f0d9a8]"
+            }`}>
+              <span>
+                {checkinsSinceGraduation >= degreeReq.requiredClasses
+                  ? `Apto para ${nextDegree}° grau`
+                  : `Ainda não apto para ${nextDegree}° grau`}
+              </span>
+              <Button
+                size="sm"
+                disabled={promoting}
+                onClick={() => promoteDegree(checkinsSinceGraduation >= degreeReq.requiredClasses)}
+              >
+                {promoting ? "..." : "Promover"}
+              </Button>
+            </div>
+          </>
+        )}
 
-          {/* Belt progress */}
-          {nextBelt && nextBeltReq && nextBeltReq.requiredClasses > 0 ? (
-            <>
-              <BeltProgress
-                checkins={checkinsSinceBeltChange}
-                nextBelt={nextBelt}
-                requiredClasses={nextBeltReq.requiredClasses}
-                width={320}
-              />
-              <div className={`flex items-center justify-between p-3 rounded-lg text-sm mt-2 ${
-                checkinsSinceBeltChange >= nextBeltReq.requiredClasses
-                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                  : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-              }`}>
-                <span>
-                  {checkinsSinceBeltChange >= nextBeltReq.requiredClasses
-                    ? `Apto para faixa ${nextBelt}`
-                    : `Ainda não apto para faixa ${nextBelt}`}
-                </span>
-                <Button
-                  size="sm"
-                  disabled={promoting}
-                  onClick={() => promoteBelt(checkinsSinceBeltChange >= nextBeltReq.requiredClasses)}
-                >
-                  {promoting ? "..." : "Promover"}
-                </Button>
-              </div>
-            </>
-          ) : nextBelt && (!nextBeltReq || nextBeltReq.requiredClasses === 0) ? (
-            <p className="text-xs text-content-secondary border-t border-border pt-3 mt-3">
-              Requisito para faixa {nextBelt} não configurado.{" "}
-              <Link href="/admin/belt-requirements" className="underline text-accent hover:text-accent/80">
-                Configurar
-              </Link>
-            </p>
-          ) : (
-            <p className="text-xs text-content-secondary border-t border-border pt-3 mt-3">
-              Faixa máxima atingida.
-            </p>
-          )}
-        </Card>
+        {nextBelt && nextBeltReq && nextBeltReq.requiredClasses > 0 ? (
+          <>
+            <BeltProgress
+              checkins={checkinsSinceBeltChange}
+              nextBelt={nextBelt}
+              requiredClasses={nextBeltReq.requiredClasses}
+              width={320}
+            />
+            <div className={`flex items-center justify-between p-3 rounded-[9px] text-[13px] mt-2 ${
+              checkinsSinceBeltChange >= nextBeltReq.requiredClasses
+                ? "bg-[#e7f4ec] text-[#0f7a4d] border border-[#b9e2cb]"
+                : "bg-[#fbf0dd] text-[#b45309] border border-[#f0d9a8]"
+            }`}>
+              <span>
+                {checkinsSinceBeltChange >= nextBeltReq.requiredClasses
+                  ? `Apto para faixa ${nextBelt}`
+                  : `Ainda não apto para faixa ${nextBelt}`}
+              </span>
+              <Button
+                size="sm"
+                disabled={promoting}
+                onClick={() => promoteBelt(checkinsSinceBeltChange >= nextBeltReq.requiredClasses)}
+              >
+                {promoting ? "..." : "Promover"}
+              </Button>
+            </div>
+          </>
+        ) : nextBelt && (!nextBeltReq || nextBeltReq.requiredClasses === 0) ? (
+          <p className="text-[11.5px] text-[#9b9ca2] border-t border-[#f1f1f3] pt-3 mt-3">
+            Requisito para faixa {nextBelt} não configurado.{" "}
+            <Link href="/admin/belt-requirements" className="underline text-accent-dark hover:text-accent">
+              Configurar
+            </Link>
+          </p>
+        ) : (
+          <p className="text-[11.5px] text-[#9b9ca2] border-t border-[#f1f1f3] pt-3 mt-3">
+            Faixa máxima atingida.
+          </p>
+        )}
+      </Card>
 
       {/* Frequência */}
-      <Card className="mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-content-primary">Frequência</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-          <div>
-            <p className="text-2xl font-bold text-content-primary">{totalBookings}</p>
-            <p className="text-sm text-content-secondary">Agendamentos</p>
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-content-primary">{totalCheckins}</p>
-            <p className="text-sm text-content-secondary">Check-ins</p>
-            {student.initialCheckins > 0 && (
-              <p className="text-xs text-content-muted">({student.initialCheckins} iniciais)</p>
-            )}
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-content-primary">{frequencia}%</p>
-            <p className="text-sm text-content-secondary">Presença</p>
-          </div>
-        </div>
-      </Card>
+      <div className="flex flex-wrap gap-3 mb-4">
+        <StatCard label="Agendamentos" value={totalBookings} />
+        <StatCard label="Check-ins" value={totalCheckins} badge={student.initialCheckins > 0 ? <span className="text-[11px] text-[#9b9ca2]">({student.initialCheckins} iniciais)</span> : undefined} />
+        <StatCard label="Presença" value={`${frequencia}%`} />
+      </div>
 
       {/* Histórico de Aulas */}
       <Card>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-content-primary">Histórico de Aulas</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold text-[14px] text-[#17181c]">Histórico de Aulas</h2>
           <Button size="sm" variant="secondary" onClick={() => setShowAddForm(!showAddForm)}>
             <Plus size={14} className="mr-1.5" />
             Adicionar Presença
@@ -368,19 +352,19 @@ export default function StudentProfilePage() {
         </div>
 
         {showAddForm && (
-          <div className="mb-4 p-3 bg-surface-tertiary/50 rounded-lg space-y-3">
-            <p className="text-xs text-content-secondary">
+          <div className="mb-4 p-3 bg-[#f4f4f6] rounded-[9px] space-y-3">
+            <p className="text-[11.5px] text-[#9b9ca2]">
               Adicione presenças retroativas para este aluno. O total será somado ao contador de check-ins.
             </p>
             <div className="flex items-end gap-3">
               <div>
-                <label className="text-xs text-content-secondary block mb-1">Quantidade</label>
+                <label className="font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] block mb-1">Quantidade</label>
                 <input
                   type="number"
                   min={1}
                   value={addCount}
                   onChange={(e) => setAddCount(Number(e.target.value))}
-                  className="w-24 bg-surface-secondary border border-border rounded px-2 py-1.5 text-sm text-content-primary"
+                  className="w-24 h-[36px] rounded-[8px] border border-[#e6e6e9] bg-white px-3 text-sm text-[#17181c]"
                 />
               </div>
               <Button size="sm" onClick={addManualCheckins} disabled={saving || addCount < 1}>
@@ -394,11 +378,11 @@ export default function StudentProfilePage() {
         )}
 
         {student.bookings.length === 0 && !showAddForm ? (
-          <p className="text-content-secondary text-sm text-center py-4">
+          <p className="text-[#9b9ca2] text-[13px] text-center py-4">
             Nenhum agendamento registrado
           </p>
         ) : (
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-[#f1f1f3]">
             {student.bookings.map((b) => {
               let label: string;
               if (b.type === "PRIVATE" && b.privateSlot) {
@@ -412,8 +396,8 @@ export default function StudentProfilePage() {
               return (
                 <div key={b.id} className="flex items-center justify-between py-3">
                   <div>
-                    <p className="text-sm font-medium text-content-primary">{label}</p>
-                    <p className="text-xs text-content-secondary">
+                    <p className="text-[13px] font-semibold text-[#17181c]">{label}</p>
+                    <p className="text-[11.5px] text-[#9b9ca2]">
                       {new Date(b.date + "T12:00:00").toLocaleDateString("pt-BR", {
                         weekday: "long",
                         day: "2-digit",
@@ -427,25 +411,25 @@ export default function StudentProfilePage() {
                       {b.type === "PRIVATE" ? "Particular" : "Coletiva"}
                     </Badge>
                     {b.checkinStatus === "PRESENTE" ? (
-                      <span className="flex items-center gap-1 text-xs font-medium text-emerald-400">
+                      <span className="flex items-center gap-1 text-[11px] font-semibold text-[#0f7a4d]">
                         <CheckCircle size={14} /> Presente
                       </span>
                     ) : b.checkinStatus === "CANCELADO" ? (
-                      <span className="flex items-center gap-1 text-xs font-medium text-amber-400">
+                      <span className="flex items-center gap-1 text-[11px] font-semibold text-[#b45309]">
                         <Clock size={14} /> Cancelou
                       </span>
                     ) : b.checkinStatus === "AUSENTE" ? (
-                      <span className="flex items-center gap-1 text-xs font-medium text-red-400">
+                      <span className="flex items-center gap-1 text-[11px] font-semibold text-[#b42318]">
                         <XCircle size={14} /> Ausente
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 text-xs font-medium text-content-muted">
+                      <span className="flex items-center gap-1 text-[11px] font-semibold text-[#9b9ca2]">
                         <Clock size={14} /> Pendente
                       </span>
                     )}
                     <button
                       onClick={() => deleteBooking(b.id)}
-                      className="text-content-muted hover:text-red-400 transition-colors"
+                      className="text-[#9b9ca2] hover:text-[#b42318] transition-colors"
                       title="Excluir presença"
                     >
                       <Trash2 size={14} />

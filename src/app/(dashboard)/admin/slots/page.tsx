@@ -9,6 +9,7 @@ import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
 import { DAY_NAMES } from "@/lib/utils";
 import { Pencil, Trash2, X } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 
 interface Student {
   id: string;
@@ -115,14 +116,11 @@ export default function SlotsPage() {
     const oldUserIds = editingGroup.filter((s) => s.userId).map((s) => s.userId!);
     const oldOpenSlot = editingGroup.find((s) => !s.userId);
 
-    // Update existing slots that stay (same user)
     const keptUserIds = selectedUserIds.filter((uid) => oldUserIds.includes(uid));
     const addedUserIds = selectedUserIds.filter((uid) => !oldUserIds.includes(uid));
     const removedUserIds = oldUserIds.filter((uid) => !selectedUserIds.includes(uid));
 
-    // If going to open (no students selected), pick one slot to convert instead of deleting all
     const needsOpenSlot = selectedUserIds.length === 0;
-    // Slot we'll reuse as open (prefer existing open slot, otherwise first removed)
     let reusedAsOpenId: string | null = null;
 
     if (needsOpenSlot && !oldOpenSlot && removedUserIds.length > 0) {
@@ -131,7 +129,6 @@ export default function SlotsPage() {
     }
 
     try {
-      // Update kept slots (day/time might have changed)
       for (const uid of keptUserIds) {
         const slot = editingGroup.find((s) => s.userId === uid);
         if (slot) {
@@ -143,7 +140,6 @@ export default function SlotsPage() {
         }
       }
 
-      // Delete removed student slots (skip the one we'll reuse as open)
       for (const uid of removedUserIds) {
         const slot = editingGroup.find((s) => s.userId === uid);
         if (slot && slot.id !== reusedAsOpenId) {
@@ -151,27 +147,22 @@ export default function SlotsPage() {
         }
       }
 
-      // Handle open slot
       if (needsOpenSlot && oldOpenSlot) {
-        // Keep existing open slot, update day/time
         await fetch(`/api/slots/${oldOpenSlot.id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ dayOfWeek: form.dayOfWeek, startTime: form.startTime, endTime }),
         });
       } else if (needsOpenSlot && reusedAsOpenId) {
-        // Convert a removed student slot into an open slot
         await fetch(`/api/slots/${reusedAsOpenId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ dayOfWeek: form.dayOfWeek, startTime: form.startTime, endTime, userId: null, instructorId }),
         });
       } else if (selectedUserIds.length > 0 && oldOpenSlot) {
-        // Remove old open slot (students were added)
         await fetch(`/api/slots/${oldOpenSlot.id}`, { method: "DELETE" });
       }
 
-      // Create new student slots
       if (addedUserIds.length > 0) {
         await fetch("/api/slots", {
           method: "POST",
@@ -203,31 +194,29 @@ export default function SlotsPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-content-primary">Horários Particulares</h1>
+    <div className="max-w-[900px] mx-auto">
+      <PageHeader title="Horários Particulares">
         <Button onClick={() => { setEditingGroup(null); setModalOpen(true); }}>Novo Horário</Button>
-      </div>
+      </PageHeader>
 
-      <Card>
+      <Card className="overflow-hidden !p-0">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-2 px-2 text-content-secondary">Dia</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Início</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Fim</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Aluno</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Status</th>
+              <tr className="border-b border-[#f1f1f3]">
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Dia</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Início</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Fim</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Aluno</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Status</th>
                 {professors.length > 1 && (
-                  <th className="text-left py-2 px-2 text-content-secondary">Professor</th>
+                  <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Prof.</th>
                 )}
-                <th className="text-left py-2 px-2"></th>
+                <th className="text-left py-[9px] px-[18px] bg-[#fafafa]"></th>
               </tr>
             </thead>
             <tbody>
               {(() => {
-                // Group slots by day+time
                 const groups: Record<string, Slot[]> = {};
                 for (const slot of slots) {
                   const key = `${slot.dayOfWeek}-${slot.startTime}-${slot.endTime}`;
@@ -237,61 +226,61 @@ export default function SlotsPage() {
                 return Object.values(groups).map((group) => {
                   const first = group[0];
                   return (
-                    <tr key={group.map((s) => s.id).join(",")} className="border-b border-border hover:bg-surface-tertiary">
-                      <td className="py-2 px-2 text-content-primary">{DAY_NAMES[first.dayOfWeek]}</td>
-                      <td className="py-2 px-2 text-content-primary">{first.startTime}</td>
-                      <td className="py-2 px-2 text-content-primary">{first.endTime}</td>
-                      <td className="py-2 px-2 text-content-primary">
+                    <tr key={group.map((s) => s.id).join(",")} className="border-b border-[#f1f1f3] hover:bg-[#fafafa] transition-colors">
+                      <td className="py-[9px] px-[18px] text-[12.5px] text-[#17181c]">{DAY_NAMES[first.dayOfWeek]}</td>
+                      <td className="py-[9px] px-[18px] text-[12.5px] text-[#5c5d63]">{first.startTime}</td>
+                      <td className="py-[9px] px-[18px] text-[12.5px] text-[#5c5d63]">{first.endTime}</td>
+                      <td className="py-[9px] px-[18px]">
                         {group.some((s) => s.user) ? (
                           <div className="flex flex-wrap gap-1">
                             {group.map((s) => s.user ? (
-                              <span key={s.id} className="inline-flex items-center gap-1 bg-surface-tertiary rounded px-2 py-0.5 text-xs">
+                              <span key={s.id} className="inline-flex items-center gap-1 bg-[#f4f4f6] rounded-[6px] px-2 py-0.5 text-[11px] text-[#3d3e44]">
                                 {s.user.name}
                                 <button
                                   onClick={() => handleDelete(s.id)}
-                                  className="text-content-muted hover:text-red-400 transition-colors"
+                                  className="text-[#9b9ca2] hover:text-[#b42318] transition-colors"
                                   title="Remover aluno"
                                 >
                                   <X size={10} />
                                 </button>
                               </span>
                             ) : (
-                              <span key={s.id} className="text-content-muted text-xs">Aberto</span>
+                              <span key={s.id} className="text-[#9b9ca2] text-[11px]">Aberto</span>
                             ))}
                           </div>
                         ) : (
-                          <span className="text-content-muted">Aberto</span>
+                          <span className="text-[#9b9ca2] text-[12.5px]">Aberto</span>
                         )}
                       </td>
-                      <td className="py-2 px-2">
+                      <td className="py-[9px] px-[18px]">
                         <button onClick={() => toggleAvailability(first)}>
-                          <Badge variant={first.isAvailable ? "success" : "danger"}>
+                          <Badge variant={first.isAvailable ? "green" : "danger"}>
                             {first.isAvailable ? "Ativo" : "Inativo"}
                           </Badge>
                         </button>
                       </td>
                       {professors.length > 1 && (
-                        <td className="py-2 px-2 text-content-primary">
+                        <td className="py-[9px] px-[18px] text-[12.5px] text-[#5c5d63]">
                           {first.instructor?.name || "-"}
                         </td>
                       )}
-                      <td className="py-2 px-2">
+                      <td className="py-[9px] px-[18px]">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => openEdit(group)}
-                            className="text-content-secondary hover:text-content-primary"
+                            className="text-[#9b9ca2] hover:text-[#17181c] transition-colors"
                             title="Editar horário"
                           >
-                            <Pencil size={16} />
+                            <Pencil size={15} />
                           </button>
                           <button
                             onClick={() => {
                               if (!confirm("Excluir este horário e todos os alunos vinculados?")) return;
                               Promise.all(group.map((s) => fetch(`/api/slots/${s.id}`, { method: "DELETE" }))).then(loadSlots);
                             }}
-                            className="text-red-400 hover:text-red-300"
+                            className="text-[#9b9ca2] hover:text-[#b42318] transition-colors"
                           >
-                            <Trash2 size={16} />
+                            <Trash2 size={15} />
                           </button>
                         </div>
                       </td>
@@ -301,7 +290,7 @@ export default function SlotsPage() {
               })()}
               {slots.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-content-muted">
+                  <td colSpan={6} className="py-8 text-center text-[#9b9ca2] text-[13px]">
                     Nenhum horário cadastrado
                   </td>
                 </tr>
@@ -318,7 +307,7 @@ export default function SlotsPage() {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-content-secondary mb-1.5">
+            <label className="block font-spline text-[9.5px] tracking-[.1em] uppercase text-[#9b9ca2] mb-1.5">
               Alunos {selectedUserIds.length > 0 && `(${selectedUserIds.length}/4)`}
             </label>
             {selectedUserIds.length > 0 && (
@@ -326,12 +315,12 @@ export default function SlotsPage() {
                 {selectedUserIds.map((uid) => {
                   const student = students.find((s) => s.id === uid);
                   return (
-                    <div key={uid} className="flex items-center justify-between bg-surface-tertiary rounded-lg px-3 py-2">
-                      <span className="text-sm text-content-primary">{student?.name}</span>
+                    <div key={uid} className="flex items-center justify-between bg-[#f4f4f6] rounded-[9px] px-3 py-2">
+                      <span className="text-[13px] text-[#17181c]">{student?.name}</span>
                       <button
                         type="button"
                         onClick={() => setSelectedUserIds((prev) => prev.filter((id) => id !== uid))}
-                        className="text-content-muted hover:text-red-400 transition-colors"
+                        className="text-[#9b9ca2] hover:text-[#b42318] transition-colors"
                       >
                         <X size={14} />
                       </button>
@@ -341,27 +330,24 @@ export default function SlotsPage() {
               </div>
             )}
             {selectedUserIds.length < 4 && (
-              <div className="flex items-center gap-2">
-                <Select
-                  label=""
-                  value=""
-                  onChange={(e) => {
-                    if (e.target.value) {
-                      setSelectedUserIds((prev) => [...prev, e.target.value]);
-                    }
-                  }}
-                >
-                  <option value="">{selectedUserIds.length === 0 ? "Aberto (qualquer particular)" : "Adicionar aluno..."}</option>
-                  {students
-                    .filter((s) => !selectedUserIds.includes(s.id))
-                    .map((s) => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
-                    ))}
-                </Select>
-              </div>
+              <Select
+                value=""
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setSelectedUserIds((prev) => [...prev, e.target.value]);
+                  }
+                }}
+              >
+                <option value="">{selectedUserIds.length === 0 ? "Aberto (qualquer particular)" : "Adicionar aluno..."}</option>
+                {students
+                  .filter((s) => !selectedUserIds.includes(s.id))
+                  .map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+              </Select>
             )}
             {selectedUserIds.length === 0 && (
-              <p className="text-xs text-content-muted mt-1">Deixe vazio para horário aberto ou selecione até 4 alunos.</p>
+              <p className="text-[11px] text-[#9b9ca2] mt-1">Deixe vazio para horário aberto ou selecione até 4 alunos.</p>
             )}
           </div>
           <Select

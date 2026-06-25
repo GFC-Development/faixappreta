@@ -12,12 +12,12 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-medium",
-        variant === "default" && "bg-surface-tertiary text-content-secondary border border-border",
-        variant === "success" && "bg-orange-50 text-orange-600 border border-orange-200",
-        variant === "green" && "bg-emerald-50 text-emerald-600 border border-emerald-200",
-        variant === "warning" && "bg-amber-50 text-amber-600 border border-amber-200",
-        variant === "danger" && "bg-red-50 text-red-600 border border-red-200",
+        "inline-flex items-center rounded-[20px] px-2 py-[2px] text-[11px] font-semibold",
+        variant === "default" && "bg-[#f4f4f6] text-[#3d3e44]",
+        variant === "success" && "bg-[#fdf0db] text-[#c9781a]",
+        variant === "green" && "bg-[#e7f4ec] text-[#0f7a4d]",
+        variant === "warning" && "bg-[#fbf0dd] text-[#b45309]",
+        variant === "danger" && "bg-[#fdeee9] text-[#b42318]",
         className
       )}
     >

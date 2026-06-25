@@ -30,10 +30,10 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-md rounded-xl bg-surface-primary border border-border p-6 mx-4 shadow-lg">
+      <div className="relative z-10 w-full max-w-[460px] rounded-[18px] bg-white border border-[#e9e9ec] p-6 mx-4 shadow-lg animate-fp-pop">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-content-primary">{title}</h2>
-          <button onClick={onClose} className="text-content-muted hover:text-content-primary transition-colors">
+          <h2 className="font-archivo font-bold text-lg text-[#17181c]">{title}</h2>
+          <button onClick={onClose} className="text-[#9b9ca2] hover:text-[#17181c] transition-colors">
             <X size={20} />
           </button>
         </div>

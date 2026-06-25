@@ -28,10 +28,10 @@ function medalEmoji(position: number): string | null {
 
 function badgeClass(position: number): string {
   switch (position) {
-    case 1: return "bg-yellow-500 text-content-primary";
-    case 2: return "bg-gray-300 text-content-primary";
-    case 3: return "bg-amber-700 text-content-primary";
-    default: return "bg-white text-content-primary";
+    case 1: return "bg-yellow-500 text-[#17181c]";
+    case 2: return "bg-gray-300 text-[#17181c]";
+    case 3: return "bg-amber-700 text-white";
+    default: return "bg-[#26282e] text-[#9b9ca2]";
   }
 }
 
@@ -93,7 +93,6 @@ export default function TimerPage() {
   const blinkRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastConfigRef = useRef(0);
 
-  // Hide sidebar
   useEffect(() => {
     const sidebar = document.querySelector("aside") as HTMLElement | null;
     const topbar = document.querySelector("div.fixed.top-0") as HTMLElement | null;
@@ -114,7 +113,6 @@ export default function TimerPage() {
     };
   }, []);
 
-  // Fetch ranking
   useEffect(() => {
     fetch("/api/ranking")
       .then((r) => r.json())
@@ -195,7 +193,6 @@ export default function TimerPage() {
       return;
     }
     stopBlink();
-    // If finished or at 0, restart with last configured time
     if (remaining === 0 && lastConfigRef.current > 0) {
       setRemaining(lastConfigRef.current);
       remainingRef.current = lastConfigRef.current;
@@ -229,9 +226,8 @@ export default function TimerPage() {
   const seconds = remaining % 60;
   const display = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
 
-  // Colors: green when idle/finished, red when running
   const hasTime = remaining > 0 || lastConfigRef.current > 0 || finished;
-  const timerColor = running ? "text-red-500" : hasTime ? "text-emerald-500" : "text-content-muted";
+  const timerColor = running ? "text-red-500" : hasTime ? "text-emerald-500" : "text-[#9b9ca2]";
   const glowColor = running
     ? "0 0 40px rgba(239,68,68,0.5), 0 0 80px rgba(239,68,68,0.25)"
     : hasTime
@@ -241,18 +237,16 @@ export default function TimerPage() {
   const canPlay = !countingDown && (remaining > 0 || lastConfigRef.current > 0);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center overflow-hidden">
-      {/* Close button */}
+    <div className="fixed inset-0 z-50 bg-[#0a0a0a] flex flex-col items-center justify-center overflow-hidden">
       <button
         onClick={() => router.push("/admin")}
-        className="absolute top-3 right-3 z-10 text-content-muted hover:text-content-secondary transition-colors"
+        className="absolute top-3 right-3 z-10 text-[#9b9ca2] hover:text-white transition-colors"
       >
         <X size={24} />
       </button>
 
-      {/* Timer display */}
       <div
-        className={`font-mono font-bold tracking-wider ${timerColor}`}
+        className={`font-archivo font-bold tracking-wider ${timerColor}`}
         style={{
           fontSize: "clamp(8rem, 28vw, 22rem)",
           lineHeight: 1,
@@ -263,28 +257,27 @@ export default function TimerPage() {
         {display}
       </div>
 
-      {/* Controls */}
       <div className="flex items-center gap-2 sm:gap-3 mt-4 sm:mt-6">
         {ADD_OPTIONS.map((opt) => (
           <button
             key={opt.seconds}
             onClick={() => addTime(opt.seconds)}
-            className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-base sm:text-lg font-bold bg-surface-secondary text-content-secondary border-2 border-border hover:border-border hover:text-content-primary transition-all"
+            className="px-3 sm:px-5 py-2 sm:py-2.5 rounded-[9px] text-base sm:text-lg font-bold bg-[#17181c] text-[#9b9ca2] border-2 border-[#26282e] hover:border-[#3d3e44] hover:text-white transition-all"
           >
             {opt.label}
           </button>
         ))}
 
-        <div className="w-px h-6 sm:h-8 bg-surface-tertiary" />
+        <div className="w-px h-6 sm:h-8 bg-[#26282e]" />
 
         <button
           onClick={togglePlay}
           disabled={!canPlay}
-          className={`flex items-center px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl font-semibold transition-all ${
+          className={`flex items-center px-3 sm:px-5 py-2 sm:py-2.5 rounded-[9px] font-semibold transition-all ${
             !canPlay
-              ? "bg-surface-secondary text-content-muted border-2 border-border cursor-not-allowed"
+              ? "bg-[#17181c] text-[#3d3e44] border-2 border-[#26282e] cursor-not-allowed"
               : running
-              ? "bg-surface-tertiary text-content-secondary border-2 border-border hover:bg-surface-tertiary"
+              ? "bg-[#26282e] text-[#9b9ca2] border-2 border-[#3d3e44] hover:bg-[#3d3e44]"
               : "bg-emerald-500/20 text-emerald-400 border-2 border-emerald-500/40 hover:bg-emerald-500/30"
           }`}
         >
@@ -293,58 +286,57 @@ export default function TimerPage() {
 
         <button
           onClick={reset}
-          className="flex items-center px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl font-semibold bg-surface-secondary text-content-secondary border-2 border-border hover:text-content-primary hover:border-border transition-all"
+          className="flex items-center px-3 sm:px-5 py-2 sm:py-2.5 rounded-[9px] font-semibold bg-[#17181c] text-[#9b9ca2] border-2 border-[#26282e] hover:text-white hover:border-[#3d3e44] transition-all"
         >
           <RotateCcw size={16} />
         </button>
       </div>
 
-      {/* Ranking — single row of boxes */}
       {ranking.length > 0 && (
         <div className="mt-6 sm:mt-10">
           {rankingMonth && (
-            <h2 className="text-center text-lg sm:text-2xl font-bold text-content-primary uppercase tracking-wider mb-3 sm:mb-4">
+            <h2 className="text-center text-lg sm:text-2xl font-archivo font-bold text-white uppercase tracking-wider mb-3 sm:mb-4">
               Ranking {rankingMonth}
             </h2>
           )}
-        <div className="flex items-stretch gap-2 sm:gap-3 overflow-x-auto px-4 pb-2 max-w-full">
-          {ranking.map((student, i) => {
-            const pos = i + 1;
-            const nameParts = student.name.split(" ");
-            const firstName = nameParts[0];
-            const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
-            const borderClass = pos === 1
-              ? "border-yellow-500/60"
-              : pos === 2
-              ? "border-gray-400/60"
-              : pos === 3
-              ? "border-amber-700/60"
-              : "border-border";
-            return (
-              <div
-                key={student.id}
-                className={`shrink-0 flex flex-col items-center justify-between rounded-lg border-2 bg-surface-secondary/80 px-3 sm:px-4 py-2 sm:py-3 w-[72px] sm:w-[88px] ${borderClass}`}
-              >
-                {medalEmoji(pos) ? (
-                  <span className="text-lg sm:text-xl leading-none">{medalEmoji(pos)}</span>
-                ) : (
-                  <div className={`text-xs sm:text-sm font-bold ${badgeClass(pos)} w-6 h-6 rounded-full flex items-center justify-center`}>
-                    {pos}
-                  </div>
-                )}
-                <div className="mt-1.5 text-center min-w-0 w-full">
-                  <p className="text-[11px] sm:text-xs font-bold text-content-primary truncate">{firstName}</p>
-                  {lastName && (
-                    <p className="text-[10px] sm:text-[11px] text-content-secondary truncate">{lastName}</p>
+          <div className="flex items-stretch gap-2 sm:gap-3 overflow-x-auto px-4 pb-2 max-w-full">
+            {ranking.map((student, i) => {
+              const pos = i + 1;
+              const nameParts = student.name.split(" ");
+              const firstName = nameParts[0];
+              const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : "";
+              const borderClass = pos === 1
+                ? "border-yellow-500/60"
+                : pos === 2
+                ? "border-gray-400/60"
+                : pos === 3
+                ? "border-amber-700/60"
+                : "border-[#26282e]";
+              return (
+                <div
+                  key={student.id}
+                  className={`shrink-0 flex flex-col items-center justify-between rounded-[10px] border-2 bg-[#17181c] px-3 sm:px-4 py-2 sm:py-3 w-[72px] sm:w-[88px] ${borderClass}`}
+                >
+                  {medalEmoji(pos) ? (
+                    <span className="text-lg sm:text-xl leading-none">{medalEmoji(pos)}</span>
+                  ) : (
+                    <div className={`text-xs sm:text-sm font-bold ${badgeClass(pos)} w-6 h-6 rounded-full flex items-center justify-center`}>
+                      {pos}
+                    </div>
                   )}
+                  <div className="mt-1.5 text-center min-w-0 w-full">
+                    <p className="text-[11px] sm:text-xs font-bold text-white truncate">{firstName}</p>
+                    {lastName && (
+                      <p className="text-[10px] sm:text-[11px] text-[#9b9ca2] truncate">{lastName}</p>
+                    )}
+                  </div>
+                  <p className="mt-1.5 text-[11px] sm:text-xs text-[#9b9ca2] font-semibold">
+                    {student.presences} <span className="hidden sm:inline">pres.</span>
+                  </p>
                 </div>
-                <p className="mt-1.5 text-[11px] sm:text-xs text-content-muted font-semibold">
-                  {student.presences} <span className="hidden sm:inline">pres.</span>
-                </p>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

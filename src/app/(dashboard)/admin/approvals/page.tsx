@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { StudentAvatar } from "@/components/student-avatar";
 import { Check, X } from "lucide-react";
 import { getPlanLabel, isParticular } from "@/lib/utils";
+import { PageHeader } from "@/components/page-header";
 
 interface PendingStudent {
   id: string;
@@ -53,40 +54,40 @@ export default function ApprovalsPage() {
   }
 
   if (loading) {
-    return <div className="text-center py-8 text-content-muted">Carregando...</div>;
+    return <div className="text-center py-8 text-[#9b9ca2]">Carregando...</div>;
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6 text-content-primary">Aprovações de Cadastro</h1>
+    <div className="max-w-[800px] mx-auto">
+      <PageHeader title="Aprovações de Cadastro" subtitle={`${students.length} pendente${students.length !== 1 ? "s" : ""}`} />
 
       {students.length === 0 ? (
-        <Card className="!p-8">
-          <p className="text-content-secondary text-sm text-center">
+        <Card>
+          <p className="text-[#9b9ca2] text-[13px] text-center py-6">
             Nenhum cadastro pendente de aprovação.
           </p>
         </Card>
       ) : (
         <div className="space-y-3">
           {students.map((s) => (
-            <Card key={s.id} className="!p-4 border-l-4 border-l-amber-500">
+            <Card key={s.id}>
               <div className="flex items-center gap-4">
-                <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={48} />
+                <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={44} />
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-content-primary truncate">{s.name}</p>
-                  <p className="text-xs text-content-secondary truncate">{s.email}</p>
-                  <div className="flex items-center gap-2 mt-1">
+                  <p className="font-semibold text-[13.5px] text-[#17181c] truncate">{s.name}</p>
+                  <p className="text-[11.5px] text-[#9b9ca2] truncate">{s.email}</p>
+                  <div className="flex items-center gap-2 mt-1.5">
                     <Badge variant={isParticular(s.studentType) ? "success" : "default"}>
                       {getPlanLabel(s.studentType)}
                     </Badge>
                     {s.isKids && <Badge variant="warning">Kids</Badge>}
-                    <span className="text-xs text-content-muted">
+                    <span className="text-[11px] text-[#9b9ca2]">
                       {(s.modalities || "GRAPPLING").split(",").map((m) =>
                         m === "GRAPPLING" ? "Grappling" : "MMA"
                       ).join(", ")}
                     </span>
                   </div>
-                  <p className="text-xs text-content-muted mt-1">
+                  <p className="text-[11px] text-[#9b9ca2] mt-1">
                     Cadastrado em {new Date(s.createdAt).toLocaleDateString("pt-BR")}
                   </p>
                 </div>
@@ -102,7 +103,7 @@ export default function ApprovalsPage() {
                   <button
                     disabled={actionId !== null}
                     onClick={() => handleReject(s.id)}
-                    className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50"
+                    className="p-2 text-[#b42318] hover:bg-[#fdeee9] rounded-[9px] transition-colors disabled:opacity-50"
                     title="Rejeitar"
                   >
                     <X size={18} />

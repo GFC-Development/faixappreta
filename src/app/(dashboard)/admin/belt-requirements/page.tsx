@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BeltIcon } from "@/components/belt-icon";
 import { BELTS, KIDS_BELTS, KIDS_BELT_LABELS } from "@/lib/utils";
+import { PageHeader } from "@/components/page-header";
 
 const DEGREES = [1, 2, 3, 4];
 
@@ -103,13 +104,10 @@ export default function BeltRequirementsPage() {
   }
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-content-primary mb-2">Requisitos de Graduação</h1>
-      <p className="text-sm text-content-secondary mb-6">
-        Configure a quantidade de aulas necessárias para avançar de faixa e de grau.
-      </p>
+    <div className="max-w-[700px] mx-auto">
+      <PageHeader title="Requisitos de Graduação" subtitle="Configure a quantidade de aulas necessárias para avançar de faixa e de grau." />
 
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-5">
         <Button
           variant={mode === "adult" ? "primary" : "secondary"}
           size="sm"
@@ -127,9 +125,8 @@ export default function BeltRequirementsPage() {
       </div>
 
       <form onSubmit={handleSave}>
-        {/* Belt requirements */}
-        <Card className="mb-6">
-          <h2 className="text-lg font-semibold text-content-primary mb-4">Requisitos por Faixa</h2>
+        <Card className="mb-4">
+          <h2 className="font-semibold text-[14px] text-[#17181c] mb-4">Requisitos por Faixa</h2>
           <div className="space-y-5">
             {promotionBelts.map((belt) => (
               <div key={belt} className="flex items-center gap-4">
@@ -154,10 +151,9 @@ export default function BeltRequirementsPage() {
           </div>
         </Card>
 
-        {/* Degree requirements */}
-        <Card className="mb-6">
-          <h2 className="text-lg font-semibold text-content-primary mb-4">Requisitos por Grau</h2>
-          <p className="text-xs text-content-secondary mb-4">
+        <Card className="mb-4">
+          <h2 className="font-semibold text-[14px] text-[#17181c] mb-2">Requisitos por Grau</h2>
+          <p className="text-[11.5px] text-[#9b9ca2] mb-4">
             Aulas necessárias para cada grau dentro de cada faixa.
           </p>
           <div className="space-y-6">
@@ -165,7 +161,7 @@ export default function BeltRequirementsPage() {
               <div key={belt}>
                 <div className="flex items-center gap-2 mb-3">
                   <BeltIcon belt={belt} size={20} />
-                  <span className="text-sm font-medium text-content-secondary">
+                  <span className="text-[13px] font-medium text-[#5c5d63]">
                     {isKids ? (KIDS_BELT_LABELS[belt] || belt) : belt}
                   </span>
                 </div>
@@ -200,7 +196,7 @@ export default function BeltRequirementsPage() {
             {saving ? "Salvando..." : "Salvar"}
           </Button>
           {saved && (
-            <span className="text-sm text-accent">Salvo com sucesso!</span>
+            <span className="text-[13px] text-[#0f7a4d] font-semibold">Salvo com sucesso!</span>
           )}
         </div>
       </form>
