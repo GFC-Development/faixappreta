@@ -5,6 +5,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 interface TenantInfo {
   name: string;
+  slug: string;
   logoUrl: string | null;
   primaryColor: string;
   secondaryColor: string;
