@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, Pencil } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 
 interface Professor {
   id: string;
@@ -90,53 +91,52 @@ export default function ProfessorsPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-content-primary">Professores</h1>
+    <div className="max-w-[800px] mx-auto">
+      <PageHeader title="Professores">
         <Button onClick={() => { setForm(emptyForm); setCreateModalOpen(true); }}>
           Novo Professor
         </Button>
-      </div>
+      </PageHeader>
 
-      <Card>
+      <Card className="overflow-hidden !p-0">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-2 px-2 text-content-secondary">Nome</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Email</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Aulas</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Tipo</th>
-                <th className="text-left py-2 px-2"></th>
+              <tr className="border-b border-[#f1f1f3]">
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Nome</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Email</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Aulas</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Tipo</th>
+                <th className="text-left py-[9px] px-[18px] bg-[#fafafa]"></th>
               </tr>
             </thead>
             <tbody>
               {professors.map((p) => (
-                <tr key={p.id} className="border-b border-border hover:bg-surface-tertiary">
-                  <td className="py-2 px-2 font-medium text-content-primary">{p.name}</td>
-                  <td className="py-2 px-2 text-content-primary">{p.email}</td>
-                  <td className="py-2 px-2 text-content-primary">
-                    {p.classCount + p.slotCount} aula(s)
+                <tr key={p.id} className="border-b border-[#f1f1f3] hover:bg-[#fafafa] transition-colors">
+                  <td className="py-[9px] px-[18px] font-semibold text-[12.5px] text-[#17181c]">{p.name}</td>
+                  <td className="py-[9px] px-[18px] text-[12.5px] text-[#5c5d63]">{p.email}</td>
+                  <td className="py-[9px] px-[18px] font-archivo font-semibold text-[13px] text-[#3d3e44]">
+                    {p.classCount + p.slotCount}
                   </td>
-                  <td className="py-2 px-2">
+                  <td className="py-[9px] px-[18px]">
                     <Badge variant={p.isOwner ? "default" : "warning"}>
                       {p.isOwner ? "Dono" : "Professor"}
                     </Badge>
                   </td>
-                  <td className="py-2 px-2">
+                  <td className="py-[9px] px-[18px]">
                     {!p.isOwner && (
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openEdit(p)}
-                          className="text-content-secondary hover:text-content-primary"
+                          className="text-[#9b9ca2] hover:text-[#17181c] transition-colors"
                         >
-                          <Pencil size={16} />
+                          <Pencil size={15} />
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
-                          className="text-red-400 hover:text-red-300"
+                          className="text-[#9b9ca2] hover:text-[#b42318] transition-colors"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={15} />
                         </button>
                       </div>
                     )}
@@ -145,7 +145,7 @@ export default function ProfessorsPage() {
               ))}
               {professors.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-content-muted">
+                  <td colSpan={5} className="py-8 text-center text-[#9b9ca2] text-[13px]">
                     Nenhum professor cadastrado
                   </td>
                 </tr>

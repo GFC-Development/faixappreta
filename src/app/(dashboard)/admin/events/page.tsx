@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { Trash2 } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 
 interface Event {
   id: string;
@@ -48,40 +49,45 @@ export default function EventsPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-content-primary">Eventos</h1>
+    <div className="max-w-[800px] mx-auto">
+      <PageHeader title="Eventos">
         <Button onClick={() => setModalOpen(true)}>Novo Evento</Button>
-      </div>
+      </PageHeader>
 
-      <div className="grid gap-4">
-        {events.map((event) => (
-          <Card key={event.id}>
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="font-semibold text-content-primary">{event.title}</h3>
-                <p className="text-sm text-content-secondary mt-1">
-                  {new Date(event.date + "T12:00:00").toLocaleDateString("pt-BR")}
-                </p>
-                {event.description && (
-                  <p className="text-sm text-content-secondary mt-2">
-                    {event.description}
-                  </p>
-                )}
+      <div className="space-y-3">
+        {events.map((event) => {
+          const d = new Date(event.date + "T12:00:00");
+          const day = d.getDate();
+          const month = d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
+          return (
+            <Card key={event.id}>
+              <div className="flex items-start gap-4">
+                <div className="w-[50px] h-[50px] flex-none rounded-[10px] bg-[#f4f4f6] flex flex-col items-center justify-center">
+                  <span className="font-archivo font-bold text-[18px] text-[#17181c] leading-none">{day}</span>
+                  <span className="font-spline text-[9px] uppercase text-[#9b9ca2] tracking-wider">{month}</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-[13.5px] text-[#17181c]">{event.title}</h3>
+                  {event.description && (
+                    <p className="text-[13px] text-[#5c5d63] mt-0.5">{event.description}</p>
+                  )}
+                </div>
+                <button
+                  onClick={() => handleDelete(event.id)}
+                  className="text-[#9b9ca2] hover:text-[#b42318] transition-colors p-1"
+                >
+                  <Trash2 size={16} />
+                </button>
               </div>
-              <button
-                onClick={() => handleDelete(event.id)}
-                className="text-red-400 hover:text-red-300"
-              >
-                <Trash2 size={16} />
-              </button>
-            </div>
-          </Card>
-        ))}
+            </Card>
+          );
+        })}
         {events.length === 0 && (
-          <p className="text-center text-content-muted py-8">
-            Nenhum evento cadastrado
-          </p>
+          <Card>
+            <p className="text-center text-[#9b9ca2] text-[13px] py-6">
+              Nenhum evento cadastrado
+            </p>
+          </Card>
         )}
       </div>
 
@@ -105,11 +111,11 @@ export default function EventsPage() {
             required
           />
           <div>
-            <label className="block text-sm font-medium text-content-primary mb-1">
+            <label className="block font-spline text-[9.5px] tracking-[.1em] uppercase text-[#9b9ca2] mb-1.5">
               Descrição
             </label>
             <textarea
-              className="w-full rounded-md border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
+              className="w-full rounded-[9px] border border-[#e6e6e9] bg-white px-[13px] py-3 text-sm text-[#17181c] placeholder-[#9b9ca2] focus:outline-none focus:border-accent transition-colors"
               rows={3}
               value={form.description}
               onChange={(e) =>

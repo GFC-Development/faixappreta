@@ -3,11 +3,21 @@
 import { Suspense, useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { Logo } from "@/components/logo";
+import { AuthHero } from "@/components/auth/auth-hero";
+import { AuthInput } from "@/components/auth/auth-input";
+import { AuthButton } from "@/components/auth/auth-button";
+import { AuthDivider } from "@/components/auth/auth-divider";
+
+function getContrastColor(hex: string) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16) / 255;
+  const g = parseInt(h.substring(2, 4), 16) / 255;
+  const b = parseInt(h.substring(4, 6), 16) / 255;
+  const toLinear = (c: number) => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  const luminance = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+  return luminance > 0.35 ? '#17181c' : '#ffffff';
+}
 
 function LoginForm() {
   const router = useRouter();
@@ -29,12 +39,14 @@ function LoginForm() {
           if (data.logoUrl) setTenantLogoUrl(data.logoUrl);
           if (data.primaryColor) {
             document.documentElement.style.setProperty("--color-accent", data.primaryColor);
+            document.documentElement.style.setProperty("--color-accent-on", getContrastColor(data.primaryColor));
           }
           if (data.secondaryColor) {
             document.documentElement.style.setProperty("--color-accent-dark", data.secondaryColor);
+            document.documentElement.style.setProperty("--color-accent-dark-on", getContrastColor(data.secondaryColor));
           }
         })
-        .catch(() => { });
+        .catch(() => {});
     }
   }, [tenantSlug]);
 
@@ -85,95 +97,95 @@ function LoginForm() {
     const res = await fetch("/api/auth/session");
     const session = await res.json();
 
+    // Use full page navigation to ensure JWT cookie is sent with the request
     if (session?.user?.role === "ADMIN") {
-      router.push("/admin");
+      window.location.href = "/admin";
     } else {
-      router.push("/student");
+      window.location.href = "/student";
     }
   }
 
   return (
-    <Card>
-      <div className="flex flex-col items-center mb-8">
-        <Logo size={72} logoUrl={tenantLogoUrl} />
-        {tenantName ? (
-          <h1 className="text-2xl font-bold text-content-primary tracking-tight font-teko uppercase mt-3">
-            {tenantName}
-          </h1>
+    <>
+      <AuthHero tenantName={tenantName} tenantSlug={tenantSlug} logoUrl={tenantLogoUrl} />
+
+      <div className="flex-1 flex flex-col p-[22px_22px_28px]">
+        {!tenantSlug ? (
+          <div className="flex-1 flex flex-col items-center justify-center text-center px-1.5">
+            <h1 className="font-archivo font-bold text-[21px] mb-2">Acesse seu CT</h1>
+            <p className="text-[13.5px] text-[#82838a]">
+              Use o link fornecido pelo seu Centro de Treinamento para acessar o sistema.
+            </p>
+          </div>
         ) : (
-          <h1 className="text-3xl font-bold text-content-primary tracking-tight font-teko uppercase mt-3">
-            faix<span className="text-red-600 font-extrabold">app</span>reta
-          </h1>
+          <div className="flex-1 flex flex-col">
+            <h1 className="font-archivo font-bold text-[21px] mb-1">Entrar</h1>
+            <p className="text-[13.5px] text-[#82838a] mb-[22px]">
+              Acesse sua conta de aluno{tenantName ? ` na ${tenantName}` : ""}.
+            </p>
+
+            <form onSubmit={handleSubmit}>
+              <AuthInput
+                label="E-mail"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="voce@email.com"
+                required
+              />
+
+              <div className="mt-3.5">
+                <AuthInput
+                  label="Senha"
+                  labelRight={
+                    <Link
+                      href={`/forgot-password${tenantSlug ? `?tenant=${tenantSlug}` : ""}`}
+                      className="text-[11.5px] font-semibold text-accent-dark hover:text-accent transition-colors"
+                    >
+                      Esqueci
+                    </Link>
+                  }
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+
+              {error && (
+                <p className="text-sm text-red-500 text-center mt-3">{error}</p>
+              )}
+
+              <div className="mt-[22px]">
+                <AuthButton type="submit" disabled={loading}>
+                  {loading ? "Entrando..." : "Entrar"}
+                </AuthButton>
+              </div>
+            </form>
+
+            <AuthDivider />
+
+            <Link href={`/register?tenant=${tenantSlug}`}>
+              <AuthButton variant="secondary">Criar conta de aluno</AuthButton>
+            </Link>
+          </div>
         )}
-        <p className="text-content-muted text-sm mt-1">
-          {tenantName ? <>Powered by faix<span className="font-bold">app</span>reta</> : "Centro de Treinamento"}
-        </p>
+
+        {tenantSlug && (
+          <div className="text-center text-[11.5px] text-[#a8a8ad] mt-[18px]">
+            Novos cadastros passam por aprovação do professor.
+          </div>
+        )}
       </div>
-
-      {!tenantSlug ? (
-        <div className="text-center">
-          <p className="text-sm text-content-secondary mb-4">
-            Use o link fornecido pelo seu Centro de Treinamento para acessar o sistema.
-          </p>
-        </div>
-      ) : (
-        <>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              label="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="seu@email.com"
-              required
-            />
-            <Input
-              label="Senha"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="******"
-              required
-            />
-
-            {error && (
-              <p className="text-sm text-red-500 text-center">{error}</p>
-            )}
-
-            <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? "Entrando..." : "Entrar"}
-            </Button>
-          </form>
-
-          <p className="text-center text-sm text-content-muted mt-6">
-            Não tem conta?{" "}
-            <Link href={`/register?tenant=${tenantSlug}`} className="text-accent hover:text-accent-dark transition-colors">
-              Cadastre-se
-            </Link>
-          </p>
-          <p className="text-center text-sm text-content-muted mt-3">
-            Esqueceu sua senha?{" "}
-            <Link
-              href={`/forgot-password${tenantSlug ? `?tenant=${tenantSlug}` : ""}`}
-              className="text-content-secondary hover:text-content-primary underline transition-colors"
-            >
-              Clique aqui
-            </Link>
-          </p>
-        </>
-      )}
-    </Card>
+    </>
   );
 }
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-primary px-4">
-      <div className="w-full max-w-md">
-        <Suspense fallback={<div className="text-center text-content-muted">Carregando...</div>}>
-          <LoginForm />
-        </Suspense>
-      </div>
-    </div>
+    <Suspense fallback={<div className="flex-1 flex items-center justify-center text-content-muted">Carregando...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

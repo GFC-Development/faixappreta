@@ -1,7 +1,23 @@
-import { Inter } from "next/font/google";
+import { Archivo, Hanken_Grotesk, Spline_Sans_Mono } from "next/font/google";
 import "../globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-archivo",
+});
+
+const hanken = Hanken_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-hanken",
+});
+
+const spline = Spline_Sans_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-spline",
+});
 
 export const metadata = {
   title: "faixappreta - Super Admin",
@@ -14,7 +30,7 @@ export default function SuperAdminLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} font-inter antialiased bg-surface-primary text-content-primary`}>
+      <body className={`${archivo.variable} ${hanken.variable} ${spline.variable} font-hanken antialiased bg-[#15161a] text-[#e4e4e7]`}>
         {children}
       </body>
     </html>

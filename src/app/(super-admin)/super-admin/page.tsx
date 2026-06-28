@@ -40,23 +40,26 @@ export default function SuperAdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-primary">
-      <header className="border-b border-border px-6 py-4 flex items-center justify-between">
+    <div className="min-h-screen bg-[#15161a]">
+      <header className="border-b border-[#2a2b33] px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Building2 className="w-6 h-6 text-accent" />
-          <h1 className="text-xl font-bold">faix<span className="text-red-600 font-extrabold">app</span>reta - CTs</h1>
+          <Building2 className="w-6 h-6 text-[#e08a1e]" />
+          <h1 className="font-archivo text-[18px] font-bold text-white">
+            faix<span className="text-red-500 font-extrabold">app</span>reta
+            <span className="text-[#6b6c73] font-normal ml-2 text-[14px]">CTs</span>
+          </h1>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push("/super-admin/create")}
-            className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-lg hover:bg-accent-dark transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-[#e08a1e] text-[#15161a] rounded-[9px] hover:bg-[#c9781a] transition-colors text-[13px] font-semibold"
           >
             <Plus className="w-4 h-4" />
             Novo CT
           </button>
           <button
             onClick={handleLogout}
-            className="p-2 text-content-muted hover:text-content-primary transition-colors"
+            className="p-2 text-[#6b6c73] hover:text-white transition-colors"
             title="Sair"
           >
             <LogOut className="w-5 h-5" />
@@ -66,24 +69,24 @@ export default function SuperAdminDashboard() {
 
       <main className="max-w-5xl mx-auto px-6 py-8">
         {loading ? (
-          <p className="text-content-muted text-center py-12">Carregando...</p>
+          <p className="text-[#6b6c73] text-center py-12">Carregando...</p>
         ) : tenants.length === 0 ? (
           <div className="text-center py-16">
-            <Building2 className="w-12 h-12 text-content-muted mx-auto mb-4" />
-            <p className="text-content-secondary mb-2">Nenhum CT cadastrado</p>
+            <Building2 className="w-12 h-12 text-[#46484f] mx-auto mb-4" />
+            <p className="text-[#6b6c73] mb-2">Nenhum CT cadastrado</p>
             <button
               onClick={() => router.push("/super-admin/create")}
-              className="text-accent hover:underline text-sm"
+              className="text-[#e08a1e] hover:underline text-sm"
             >
               Criar primeiro CT
             </button>
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {tenants.map((t) => (
               <div
                 key={t.id}
-                className="flex items-center justify-between p-4 bg-surface-secondary rounded-xl border border-border"
+                className="flex items-center justify-between p-4 bg-[#1e1f25] rounded-[13px] border border-[#2a2b33]"
               >
                 <div className="flex items-center gap-4">
                   <div
@@ -93,21 +96,21 @@ export default function SuperAdminDashboard() {
                     {t.name.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <h3 className="font-semibold">{t.name}</h3>
-                    <p className="text-sm text-content-muted">
+                    <h3 className="font-semibold text-[14px] text-white">{t.name}</h3>
+                    <p className="text-[12px] text-[#6b6c73]">
                       {t.adminEmail}
                     </p>
-                    <p className="text-xs text-content-muted mt-0.5">
-                      Login: <a href={`/login?tenant=${t.slug}`} className="text-accent hover:underline">/login?tenant={t.slug}</a>
+                    <p className="text-[11px] text-[#46484f] mt-0.5">
+                      Login: <a href={`/login?tenant=${t.slug}`} className="text-[#e08a1e] hover:underline">/login?tenant={t.slug}</a>
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <span
-                    className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-[20px] text-[11px] font-semibold ${
                       t.isActive
-                        ? "bg-green-100 text-green-700"
-                        : "bg-red-100 text-red-700"
+                        ? "bg-emerald-500/15 text-emerald-400"
+                        : "bg-red-500/15 text-red-400"
                     }`}
                   >
                     <Power className="w-3 h-3" />
@@ -115,7 +118,7 @@ export default function SuperAdminDashboard() {
                   </span>
                   <button
                     onClick={() => router.push(`/super-admin/${t.id}/edit`)}
-                    className="p-2 text-content-muted hover:text-accent hover:bg-accent/10 rounded-lg transition-colors"
+                    className="p-2 text-[#6b6c73] hover:text-[#e08a1e] hover:bg-[#e08a1e]/10 rounded-[8px] transition-colors"
                     title="Editar CT"
                   >
                     <Pencil className="w-4 h-4" />

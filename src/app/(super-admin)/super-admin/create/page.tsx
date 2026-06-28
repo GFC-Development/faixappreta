@@ -14,6 +14,8 @@ function slugify(str: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+const inputClass = "w-full px-[13px] py-3 rounded-[9px] bg-[#15161a] border border-[#2a2b33] text-white placeholder:text-[#46484f] focus:outline-none focus:border-[#e08a1e] transition-colors text-sm";
+
 export default function CreateTenantPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -90,11 +92,11 @@ export default function CreateTenantPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-primary">
-      <header className="border-b border-border px-6 py-4">
+    <div className="min-h-screen bg-[#15161a]">
+      <header className="border-b border-[#2a2b33] px-6 py-4">
         <button
           onClick={() => router.push("/super-admin")}
-          className="flex items-center gap-2 text-content-secondary hover:text-content-primary transition-colors"
+          className="flex items-center gap-2 text-[#6b6c73] hover:text-white transition-colors text-[13px]"
         >
           <ArrowLeft className="w-4 h-4" />
           Voltar
@@ -102,37 +104,37 @@ export default function CreateTenantPage() {
       </header>
 
       <main className="max-w-2xl mx-auto px-6 py-8">
-        <h1 className="text-2xl font-bold mb-8">Criar novo CT</h1>
+        <h1 className="font-archivo text-[24px] font-bold text-white mb-8">Criar novo CT</h1>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-content-secondary mb-1">
+            <label className="block font-spline text-[9.5px] tracking-[.1em] uppercase text-[#6b6c73] mb-1.5">
               Nome do CT
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg bg-surface-secondary border border-border text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent"
+              className={inputClass}
               placeholder="Ex: CT Exemplo"
               required
             />
             {slug && (
-              <p className="mt-1 text-sm text-content-muted">
+              <p className="mt-1 text-[11px] text-[#46484f]">
                 {slug}.faixappreta.com.br
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-content-secondary mb-1">
+            <label className="block font-spline text-[9.5px] tracking-[.1em] uppercase text-[#6b6c73] mb-1.5">
               Dominio (slug)
             </label>
             <input
               type="text"
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg bg-surface-secondary border border-border text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent"
+              className={inputClass}
               placeholder="ct-exemplo"
               required
             />
@@ -140,27 +142,27 @@ export default function CreateTenantPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-content-secondary mb-1">
+              <label className="block font-spline text-[9.5px] tracking-[.1em] uppercase text-[#6b6c73] mb-1.5">
                 Nome do Admin
               </label>
               <input
                 type="text"
                 value={adminName}
                 onChange={(e) => setAdminName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg bg-surface-secondary border border-border text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent"
+                className={inputClass}
                 placeholder="Nome do professor"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-content-secondary mb-1">
+              <label className="block font-spline text-[9.5px] tracking-[.1em] uppercase text-[#6b6c73] mb-1.5">
                 Email do Admin
               </label>
               <input
                 type="email"
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-lg bg-surface-secondary border border-border text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent"
+                className={inputClass}
                 placeholder="admin@ct.com.br"
                 required
               />
@@ -168,14 +170,14 @@ export default function CreateTenantPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-content-secondary mb-1">
+            <label className="block font-spline text-[9.5px] tracking-[.1em] uppercase text-[#6b6c73] mb-1.5">
               Senha do Admin
             </label>
             <input
               type="password"
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-lg bg-surface-secondary border border-border text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent"
+              className={inputClass}
               placeholder="Minimo 6 caracteres"
               required
               minLength={6}
@@ -183,14 +185,14 @@ export default function CreateTenantPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-content-secondary mb-1">
+            <label className="block font-spline text-[9.5px] tracking-[.1em] uppercase text-[#6b6c73] mb-1.5">
               Logo
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={(e) => setLogo(e.target.files?.[0] ?? null)}
-              className="w-full text-sm text-content-secondary file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-accent file:text-white file:font-medium file:cursor-pointer hover:file:bg-accent-dark"
+              className="w-full text-sm text-[#6b6c73] file:mr-4 file:py-2 file:px-4 file:rounded-[9px] file:border-0 file:bg-[#e08a1e] file:text-[#15161a] file:font-semibold file:cursor-pointer hover:file:bg-[#c9781a] file:text-sm"
             />
           </div>
 
@@ -207,13 +209,13 @@ export default function CreateTenantPage() {
           />
 
           {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
+            <p className="text-[#b42318] text-[13px] text-center">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-lg bg-accent text-white font-semibold hover:bg-accent-dark transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-[9px] bg-[#e08a1e] text-[#15161a] font-semibold hover:bg-[#c9781a] transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
             {loading ? "Criando CT..." : "Criar CT"}

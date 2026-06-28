@@ -9,8 +9,10 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
+        archivo: ["var(--font-archivo)", "sans-serif"],
+        hanken: ["var(--font-hanken)", "sans-serif"],
+        spline: ["var(--font-spline)", "monospace"],
         teko: ["var(--font-teko)", "sans-serif"],
-        inter: ["var(--font-inter)", "sans-serif"],
       },
       colors: {
         surface: {
@@ -28,7 +30,18 @@ const config: Config = {
           DEFAULT: "var(--color-accent)",
           light: "var(--color-accent-light)",
           dark: "var(--color-accent-dark)",
+          on: "var(--color-accent-on)",
+          "dark-on": "var(--color-accent-dark-on)",
         },
+      },
+      keyframes: {
+        fpPop: {
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        "fp-pop": "fpPop 0.2s ease-out",
       },
     },
   },

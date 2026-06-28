@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#dedbd4}
+body{font-family:'Hanken Grotesk',sans-serif;-webkit-font-smoothing:antialiased;color:#17181c}
+input{font-family:inherit}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-thumb{background:#cfcfcb;border-radius:8px}
+@keyframes fp-pop{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</helmet>
+
+<div style="display:flex;justify-content:center;align-items:stretch;min-height:100vh;background:#dedbd4">
+  <div style="width:100%;max-width:440px;min-height:100vh;background:#f7f7f8;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(0,0,0,.1)">
+
+    <!-- BRANDED HERO -->
+    <div style="background:#17181c;padding:30px 26px 26px;display:flex;flex-direction:column;align-items:center;text-align:center">
+      <div style="width:56px;height:56px;border-radius:16px;background:#e08a1e;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:800;font-size:27px;color:#17181c;box-shadow:0 8px 24px rgba(224,138,30,.34)">V</div>
+      <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:19px;color:#fbfbf8;margin-top:14px">Vértice Team</div>
+      <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:#76787f;margin-top:5px">vertice.faixappreta.com.br</div>
+    </div>
+
+    <div style="flex:1;display:flex;flex-direction:column;padding:22px 22px 28px">
+
+      <!-- ===== LOGIN ===== -->
+      <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ true }}">
+        <div style="flex:1;display:flex;flex-direction:column">
+          <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:21px;margin-bottom:4px">Entrar</div>
+          <div style="font-size:13.5px;color:#82838a;margin-bottom:22px">Acesse sua conta de aluno na Vértice Team.</div>
+          <div style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9b9ca2;margin-bottom:6px">E-mail</div>
+          <input placeholder="voce@email.com" style="width:100%;height:48px;border:1px solid #e3e3e0;border-radius:12px;padding:0 14px;font-size:15px;outline:none;margin-bottom:14px;background:#fff" style-focus="border-color:#e08a1e" />
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9b9ca2">Senha</span><span style="font-size:11.5px;font-weight:600;color:#c9781a;cursor:pointer" onClick="{{ go.forgot }}">Esqueci</span></div>
+          <input type="password" placeholder="••••••••" style="width:100%;height:48px;border:1px solid #e3e3e0;border-radius:12px;padding:0 14px;font-size:15px;outline:none;margin-bottom:22px;background:#fff" style-focus="border-color:#e08a1e" />
+          <div style="height:50px;border-radius:12px;background:#e08a1e;color:#17181c;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ doLogin }}">Entrar</div>
+          <div style="display:flex;align-items:center;gap:12px;margin:22px 0"><div style="flex:1;height:1px;background:#e7e7e4"></div><span style="font-size:11.5px;color:#a8a8ad">ou</span><div style="flex:1;height:1px;background:#e7e7e4"></div></div>
+          <div style="height:50px;border-radius:12px;background:#fff;border:1px solid #e3e3e0;color:#17181c;font-size:14.5px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ go.signup }}" style-hover="border-color:#cfcfcb">Criar conta de aluno</div>
+        </div>
+        <div style="text-align:center;font-size:11.5px;color:#a8a8ad;margin-top:18px">Novos cadastros passam por aprovação do professor.</div>
+      </sc-if>
+
+      <!-- ===== SIGNUP ===== -->
+      <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#82838a;cursor:pointer;margin-bottom:14px;font-weight:600" onClick="{{ go.login }}"><span style="font-size:16px">‹</span> Voltar</div>
+        <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:21px;margin-bottom:4px">Criar conta</div>
+        <div style="font-size:13.5px;color:#82838a;margin-bottom:20px">Preencha seus dados para treinar na Vértice.</div>
+
+        <div style="display:flex;justify-content:center;margin-bottom:20px">
+          <label style="position:relative;cursor:pointer">
+            <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}"><img src="{{ photo }}" style="width:88px;height:88px;border-radius:26px;object-fit:cover;display:block" /></sc-if>
+            <sc-if value="{{ noPhoto }}" hint-placeholder-val="{{ true }}"><div style="width:88px;height:88px;border-radius:26px;background:#efeeea;border:2px dashed #cfcfca;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px"><span style="width:20px;height:16px;border-radius:4px 4px 3px 3px;border:2px solid #a8a8a2;position:relative"><span style="position:absolute;top:-5px;left:5px;right:5px;height:4px;border:2px solid #a8a8a2;border-bottom:none;border-radius:3px 3px 0 0"></span></span><span style="font-size:9.5px;color:#a8a8a2;font-weight:600">Foto</span></div></sc-if>
+            <div style="position:absolute;bottom:-3px;right:-3px;width:28px;height:28px;border-radius:50%;background:#e08a1e;border:3px solid #f7f7f8;display:flex;align-items:center;justify-content:center;color:#17181c;font-weight:800;font-size:14px">+</div>
+            <input type="file" accept="image/*" onChange="{{ onPhoto }}" style="position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer" />
+          </label>
+        </div>
+
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9b9ca2;margin-bottom:6px">Nome completo</div>
+        <input placeholder="Seu nome" style="width:100%;height:46px;border:1px solid #e3e3e0;border-radius:12px;padding:0 14px;font-size:15px;outline:none;margin-bottom:12px;background:#fff" style-focus="border-color:#e08a1e" />
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9b9ca2;margin-bottom:6px">E-mail</div>
+        <input placeholder="voce@email.com" style="width:100%;height:46px;border:1px solid #e3e3e0;border-radius:12px;padding:0 14px;font-size:15px;outline:none;margin-bottom:12px;background:#fff" style-focus="border-color:#e08a1e" />
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9b9ca2;margin-bottom:6px">Senha</div>
+        <input type="password" placeholder="Crie uma senha" style="width:100%;height:46px;border:1px solid #e3e3e0;border-radius:12px;padding:0 14px;font-size:15px;outline:none;margin-bottom:16px;background:#fff" style-focus="border-color:#e08a1e" />
+
+        <div style="display:flex;align-items:center;gap:13px;padding:13px 15px;border:1px solid #e3e3e0;border-radius:13px;background:#fff;margin-bottom:22px">
+          <div style="flex:1"><div style="font-weight:600;font-size:14px">Cadastro Kids</div><div style="font-size:11.5px;color:#9b9ca2;margin-top:2px">Aluno menor de idade (responsável)</div></div>
+          <div style="{{ kidsToggle }}" onClick="{{ toggleKids }}"><span style="{{ kidsKnob }}"></span></div>
+        </div>
+
+        <div style="height:50px;border-radius:12px;background:#e08a1e;color:#17181c;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ go.otp }}">Criar conta</div>
+        <div style="text-align:center;font-size:11px;color:#a8a8ad;margin-top:14px;line-height:1.5">Ao criar a conta você concorda com os termos da academia.<br>Enviaremos um código de verificação para seu e-mail.</div>
+      </sc-if>
+
+      <!-- ===== OTP ===== -->
+      <sc-if value="{{ isOtp }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#82838a;cursor:pointer;margin-bottom:14px;font-weight:600" onClick="{{ go.signup }}"><span style="font-size:16px">‹</span> Voltar</div>
+        <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:21px;margin-bottom:4px">Verifique seu e-mail</div>
+        <div style="font-size:13.5px;color:#82838a;margin-bottom:24px">Enviamos um código de 6 dígitos para <b style="color:#17181c">voce@email.com</b>.</div>
+
+        <div style="position:relative;margin-bottom:18px">
+          <div style="display:flex;gap:9px;justify-content:space-between">
+            <sc-for list="{{ otpCells }}" as="c" hint-placeholder-count="6"><div style="{{ c.style }}">{{ c.char }}</div></sc-for>
+          </div>
+          <input value="{{ otp }}" onInput="{{ onOtp }}" inputmode="numeric" maxlength="6" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px" />
+        </div>
+
+        <div style="height:50px;border-radius:12px;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;{{ verifyStyle }}" onClick="{{ verifyOtp }}">Verificar</div>
+
+        <div style="text-align:center;margin-top:18px;font-size:13px;color:#82838a">{{ resendText }}</div>
+        <div style="display:flex;align-items:center;gap:12px;margin:22px 0 0"><div style="flex:1;height:1px;background:#e7e7e4"></div><span style="font-size:11.5px;color:#a8a8ad">ou</span><div style="flex:1;height:1px;background:#e7e7e4"></div></div>
+        <div style="text-align:center;font-size:13px;color:#c9781a;font-weight:600;margin-top:18px;cursor:pointer" onClick="{{ go.pending }}">Verifiquei pelo link do e-mail →</div>
+      </sc-if>
+
+      <!-- ===== PENDING ===== -->
+      <sc-if value="{{ isPending }}" hint-placeholder-val="{{ false }}">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px 6px">
+          <div style="width:76px;height:76px;border-radius:24px;background:#fbf0dd;display:flex;align-items:center;justify-content:center;margin-bottom:22px"><span style="width:30px;height:30px;border-radius:50%;border:3px solid #e08a1e;border-top-color:transparent;display:block"></span></div>
+          <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:22px;margin-bottom:8px">Quase lá!</div>
+          <div style="font-size:14px;color:#5c5d63;line-height:1.55;max-width:300px">E-mail verificado. Seu cadastro foi enviado para o professor — você poderá entrar assim que ele <b style="color:#17181c">aprovar sua conta</b>.</div>
+          <div style="background:#fff;border:1px solid #e8e8e6;border-radius:14px;padding:14px 16px;margin-top:24px;width:100%;display:flex;align-items:center;gap:12px;text-align:left">
+            <div style="width:38px;height:38px;flex:none;border-radius:10px;background:#17181c;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;color:#e08a1e">V</div>
+            <div><div style="font-weight:600;font-size:13.5px">Vértice Team</div><div style="font-size:11.5px;color:#9b9ca2">Você receberá um e-mail ao ser aprovado</div></div>
+          </div>
+        </div>
+        <div style="height:50px;border-radius:12px;background:#fff;border:1px solid #e3e3e0;color:#17181c;font-size:14.5px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:18px" onClick="{{ go.login }}" style-hover="border-color:#cfcfcb">Voltar ao login</div>
+      </sc-if>
+
+      <!-- ===== FORGOT ===== -->
+      <sc-if value="{{ isForgot }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#82838a;cursor:pointer;margin-bottom:14px;font-weight:600" onClick="{{ go.login }}"><span style="font-size:16px">‹</span> Voltar</div>
+        <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:21px;margin-bottom:4px">Esqueci minha senha</div>
+        <div style="font-size:13.5px;color:#82838a;margin-bottom:22px">Informe seu e-mail e enviaremos um link para redefinir a senha.</div>
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9b9ca2;margin-bottom:6px">E-mail</div>
+        <input placeholder="voce@email.com" style="width:100%;height:48px;border:1px solid #e3e3e0;border-radius:12px;padding:0 14px;font-size:15px;outline:none;margin-bottom:22px;background:#fff" style-focus="border-color:#e08a1e" />
+        <div style="height:50px;border-radius:12px;background:#e08a1e;color:#17181c;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ go.reset }}">Enviar link</div>
+      </sc-if>
+
+      <!-- ===== RESET ===== -->
+      <sc-if value="{{ isReset }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#82838a;cursor:pointer;margin-bottom:14px;font-weight:600" onClick="{{ go.login }}"><span style="font-size:16px">‹</span> Login</div>
+        <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:21px;margin-bottom:4px">Redefinir senha</div>
+        <div style="font-size:13.5px;color:#82838a;margin-bottom:22px">Crie uma nova senha para sua conta.</div>
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9b9ca2;margin-bottom:6px">Nova senha</div>
+        <input type="password" placeholder="Nova senha" style="width:100%;height:48px;border:1px solid #e3e3e0;border-radius:12px;padding:0 14px;font-size:15px;outline:none;margin-bottom:12px;background:#fff" style-focus="border-color:#e08a1e" />
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#9b9ca2;margin-bottom:6px">Confirmar nova senha</div>
+        <input type="password" placeholder="Repita a senha" style="width:100%;height:48px;border:1px solid #e3e3e0;border-radius:12px;padding:0 14px;font-size:15px;outline:none;margin-bottom:22px;background:#fff" style-focus="border-color:#e08a1e" />
+        <div style="height:50px;border-radius:12px;background:#e08a1e;color:#17181c;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ doReset }}">Redefinir senha</div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:90;background:#17181c;color:#fff;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3);animation:fp-pop .2s ease-out;white-space:nowrap">{{ toast }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { screen:'login', kids:false, photo:'', otp:'', resend:0, toast:'' };
+
+  componentWillUnmount(){ clearInterval(this._ri); clearTimeout(this._tt); }
+  showToast(m){ this.setState({toast:m}); clearTimeout(this._tt); this._tt=setTimeout(()=>this.setState({toast:''}),2200); }
+
+  nav(s){
+    clearInterval(this._ri);
+    if(s==='otp'){ this.setState({screen:'otp', otp:'', resend:30}); this._ri=setInterval(()=>{ this.setState(st=>{ if(st.resend<=1){ clearInterval(this._ri); return {resend:0}; } return {resend:st.resend-1}; }); },1000); return; }
+    this.setState({screen:s});
+    if(s==='reset') this.showToast('Link enviado para seu e-mail ✓');
+  }
+  onPhoto(e){ const f=e.target.files&&e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>this.setState({photo:r.result}); r.readAsDataURL(f); }
+  onOtp(e){ this.setState({otp:(e.target.value||'').replace(/\D/g,'').slice(0,6)}); }
+  verifyOtp(){ if(this.state.otp.length===6) this.nav('pending'); else this.showToast('Digite os 6 dígitos'); }
+  doReset(){ this.nav('login'); this.showToast('Senha redefinida ✓'); }
+
+  renderVals(){
+    const A='#e08a1e', screen=this.state.screen;
+    const tgOn='width:46px;height:26px;border-radius:20px;background:#e08a1e;position:relative;cursor:pointer;flex:none';
+    const tgOff='width:46px;height:26px;border-radius:20px;background:#d8d8db;position:relative;cursor:pointer;flex:none';
+    const knOn='position:absolute;top:3px;left:23px;width:20px;height:20px;border-radius:50%;background:#fff';
+    const knOff='position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff';
+
+    const otp=this.state.otp;
+    const otpCells=[0,1,2,3,4,5].map(i=>{ const filled=!!otp[i]; const active=i===otp.length; return { char:otp[i]||'',
+      style:`flex:1;height:56px;border-radius:13px;background:#fff;border:1.5px solid ${active?'#e08a1e':(filled?'#cfcfcb':'#e3e3e0')};display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:22px;color:#17181c${active?';box-shadow:0 0 0 3px rgba(224,138,30,.15)':''}` }; });
+    const otpDone=otp.length===6;
+    const verifyStyle = otpDone ? 'background:#e08a1e;color:#17181c' : 'background:#efe7da;color:#bba277;cursor:default';
+
+    const resendText = this.state.resend>0 ? `Reenviar código em ${this.state.resend}s` : 'Não recebeu? Reenviar código';
+
+    return {
+      isLogin:screen==='login', isSignup:screen==='signup', isOtp:screen==='otp', isPending:screen==='pending', isForgot:screen==='forgot', isReset:screen==='reset',
+      go:{ login:()=>this.nav('login'), signup:()=>this.nav('signup'), otp:()=>this.nav('otp'), pending:()=>this.nav('pending'), forgot:()=>this.nav('forgot'), reset:()=>this.nav('reset') },
+      doLogin:()=>this.showToast('Login validado ✓ (demo)'),
+      hasPhoto: !!this.state.photo, noPhoto: !this.state.photo, photo:this.state.photo, onPhoto:e=>this.onPhoto(e),
+      kidsToggle:this.state.kids?tgOn:tgOff, kidsKnob:this.state.kids?knOn:knOff, toggleKids:()=>this.setState(s=>({kids:!s.kids})),
+      otp, otpCells, onOtp:e=>this.onOtp(e), verifyOtp:()=>this.verifyOtp(), verifyStyle, resendText,
+      doReset:()=>this.doReset(),
+      toast:this.state.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

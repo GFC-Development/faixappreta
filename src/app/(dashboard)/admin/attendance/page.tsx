@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { BeltIcon } from "@/components/belt-icon";
 import { StudentAvatar } from "@/components/student-avatar";
-import { CheckCircle, Users, TrendingUp, Trophy } from "lucide-react";
+import { Belt } from "@/components/belt";
 import { useRouter } from "next/navigation";
+import { PageHeader } from "@/components/page-header";
+import { StatCard } from "@/components/stat-card";
+import { BELT_COLORS, KIDS_BELT_COLORS } from "@/lib/utils";
 
 interface StudentAttendance {
   id: string;
@@ -47,6 +49,13 @@ function getDateRange(period: string): { from: string; to: string } {
   return { from: to, to };
 }
 
+function getBeltColor(belt: string): string {
+  if (BELT_COLORS[belt]) return BELT_COLORS[belt];
+  const kids = KIDS_BELT_COLORS[belt];
+  if (kids) return kids[0];
+  return "#FFFFFF";
+}
+
 export default function AttendancePage() {
   const router = useRouter();
   const [period, setPeriod] = useState("month");
@@ -79,11 +88,11 @@ export default function AttendancePage() {
   const sortedStudents = [...students].sort((a, b) => b.checkins - a.checkins);
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6 text-content-primary">Presenças</h1>
+    <div className="max-w-[1000px] mx-auto">
+      <PageHeader title="Presenças" />
 
       {/* Filters */}
-      <div className="flex flex-wrap items-end gap-3 mb-6">
+      <div className="flex flex-wrap items-end gap-2 mb-5">
         {[
           { value: "week", label: "Semana" },
           { value: "month", label: "Mês" },
@@ -93,10 +102,10 @@ export default function AttendancePage() {
           <button
             key={p.value}
             onClick={() => setPeriod(p.value)}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            className={`px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-colors ${
               period === p.value
-                ? "bg-accent text-content-primary"
-                : "bg-surface-tertiary text-content-secondary hover:bg-surface-tertiary"
+                ? "bg-accent text-accent-on"
+                : "bg-[#f4f4f6] text-[#5c5d63] hover:bg-[#eaeaed]"
             }`}
           >
             {p.label}
@@ -109,14 +118,14 @@ export default function AttendancePage() {
               type="date"
               value={customFrom}
               onChange={(e) => setCustomFrom(e.target.value)}
-              className="bg-surface-tertiary border border-border text-content-secondary rounded-md px-3 py-1.5 text-sm"
+              className="h-[36px] rounded-[8px] border border-[#e6e6e9] bg-white px-3 text-[12px] text-[#17181c]"
             />
-            <span className="text-content-muted">até</span>
+            <span className="text-[#9b9ca2] text-[12px]">até</span>
             <input
               type="date"
               value={customTo}
               onChange={(e) => setCustomTo(e.target.value)}
-              className="bg-surface-tertiary border border-border text-content-secondary rounded-md px-3 py-1.5 text-sm"
+              className="h-[36px] rounded-[8px] border border-[#e6e6e9] bg-white px-3 text-[12px] text-[#17181c]"
             />
           </div>
         )}
@@ -124,108 +133,81 @@ export default function AttendancePage() {
 
       {/* Summary cards */}
       {summary && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-blue-500/10">
-                <CheckCircle size={22} className="text-blue-400" />
-              </div>
-              <div>
-                <p className="text-sm text-content-secondary">Check-ins</p>
-                <p className="text-2xl font-bold text-content-primary">{summary.totalCheckins}</p>
-              </div>
-            </div>
-          </Card>
-          <Card>
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-emerald-500/10">
-                <Users size={22} className="text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-sm text-content-secondary">Alunos Ativos</p>
-                <p className="text-2xl font-bold text-content-primary">{summary.activeStudents}</p>
-              </div>
-            </div>
-          </Card>
-          <Card>
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-accent/10">
-                <TrendingUp size={22} className="text-accent" />
-              </div>
-              <div>
-                <p className="text-sm text-content-secondary">Média por aluno</p>
-                <p className="text-2xl font-bold text-content-primary">{summary.avgPerStudent}</p>
-              </div>
-            </div>
-          </Card>
-          <Card>
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-lg bg-amber-500/10">
-                <Trophy size={22} className="text-amber-400" />
-              </div>
-              <div>
-                <p className="text-sm text-content-secondary">Mais frequente</p>
-                <p className="text-lg font-bold text-content-primary truncate">{summary.topStudent}</p>
-                <p className="text-xs text-content-muted">{summary.topStudentCheckins} check-ins</p>
-              </div>
-            </div>
-          </Card>
+        <div className="flex flex-wrap gap-3 mb-5">
+          <StatCard label="Check-ins" value={summary.totalCheckins} />
+          <StatCard label="Alunos Ativos" value={summary.activeStudents} />
+          <StatCard label="Média por aluno" value={summary.avgPerStudent} />
+          <StatCard label="Mais frequente" value={summary.topStudentCheckins} badge={<span className="text-[11.5px] text-[#9b9ca2] truncate max-w-[100px]">{summary.topStudent}</span>} />
         </div>
       )}
 
       {/* Students table */}
-      <Card>
-        <h2 className="text-lg font-semibold mb-4 text-content-primary">Alunos</h2>
+      <Card className="overflow-hidden !p-0">
+        <div className="px-[18px] pt-[15px] pb-3">
+          <span className="font-bold text-sm text-[#17181c]">Alunos</span>
+        </div>
         {loading ? (
-          <div className="text-center py-8 text-content-muted">Carregando...</div>
+          <div className="text-center py-8 text-[#9b9ca2] text-[13px] border-t border-[#f1f1f3]">Carregando...</div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="text-left py-3 px-3 text-content-secondary font-medium">#</th>
-                  <th className="text-left py-3 px-3 text-content-secondary font-medium">Aluno</th>
-                  <th className="text-left py-3 px-3 text-content-secondary font-medium">Faixa</th>
-                  <th className="text-left py-3 px-3 text-content-secondary font-medium">Presenças</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedStudents.map((s, i) => (
-                  <tr
-                    key={s.id}
-                    className="border-b border-border hover:bg-surface-tertiary cursor-pointer transition-colors"
-                    onClick={() => router.push(`/admin/students/${s.id}`)}
-                  >
-                    <td className="py-3 px-3 text-content-muted font-medium">{i + 1}</td>
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-3">
-                        <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={32} />
-                        <span className="font-medium text-content-primary">{s.name}</span>
+          <>
+            {/* Desktop table */}
+            <div className="hidden sm:block">
+              <div className="grid grid-cols-[50px_1.5fr_1fr_.6fr] gap-2.5 px-[18px] py-[9px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa] border-t border-[#f1f1f3]">
+                <div>#</div>
+                <div>Aluno</div>
+                <div>Faixa</div>
+                <div>Pres.</div>
+              </div>
+              {sortedStudents.map((s, i) => (
+                <div
+                  key={s.id}
+                  className="grid grid-cols-[50px_1.5fr_1fr_.6fr] gap-2.5 items-center px-[18px] py-[9px] border-t border-[#f1f1f3] cursor-pointer hover:bg-[#fafafa] transition-colors"
+                  onClick={() => router.push(`/admin/students/${s.id}`)}
+                >
+                  <div className="font-archivo font-semibold text-[13px] text-[#9b9ca2]">{i + 1}</div>
+                  <div className="flex items-center gap-[9px] min-w-0">
+                    <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={28} />
+                    <span className="font-semibold text-[12.5px] text-[#17181c] truncate">{s.name}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-24">
+                      <Belt color={getBeltColor(s.belt)} degrees={s.degrees} />
+                    </div>
+                  </div>
+                  <div className="font-archivo font-semibold text-[13px] text-[#3d3e44]">{s.checkins}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Mobile list */}
+            <div className="sm:hidden">
+              {sortedStudents.map((s, i) => (
+                <div
+                  key={s.id}
+                  className="flex items-center gap-3 px-4 py-3 border-t border-[#f1f1f3]"
+                  onClick={() => router.push(`/admin/students/${s.id}`)}
+                >
+                  <span className="font-archivo font-bold text-[13px] text-[#9b9ca2] w-6 text-center">{i + 1}</span>
+                  <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={32} />
+                  <div className="flex-1 min-w-0">
+                    <span className="font-semibold text-[13px] text-[#17181c] truncate block">{s.name}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="w-[70px]">
+                        <Belt color={getBeltColor(s.belt)} degrees={s.degrees} />
                       </div>
-                    </td>
-                    <td className="py-3 px-3">
-                      <div className="flex items-center gap-2">
-                        <BeltIcon belt={s.belt} size={16} />
-                        <span className="text-content-secondary">
-                          {s.belt}{s.degrees > 0 ? ` ${s.degrees}°` : ""}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-3">
-                      <span className="font-semibold text-content-primary">{s.checkins}</span>
-                    </td>
-                  </tr>
-                ))}
-                {sortedStudents.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="py-8 text-center text-content-muted">
-                      Nenhum dado de presença no período
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                      <span className="text-[11px] text-[#9b9ca2]">{s.checkins} pres.</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {sortedStudents.length === 0 && (
+              <div className="py-8 text-center text-[#9b9ca2] text-[13px] border-t border-[#f1f1f3]">
+                Nenhum dado de presença no período
+              </div>
+            )}
+          </>
         )}
       </Card>
     </div>

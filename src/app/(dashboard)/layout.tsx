@@ -8,9 +8,11 @@ export default function DashboardLayout({
 }) {
   return (
     <TenantThemeProvider>
-      <div className="flex min-h-screen bg-surface-primary">
+      <div className="flex min-h-screen bg-[#f7f7f8]">
         <NavSidebar />
-        <main className="flex-1 min-w-0 p-4 lg:p-8 pt-16 lg:pt-8">{children}</main>
+        <main className="flex-1 min-w-0 p-4 lg:p-8 pt-[72px] lg:pt-8 pb-[90px] lg:pb-8">
+          {children}
+        </main>
       </div>
     </TenantThemeProvider>
   );

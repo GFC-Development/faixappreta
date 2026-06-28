@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { BeltVisual } from "@/components/belt-visual";
+import { PageHeader } from "@/components/page-header";
 
 interface GraduationLog {
   id: string;
@@ -26,23 +27,22 @@ export default function GraduationsPage() {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-8 text-content-muted">Carregando...</div>;
+    return <div className="text-center py-8 text-[#9b9ca2]">Carregando...</div>;
   }
 
   return (
     <div className="max-w-xl">
-      <h1 className="text-2xl font-bold mb-6 text-content-primary">Graduações</h1>
+      <PageHeader title="Graduações" />
 
       {logs.length === 0 ? (
         <Card className="!p-8">
-          <p className="text-content-secondary text-sm text-center">
+          <p className="text-[#5c5d63] text-sm text-center">
             Nenhuma graduação registrada ainda.
           </p>
         </Card>
       ) : (
         <div className="relative pl-8">
-          {/* Vertical timeline line */}
-          <div className="absolute left-3 top-2 bottom-2 w-px border-l-2 border-dashed border-border" />
+          <div className="absolute left-[15px] top-2 bottom-2 border-l-2 border-dashed border-[#e9e9ec]" />
 
           <div className="space-y-6">
             {logs.map((log) => {
@@ -55,20 +55,19 @@ export default function GraduationsPage() {
 
               return (
                 <div key={log.id} className="relative">
-                  {/* Timeline dot */}
-                  <div className="absolute -left-5 top-3 w-3 h-3 rounded-full bg-accent border-2 border-surface-secondary" />
+                  <div className="absolute -left-[22px] top-3 w-3 h-3 rounded-full bg-accent border-2 border-[#f4f4f6]" />
 
                   <Card className="!p-4">
                     <div className="mb-2">
                       <BeltVisual belt={log.belt} degrees={log.degrees} width={240} />
                     </div>
-                    <p className="text-sm font-medium text-content-primary">
+                    <p className="text-sm font-medium text-[#17181c]">
                       {log.type === "BELT" ? "Promoção de Faixa" : `${log.degrees}° grau`}
                     </p>
-                    <p className="text-xs text-content-muted uppercase tracking-wide">
+                    <p className="text-[10px] font-spline uppercase tracking-[.1em] text-[#9b9ca2]">
                       Graduação JIU JITSU
                     </p>
-                    <p className="text-xs text-content-secondary mt-1">{formatted}</p>
+                    <p className="text-xs text-[#5c5d63] mt-1">{formatted}</p>
                   </Card>
                 </div>
               );

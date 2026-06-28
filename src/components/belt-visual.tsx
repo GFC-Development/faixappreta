@@ -72,7 +72,7 @@ export function BeltVisual({
           ry={borderRadius}
           fill={color}
           stroke={isWhite ? "#D1D5DB" : "rgba(255,255,255,0.15)"}
-          strokeWidth={0.5}
+          strokeWidth={isWhite ? 1.5 : 0.5}
           filter="url(#beltShadow)"
         />
       )}

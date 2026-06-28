@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Modal } from "@/components/ui/modal";
 import { StudentAvatar } from "@/components/student-avatar";
-import { CreditCard, Plus, Pencil, Trash2, Check, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
 import { getPlanLabel } from "@/lib/utils";
+import { PageHeader } from "@/components/page-header";
 
 interface Plan {
   id: string;
@@ -62,7 +63,6 @@ export default function AdminPlansPage() {
   const [actionId, setActionId] = useState<string | null>(null);
   const [tab, setTab] = useState<"plans" | "requests">("plans");
 
-  // Form state
   const [formName, setFormName] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formPrice, setFormPrice] = useState("");
@@ -182,41 +182,36 @@ export default function AdminPlansPage() {
   }
 
   if (loading) {
-    return <div className="text-center py-8 text-content-muted">Carregando...</div>;
+    return <div className="text-center py-8 text-[#9b9ca2]">Carregando...</div>;
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <CreditCard size={28} className="text-accent" />
-          <h1 className="text-2xl font-bold text-content-primary">Planos</h1>
-        </div>
-      </div>
+    <div className="max-w-[900px] mx-auto">
+      <PageHeader title="Planos" />
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-5">
         <button
           onClick={() => setTab("plans")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          className={`px-4 py-2 rounded-[8px] text-[12px] font-semibold transition-colors ${
             tab === "plans"
-              ? "bg-accent text-white"
-              : "bg-surface-secondary text-content-secondary hover:text-content-primary"
+              ? "bg-accent text-accent-on"
+              : "bg-[#f4f4f6] text-[#5c5d63] hover:bg-[#eaeaed]"
           }`}
         >
           Planos Cadastrados
         </button>
         <button
           onClick={() => setTab("requests")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors relative ${
+          className={`px-4 py-2 rounded-[8px] text-[12px] font-semibold transition-colors relative ${
             tab === "requests"
-              ? "bg-accent text-white"
-              : "bg-surface-secondary text-content-secondary hover:text-content-primary"
+              ? "bg-accent text-accent-on"
+              : "bg-[#f4f4f6] text-[#5c5d63] hover:bg-[#eaeaed]"
           }`}
         >
           Solicitações
           {requests.length > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 h-[18px] min-w-[18px] rounded-[9px] bg-[#b42318] text-white text-[10px] font-bold flex items-center justify-center px-1">
               {requests.length}
             </span>
           )}
@@ -233,33 +228,33 @@ export default function AdminPlansPage() {
           </div>
 
           {plans.length === 0 ? (
-            <Card className="!p-8">
-              <p className="text-content-secondary text-sm text-center">
+            <Card>
+              <p className="text-[#9b9ca2] text-[13px] text-center py-6">
                 Nenhum plano cadastrado.
               </p>
             </Card>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {plans.map((plan) => (
-                <Card key={plan.id} className="!p-4">
+                <Card key={plan.id}>
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <h3 className="font-semibold text-content-primary">{plan.name}</h3>
+                      <h3 className="font-semibold text-[13.5px] text-[#17181c]">{plan.name}</h3>
                       {plan.description && (
-                        <p className="text-xs text-content-secondary mt-0.5">{plan.description}</p>
+                        <p className="text-[11.5px] text-[#9b9ca2] mt-0.5">{plan.description}</p>
                       )}
                     </div>
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => openEdit(plan)}
-                        className="p-1.5 text-content-muted hover:text-accent transition-colors"
+                        className="p-1.5 text-[#9b9ca2] hover:text-accent transition-colors"
                         title="Editar"
                       >
                         <Pencil size={14} />
                       </button>
                       <button
                         onClick={() => handleDelete(plan.id)}
-                        className="p-1.5 text-content-muted hover:text-red-500 transition-colors"
+                        className="p-1.5 text-[#9b9ca2] hover:text-[#b42318] transition-colors"
                         title="Desativar"
                       >
                         <Trash2 size={14} />
@@ -270,13 +265,13 @@ export default function AdminPlansPage() {
                     <Badge variant={plan.planType === "PARTICULAR" ? "success" : "default"}>
                       {plan.planType === "PARTICULAR" ? "Particular" : "Coletiva"}
                     </Badge>
-                    <span className="text-sm font-bold text-content-primary">{plan.price}</span>
-                    <span className="text-xs text-content-secondary">
+                    <span className="font-archivo font-bold text-[14px] text-[#17181c]">{plan.price}</span>
+                    <span className="text-[11.5px] text-[#9b9ca2]">
                       {FREQUENCY_LABELS[plan.frequency] || plan.frequency}
                     </span>
                   </div>
                   {plan.monthlyCredits > 0 && (
-                    <p className="text-xs text-content-muted mt-1.5">
+                    <p className="text-[11px] text-[#9b9ca2] mt-1.5">
                       {plan.monthlyCredits} créditos/mês
                     </p>
                   )}
@@ -290,20 +285,20 @@ export default function AdminPlansPage() {
       {tab === "requests" && (
         <>
           {requests.length === 0 ? (
-            <Card className="!p-8">
-              <p className="text-content-secondary text-sm text-center">
+            <Card>
+              <p className="text-[#9b9ca2] text-[13px] text-center py-6">
                 Nenhuma solicitação de plano pendente.
               </p>
             </Card>
           ) : (
             <div className="space-y-3">
               {requests.map((r) => (
-                <Card key={r.id} className="!p-4 border-l-4 border-l-blue-500">
+                <Card key={r.id}>
                   <div className="flex items-center gap-4">
-                    <StudentAvatar name={r.user.name} photoUrl={r.user.photoUrl} size={48} />
+                    <StudentAvatar name={r.user.name} photoUrl={r.user.photoUrl} size={44} />
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-content-primary truncate">{r.user.name}</p>
-                      <p className="text-xs text-content-secondary truncate">{r.user.email}</p>
+                      <p className="font-semibold text-[13.5px] text-[#17181c] truncate">{r.user.name}</p>
+                      <p className="text-[11.5px] text-[#9b9ca2] truncate">{r.user.email}</p>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <Badge variant="default">
                           Atual: {getPlanLabel(r.user.studentType)}
@@ -311,12 +306,12 @@ export default function AdminPlansPage() {
                         <Badge variant="success">
                           Plano {r.plan}
                         </Badge>
-                        <span className="text-xs text-content-secondary">
+                        <span className="text-[11px] text-[#9b9ca2]">
                           {r.frequency}{r.details ? ` - ${formatDetails(r.details)}` : ""}
                         </span>
-                        <span className="text-sm font-bold text-content-primary">{r.price}</span>
+                        <span className="font-archivo font-bold text-[13px] text-[#17181c]">{r.price}</span>
                       </div>
-                      <p className="text-xs text-content-muted mt-1">
+                      <p className="text-[11px] text-[#9b9ca2] mt-1">
                         Solicitado em {new Date(r.createdAt).toLocaleDateString("pt-BR")}
                       </p>
                     </div>
@@ -332,7 +327,7 @@ export default function AdminPlansPage() {
                       <button
                         disabled={actionId !== null}
                         onClick={() => handleReject(r.id)}
-                        className="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors disabled:opacity-50"
+                        className="p-2 text-[#b42318] hover:bg-[#fdeee9] rounded-[9px] transition-colors disabled:opacity-50"
                         title="Rejeitar"
                       >
                         <X size={18} />
@@ -346,7 +341,6 @@ export default function AdminPlansPage() {
         </>
       )}
 
-      {/* Create/Edit Modal */}
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -362,13 +356,13 @@ export default function AdminPlansPage() {
           />
 
           <div className="w-full">
-            <label className="block text-sm font-medium text-content-secondary mb-1.5">
+            <label className="block font-spline text-[9.5px] tracking-[.1em] uppercase text-[#9b9ca2] mb-1.5">
               Descrição
             </label>
             <textarea
               value={formDescription}
               onChange={(e) => setFormDescription(e.target.value)}
-              className="w-full rounded-lg border border-border bg-surface-primary px-3 py-2.5 text-sm text-content-primary placeholder-content-muted focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40 transition-all"
+              className="w-full rounded-[9px] border border-[#e6e6e9] bg-white px-[13px] py-3 text-sm text-[#17181c] placeholder-[#9b9ca2] focus:outline-none focus:border-accent transition-colors"
               rows={2}
               placeholder="Descrição do plano (opcional)"
             />
@@ -411,7 +405,7 @@ export default function AdminPlansPage() {
           />
 
           {formError && (
-            <p className="text-red-500 text-sm">{formError}</p>
+            <p className="text-[#b42318] text-sm">{formError}</p>
           )}
 
           <div className="flex gap-3 pt-2">
@@ -420,7 +414,7 @@ export default function AdminPlansPage() {
             </Button>
             <button
               onClick={() => setModalOpen(false)}
-              className="px-4 py-2 text-sm text-content-secondary hover:text-content-primary transition-colors"
+              className="px-4 py-2 text-sm text-[#5c5d63] hover:text-[#17181c] transition-colors"
             >
               Cancelar
             </button>

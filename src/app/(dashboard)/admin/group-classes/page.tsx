@@ -11,6 +11,7 @@ import { Modal } from "@/components/ui/modal";
 import { StudentAvatar } from "@/components/student-avatar";
 import { DAY_NAMES } from "@/lib/utils";
 import { Trash2, Pencil, Users, UserPlus, X } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 
 interface Instructor {
   id: string;
@@ -157,7 +158,6 @@ export default function GroupClassesPage() {
     });
     if (res.ok) {
       loadClasses();
-      // Update local enrollingClass
       const enrollment = await res.json();
       setEnrollingClass((prev) =>
         prev ? { ...prev, enrollments: [...prev.enrollments, enrollment] } : prev
@@ -235,20 +235,20 @@ export default function GroupClassesPage() {
           type="checkbox"
           checked={form.isKids}
           onChange={(e) => setForm({ ...form, isKids: e.target.checked })}
-          className="w-4 h-4 rounded border-border bg-surface-tertiary text-accent focus:ring-accent"
+          className="w-4 h-4 rounded border-[#e6e6e9] bg-white text-accent focus:ring-accent"
         />
-        <span className="text-sm text-content-primary">Aula Kids</span>
+        <span className="text-sm text-[#17181c]">Aula Kids</span>
       </label>
       <label className="flex items-center gap-3 cursor-pointer">
         <input
           type="checkbox"
           checked={form.fixedRoster}
           onChange={(e) => setForm({ ...form, fixedRoster: e.target.checked })}
-          className="w-4 h-4 rounded border-border bg-surface-tertiary text-accent focus:ring-accent"
+          className="w-4 h-4 rounded border-[#e6e6e9] bg-white text-accent focus:ring-accent"
         />
         <div>
-          <span className="text-sm text-content-primary">Turma Fixa</span>
-          <p className="text-xs text-content-muted">Alunos são matriculados pelo professor e aparecem automaticamente na chamada</p>
+          <span className="text-sm text-[#17181c]">Turma Fixa</span>
+          <p className="text-[11px] text-[#9b9ca2]">Alunos são matriculados pelo professor e aparecem automaticamente na chamada</p>
         </div>
       </label>
       {professors.length > 1 && (
@@ -269,41 +269,40 @@ export default function GroupClassesPage() {
   );
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-content-primary">Aulas Coletivas</h1>
+    <div className="max-w-[900px] mx-auto">
+      <PageHeader title="Aulas Coletivas">
         <Button onClick={() => { setForm(emptyForm); setCreateModalOpen(true); }}>Nova Aula</Button>
-      </div>
+      </PageHeader>
 
-      <Card>
+      <Card className="overflow-hidden !p-0">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-2 px-2 text-content-secondary">Nome</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Dia</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Horário</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Capacidade</th>
-                <th className="text-left py-2 px-2 text-content-secondary">Tipo</th>
+              <tr className="border-b border-[#f1f1f3]">
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Nome</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Dia</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Horário</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Cap.</th>
+                <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Tipo</th>
                 {professors.length > 1 && (
-                  <th className="text-left py-2 px-2 text-content-secondary">Professor</th>
+                  <th className="text-left py-[9px] px-[18px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa]">Prof.</th>
                 )}
-                <th className="text-left py-2 px-2"></th>
+                <th className="text-left py-[9px] px-[18px] bg-[#fafafa]"></th>
               </tr>
             </thead>
             <tbody>
               {classes.map((gc) => (
-                <tr key={gc.id} className="border-b border-border hover:bg-surface-tertiary">
-                  <td className="py-2 px-2 font-medium text-content-primary">{gc.name}</td>
-                  <td className="py-2 px-2 text-content-primary">{DAY_NAMES[gc.dayOfWeek]}</td>
-                  <td className="py-2 px-2 text-content-primary">
+                <tr key={gc.id} className="border-b border-[#f1f1f3] hover:bg-[#fafafa] transition-colors">
+                  <td className="py-[9px] px-[18px] font-semibold text-[12.5px] text-[#17181c]">{gc.name}</td>
+                  <td className="py-[9px] px-[18px] text-[12.5px] text-[#5c5d63]">{DAY_NAMES[gc.dayOfWeek]}</td>
+                  <td className="py-[9px] px-[18px] text-[12.5px] text-[#5c5d63]">
                     {gc.startTime} - {gc.endTime}
                   </td>
-                  <td className="py-2 px-2 text-content-primary">{gc.capacity} alunos</td>
-                  <td className="py-2 px-2">
+                  <td className="py-[9px] px-[18px] font-archivo font-semibold text-[13px] text-[#3d3e44]">{gc.capacity}</td>
+                  <td className="py-[9px] px-[18px]">
                     <div className="flex items-center gap-1">
                       {gc.fixedRoster ? (
-                        <Badge variant="success">Turma Fixa ({gc.enrollments.length})</Badge>
+                        <Badge variant="success">Fixa ({gc.enrollments.length})</Badge>
                       ) : (
                         <Badge variant="default">Aberta</Badge>
                       )}
@@ -311,32 +310,32 @@ export default function GroupClassesPage() {
                     </div>
                   </td>
                   {professors.length > 1 && (
-                    <td className="py-2 px-2 text-content-primary">
+                    <td className="py-[9px] px-[18px] text-[12.5px] text-[#5c5d63]">
                       {gc.instructor?.name || "-"}
                     </td>
                   )}
-                  <td className="py-2 px-2">
+                  <td className="py-[9px] px-[18px]">
                     <div className="flex items-center gap-2">
                       {gc.fixedRoster && (
                         <button
                           onClick={() => openEnrollments(gc)}
-                          className="text-accent hover:text-accent-dark"
+                          className="text-accent hover:text-accent-dark transition-colors"
                           title="Gerenciar Alunos"
                         >
-                          <Users size={16} />
+                          <Users size={15} />
                         </button>
                       )}
                       <button
                         onClick={() => openEdit(gc)}
-                        className="text-content-secondary hover:text-content-primary"
+                        className="text-[#9b9ca2] hover:text-[#17181c] transition-colors"
                       >
-                        <Pencil size={16} />
+                        <Pencil size={15} />
                       </button>
                       <button
                         onClick={() => handleDelete(gc.id)}
-                        className="text-red-400 hover:text-red-300"
+                        className="text-[#9b9ca2] hover:text-[#b42318] transition-colors"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={15} />
                       </button>
                     </div>
                   </td>
@@ -344,7 +343,7 @@ export default function GroupClassesPage() {
               ))}
               {classes.length === 0 && (
                 <tr>
-                  <td colSpan={professors.length > 1 ? 7 : 6} className="py-8 text-center text-content-muted">
+                  <td colSpan={professors.length > 1 ? 7 : 6} className="py-8 text-center text-[#9b9ca2] text-[13px]">
                     Nenhuma aula cadastrada
                   </td>
                 </tr>
@@ -387,20 +386,19 @@ export default function GroupClassesPage() {
         title={`Alunos - ${enrollingClass?.name || ""}`}
       >
         <div className="space-y-4">
-          {/* Current enrollments */}
           {enrollingClass && enrollingClass.enrollments.length > 0 && (
             <div>
-              <p className="text-xs font-semibold text-content-secondary uppercase tracking-wider mb-2">
+              <p className="font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] mb-2">
                 Matriculados ({enrollingClass.enrollments.length})
               </p>
               <div className="space-y-1 max-h-40 overflow-y-auto">
                 {enrollingClass.enrollments.map((e) => (
-                  <div key={e.id} className="flex items-center gap-2 p-2 rounded-lg bg-surface-secondary">
+                  <div key={e.id} className="flex items-center gap-2 p-2 rounded-[9px] bg-[#f4f4f6]">
                     <StudentAvatar name={e.user.name} photoUrl={e.user.photoUrl} size={28} />
-                    <span className="text-sm text-content-primary flex-1 truncate">{e.user.name}</span>
+                    <span className="text-[13px] text-[#17181c] flex-1 truncate">{e.user.name}</span>
                     <button
                       onClick={() => removeEnrollment(e.userId)}
-                      className="text-red-400 hover:text-red-300 p-1"
+                      className="text-[#9b9ca2] hover:text-[#b42318] p-1 transition-colors"
                       title="Remover"
                     >
                       <X size={14} />
@@ -411,7 +409,6 @@ export default function GroupClassesPage() {
             </div>
           )}
 
-          {/* Add students */}
           <div>
             <Input
               label="Adicionar Aluno"
@@ -425,15 +422,15 @@ export default function GroupClassesPage() {
                   <button
                     key={s.id}
                     onClick={() => addEnrollment(s.id)}
-                    className="flex items-center gap-2 p-2 rounded-lg hover:bg-surface-tertiary w-full text-left transition-colors"
+                    className="flex items-center gap-2 p-2 rounded-[9px] hover:bg-[#f4f4f6] w-full text-left transition-colors"
                   >
                     <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={28} />
-                    <span className="text-sm text-content-primary">{s.name}</span>
+                    <span className="text-[13px] text-[#17181c]">{s.name}</span>
                     <UserPlus size={14} className="ml-auto text-accent" />
                   </button>
                 ))}
                 {availableStudents.length === 0 && (
-                  <p className="text-xs text-content-muted text-center py-2">Nenhum aluno encontrado</p>
+                  <p className="text-[11.5px] text-[#9b9ca2] text-center py-2">Nenhum aluno encontrado</p>
                 )}
               </div>
             )}

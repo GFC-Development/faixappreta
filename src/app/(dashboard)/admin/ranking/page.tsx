@@ -1,15 +1,12 @@
 "use client";
 
-import { Trophy } from "lucide-react";
 import { RankingBoard } from "@/components/ranking-board";
+import { PageHeader } from "@/components/page-header";
 
 export default function RankingPage() {
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-6">
-        <Trophy size={28} className="text-yellow-400" />
-        <h1 className="text-2xl font-bold text-content-primary">Ranking de Presenças</h1>
-      </div>
+    <div className="max-w-[900px] mx-auto">
+      <PageHeader title="Ranking de Presenças" />
       <RankingBoard />
     </div>
   );

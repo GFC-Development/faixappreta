@@ -26,6 +26,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { DAY_NAMES, getPlanLabel, isParticular } from "@/lib/utils";
+import { PageHeader } from "@/components/page-header";
 
 interface Booking {
   id: string;
@@ -87,7 +88,6 @@ export default function AdminAgendaPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
 
-  // Modal state
   const [modalTarget, setModalTarget] = useState<{ type: "PRIVATE"; slot: PrivateSlot; slotGroup?: PrivateSlot[] } | { type: "GROUP"; groupClass: GroupClass } | null>(null);
   const [modalSearch, setModalSearch] = useState("");
   const [bookingStudent, setBookingStudent] = useState<string | null>(null);
@@ -142,7 +142,7 @@ export default function AdminAgendaPage() {
 
   function statusBadge(booking: Booking) {
     if (booking.checkinStatus === "PRESENTE" || booking.checkedIn)
-      return <Badge variant="success">Presente</Badge>;
+      return <Badge variant="green">Presente</Badge>;
     if (booking.checkinStatus === "CANCELADO")
       return <Badge variant="danger">Cancelou</Badge>;
     if (booking.checkinStatus === "AUSENTE")
@@ -205,37 +205,34 @@ export default function AdminAgendaPage() {
   );
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-content-primary">Agenda do Dia</h1>
-        <Button variant="ghost" size="sm" onClick={refetchBookings} disabled={loading}>
+    <div className="max-w-[900px] mx-auto">
+      <PageHeader title="Agenda do Dia">
+        <Button variant="secondary" size="sm" onClick={refetchBookings} disabled={loading}>
           <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
         </Button>
-      </div>
+      </PageHeader>
 
       {/* Week navigation */}
-      <Card className="mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <Button
-            variant="ghost"
-            size="sm"
+      <Card className="mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <button
             onClick={() => setCurrentWeekStart(subWeeks(currentWeekStart, 1))}
+            className="p-1 text-[#9b9ca2] hover:text-[#17181c] transition-colors"
           >
             <ChevronLeft size={18} />
-          </Button>
-          <span className="font-medium text-sm text-content-primary">
+          </button>
+          <span className="font-semibold text-[13px] text-[#17181c]">
             {format(currentWeekStart, "d MMM", { locale: ptBR })} -{" "}
             {format(addDays(currentWeekStart, 6), "d MMM yyyy", {
               locale: ptBR,
             })}
           </span>
-          <Button
-            variant="ghost"
-            size="sm"
+          <button
             onClick={() => setCurrentWeekStart(addWeeks(currentWeekStart, 1))}
+            className="p-1 text-[#9b9ca2] hover:text-[#17181c] transition-colors"
           >
             <ChevronRight size={18} />
-          </Button>
+          </button>
         </div>
 
         <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
@@ -248,19 +245,19 @@ export default function AdminAgendaPage() {
               <button
                 key={day.toISOString()}
                 onClick={() => setSelectedDate(day)}
-                className={`flex flex-col items-center p-1.5 sm:p-2 rounded-md text-sm transition-colors ${
+                className={`flex flex-col items-center p-1.5 sm:p-2 rounded-[8px] text-sm transition-colors ${
                   isSelected
-                    ? "bg-accent text-content-primary"
+                    ? "bg-accent text-accent-on"
                     : isToday
-                    ? "bg-surface-tertiary"
-                    : "hover:bg-surface-tertiary"
+                    ? "bg-[#f4f4f6]"
+                    : "hover:bg-[#f4f4f6]"
                 }`}
               >
-                <span className="text-[10px] sm:text-xs uppercase text-content-secondary">
+                <span className={`text-[10px] sm:text-[11px] uppercase transition-colors ${isSelected ? "opacity-80" : "text-[#9b9ca2]"}`}>
                   <span className="sm:hidden">{format(day, "EEEEE", { locale: ptBR })}</span>
                   <span className="hidden sm:inline">{format(day, "EEE", { locale: ptBR })}</span>
                 </span>
-                <span className="font-medium text-content-primary text-sm sm:text-base">{format(day, "d")}</span>
+                <span className={`font-semibold text-sm sm:text-base transition-colors ${!isSelected && "text-[#17181c]"}`}>{format(day, "d")}</span>
                 {has && (
                   <div
                     className={`w-1.5 h-1.5 rounded-full mt-0.5 sm:mt-1 ${
@@ -275,33 +272,32 @@ export default function AdminAgendaPage() {
       </Card>
 
       {/* Day details */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold text-content-primary">
+      <div className="space-y-3">
+        <h2 className="font-semibold text-[14px] text-[#17181c]">
           {format(selectedDate, "d 'de' MMMM, EEEE", { locale: ptBR })}
         </h2>
 
         {loading && (
-          <p className="text-content-secondary text-sm">Carregando...</p>
+          <p className="text-[#9b9ca2] text-[13px]">Carregando...</p>
         )}
 
         {!loading && (
           <>
-            {/* Group classes */}
             {dayClasses.map((gc) => {
               const classBookings = getBookingsForClass(gc.id);
               return (
-                <Card key={gc.id} className="!p-4 border-l-4 border-l-accent">
+                <Card key={gc.id}>
                   <div className="flex items-center gap-2 mb-2">
-                    <Clock size={14} className="text-content-secondary" />
-                    <span className="text-sm font-semibold text-content-primary">
+                    <Clock size={14} className="text-[#9b9ca2]" />
+                    <span className="font-archivo font-semibold text-[13px] text-[#17181c]">
                       {gc.startTime} - {gc.endTime}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 mb-3">
-                    <p className="font-medium text-content-primary">{gc.name}</p>
+                    <p className="font-semibold text-[13.5px] text-[#17181c]">{gc.name}</p>
                     <Badge variant="default">Coletiva</Badge>
                     {gc.isKids && <Badge variant="warning">Kids</Badge>}
-                    <span className="text-xs text-content-secondary flex items-center gap-1">
+                    <span className="text-[11px] text-[#9b9ca2] flex items-center gap-1">
                       <Users size={12} />
                       {classBookings.length}/{gc.capacity}
                     </span>
@@ -309,8 +305,8 @@ export default function AdminAgendaPage() {
                   {classBookings.length > 0 && (
                     <div className="space-y-1.5 mb-3">
                       {classBookings.map((b) => (
-                        <div key={b.id} className="flex items-center justify-between text-sm">
-                          <span className="text-content-secondary">{b.user?.name}</span>
+                        <div key={b.id} className="flex items-center justify-between text-[13px]">
+                          <span className="text-[#5c5d63]">{b.user?.name}</span>
                           {statusBadge(b)}
                         </div>
                       ))}
@@ -339,28 +335,26 @@ export default function AdminAgendaPage() {
               return Object.entries(slotGroups).map(([key, groupSlots]) => {
                 const first = groupSlots[0];
                 const allBookings = groupSlots.flatMap((s) => getBookingsForSlot(s.id));
-                // Show bound students that have no booking yet (excluding rescheduled)
                 const bookedUserIds = new Set(allBookings.map((b) => b.user?.id));
                 const rescheduledKey = new Set(rescheduleLogs.map((r) => `${r.privateSlotId}:${r.userId}`));
                 const pendingSlots = groupSlots.filter((s) => s.userId && !bookedUserIds.has(s.userId) && !rescheduledKey.has(`${s.id}:${s.userId}`));
-                // Effective bound: bound students that haven't rescheduled for this date
                 const effectiveBound = groupSlots.some((s) => s.userId && !rescheduledKey.has(`${s.id}:${s.userId}`));
                 const hasActivity = effectiveBound || allBookings.length > 0;
 
                 return (
-                  <Card key={key} className={`!p-4 border-l-4 ${hasActivity ? "border-l-emerald-500" : "border-l-yellow-500"}`}>
+                  <Card key={key}>
                     <div className="flex items-center gap-2 mb-2">
-                      <Clock size={14} className="text-content-secondary" />
-                      <span className="text-sm font-semibold text-content-primary">
+                      <Clock size={14} className="text-[#9b9ca2]" />
+                      <span className="font-archivo font-semibold text-[13px] text-[#17181c]">
                         {first.startTime} - {first.endTime}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mb-3">
-                      <p className="font-medium text-content-primary">Aula Particular</p>
+                      <p className="font-semibold text-[13.5px] text-[#17181c]">Aula Particular</p>
                       <Badge variant={hasActivity ? "success" : "warning"}>
                         {hasActivity ? "Particular" : "Aberto"}
                       </Badge>
-                      <span className="text-xs text-content-secondary flex items-center gap-1">
+                      <span className="text-[11px] text-[#9b9ca2] flex items-center gap-1">
                         <Users size={12} />
                         {allBookings.length + pendingSlots.length}/4
                       </span>
@@ -368,8 +362,8 @@ export default function AdminAgendaPage() {
                     {(allBookings.length > 0 || pendingSlots.length > 0) && (
                       <div className="space-y-1.5 mb-3">
                         {allBookings.map((b) => (
-                          <div key={b.id} className="flex items-center justify-between text-sm">
-                            <span className="text-content-secondary flex items-center gap-1.5">
+                          <div key={b.id} className="flex items-center justify-between text-[13px]">
+                            <span className="text-[#5c5d63] flex items-center gap-1.5">
                               <User size={12} />
                               {b.user?.name}
                             </span>
@@ -377,8 +371,8 @@ export default function AdminAgendaPage() {
                           </div>
                         ))}
                         {pendingSlots.map((s) => (
-                          <div key={s.id} className="flex items-center justify-between text-sm">
-                            <span className="text-content-secondary flex items-center gap-1.5">
+                          <div key={s.id} className="flex items-center justify-between text-[13px]">
+                            <span className="text-[#5c5d63] flex items-center gap-1.5">
                               <User size={12} />
                               {s.user?.name}
                             </span>
@@ -400,10 +394,9 @@ export default function AdminAgendaPage() {
               });
             })()}
 
-            {/* Empty state */}
             {dayClasses.length === 0 && daySlots.length === 0 && (
-              <Card className="!p-8">
-                <p className="text-content-secondary text-sm text-center">
+              <Card>
+                <p className="text-[#9b9ca2] text-[13px] text-center py-6">
                   {DAY_NAMES[selectedDayOfWeek] === "Domingo" || DAY_NAMES[selectedDayOfWeek] === "Sábado"
                     ? "Sem aulas programadas para o fim de semana"
                     : "Nenhuma aula programada para este dia"}
@@ -425,16 +418,15 @@ export default function AdminAgendaPage() {
         const isFull = modalBookings.length >= capacity;
 
         return (
-          <div className="fixed inset-0 bg-black/20 z-50 flex items-center justify-center p-4" onClick={() => setModalTarget(null)}>
+          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setModalTarget(null)}>
             <div
-              className="bg-surface-secondary border border-border rounded-xl w-full max-w-md max-h-[80vh] flex flex-col"
+              className="bg-white border border-[#e9e9ec] rounded-[18px] w-full max-w-md max-h-[80vh] flex flex-col shadow-lg animate-fp-pop"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Modal header */}
-              <div className="flex items-center justify-between p-4 border-b border-border">
+              <div className="flex items-center justify-between p-5 border-b border-[#f1f1f3]">
                 <div>
-                  <h3 className="text-lg font-semibold text-content-primary">Gerenciar Alunos</h3>
-                  <p className="text-xs text-content-secondary mt-0.5">
+                  <h3 className="font-archivo font-bold text-[16px] text-[#17181c]">Gerenciar Alunos</h3>
+                  <p className="text-[11.5px] text-[#9b9ca2] mt-0.5">
                     {modalTarget.type === "PRIVATE"
                       ? `Particular ${modalTarget.slot.startTime} - ${modalTarget.slot.endTime}`
                       : `${modalTarget.groupClass.name} ${modalTarget.groupClass.startTime} - ${modalTarget.groupClass.endTime}`
@@ -442,33 +434,32 @@ export default function AdminAgendaPage() {
                     {" | "}{format(selectedDate, "d/MM/yyyy")}
                   </p>
                 </div>
-                <button onClick={() => setModalTarget(null)} className="text-content-secondary hover:text-content-primary">
+                <button onClick={() => setModalTarget(null)} className="text-[#9b9ca2] hover:text-[#17181c] transition-colors">
                   <X size={20} />
                 </button>
               </div>
 
               <div className="overflow-y-auto flex-1">
-                {/* Booked students */}
                 {modalBookings.length > 0 && (
-                  <div className="p-3 border-b border-border">
-                    <p className="text-xs font-medium text-content-secondary uppercase tracking-wide mb-2">
+                  <div className="p-4 border-b border-[#f1f1f3]">
+                    <p className="font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] mb-2">
                       Agendados ({modalBookings.length}/{capacity})
                     </p>
                     <div className="space-y-2">
                       {modalBookings.map((b) => (
                         <div
                           key={b.id}
-                          className="flex items-center gap-3 p-3 rounded-lg bg-surface-tertiary/50 border border-border"
+                          className="flex items-center gap-3 p-3 rounded-[9px] bg-[#f4f4f6]"
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-content-primary truncate">{b.user?.name}</p>
-                            <div className="flex items-center gap-2 mt-0.5">
+                            <p className="text-[13px] font-semibold text-[#17181c] truncate">{b.user?.name}</p>
+                            <div className="mt-0.5">
                               {statusBadge(b)}
                             </div>
                           </div>
                           <button
                             onClick={() => handleDeleteBooking(b.id)}
-                            className="text-red-400 hover:text-red-300 transition-colors p-1 shrink-0"
+                            className="text-[#9b9ca2] hover:text-[#b42318] transition-colors p-1 shrink-0"
                             title="Remover agendamento"
                           >
                             <Trash2 size={16} />
@@ -479,19 +470,18 @@ export default function AdminAgendaPage() {
                   </div>
                 )}
 
-                {/* Add students section */}
                 {!isFull && (
                   <>
-                    <div className="p-4 border-b border-border">
-                      <p className="text-xs font-medium text-content-secondary uppercase tracking-wide mb-2">Adicionar aluno</p>
+                    <div className="p-4 border-b border-[#f1f1f3]">
+                      <p className="font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] mb-2">Adicionar aluno</p>
                       <div className="relative">
-                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-content-muted" />
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#9b9ca2]" />
                         <input
                           type="text"
                           placeholder="Buscar aluno..."
                           value={modalSearch}
                           onChange={(e) => setModalSearch(e.target.value)}
-                          className="w-full bg-surface-tertiary border border-border rounded-lg pl-9 pr-3 py-2 text-sm text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-1 focus:ring-accent"
+                          className="w-full h-[42px] rounded-[9px] border border-[#e6e6e9] bg-white pl-9 pr-3 text-sm text-[#17181c] placeholder-[#9b9ca2] focus:outline-none focus:border-accent transition-colors"
                           autoFocus
                         />
                       </div>
@@ -499,7 +489,7 @@ export default function AdminAgendaPage() {
 
                     <div className="p-3 space-y-2">
                       {availableStudents.length === 0 ? (
-                        <p className="text-center text-content-muted text-sm py-4">
+                        <p className="text-center text-[#9b9ca2] text-[13px] py-4">
                           {modalSearch ? "Nenhum aluno encontrado" : "Todos os alunos já estão agendados"}
                         </p>
                       ) : (
@@ -508,16 +498,14 @@ export default function AdminAgendaPage() {
                             key={s.id}
                             disabled={bookingStudent !== null}
                             onClick={() => handleBookForStudent(s.id)}
-                            className="w-full flex items-center gap-3 p-3 rounded-lg bg-surface-tertiary/50 border border-border hover:bg-surface-tertiary hover:border-border transition-colors text-left disabled:opacity-50"
+                            className="w-full flex items-center gap-3 p-3 rounded-[9px] bg-[#f4f4f6] hover:bg-[#eaeaed] transition-colors text-left disabled:opacity-50"
                           >
-                            <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={40} />
+                            <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={36} />
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-content-primary truncate">{s.name}</p>
-                              <div className="flex items-center gap-2 mt-0.5">
-                                <Badge variant={isParticular(s.studentType) ? "success" : "default"}>
-                                  {getPlanLabel(s.studentType)}
-                                </Badge>
-                              </div>
+                              <p className="text-[13px] font-semibold text-[#17181c] truncate">{s.name}</p>
+                              <Badge variant={isParticular(s.studentType) ? "success" : "default"}>
+                                {getPlanLabel(s.studentType)}
+                              </Badge>
                             </div>
                             {bookingStudent === s.id && (
                               <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
@@ -531,7 +519,7 @@ export default function AdminAgendaPage() {
 
                 {isFull && modalBookings.length > 0 && (
                   <div className="p-4">
-                    <p className="text-xs text-content-muted text-center">Aula lotada. Remova um aluno para adicionar outro.</p>
+                    <p className="text-[11.5px] text-[#9b9ca2] text-center">Aula lotada. Remova um aluno para adicionar outro.</p>
                   </div>
                 )}
               </div>

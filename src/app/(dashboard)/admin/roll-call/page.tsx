@@ -3,9 +3,11 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { StudentAvatar } from "@/components/student-avatar";
+import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CheckCircle, XCircle, Clock, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 
 interface BookingUser {
   id: string;
@@ -26,12 +28,6 @@ interface Booking {
   privateSlot?: { startTime: string; endTime: string } | null;
   groupClass?: { name: string; startTime: string; endTime: string } | null;
 }
-
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  PRESENTE: { label: "Presente", color: "text-emerald-400", icon: <CheckCircle size={14} /> },
-  CANCELADO: { label: "Cancelou", color: "text-amber-400", icon: <Clock size={14} /> },
-  AUSENTE: { label: "Ausente", color: "text-red-400", icon: <XCircle size={14} /> },
-};
 
 export default function RollCallPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -88,27 +84,24 @@ export default function RollCallPage() {
   );
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-content-primary mb-1">Chamada</h1>
-      <p className="text-sm text-content-secondary mb-6">
-        Registre a presença dos alunos nas aulas agendadas.
-      </p>
+    <div className="max-w-[700px] mx-auto">
+      <PageHeader title="Chamada" subtitle="Registre a presença dos alunos nas aulas agendadas." />
 
       <div className="mb-6">
         <input
           type="date"
           value={selectedDate}
           onChange={(e) => setSelectedDate(e.target.value)}
-          className="bg-surface-secondary border border-border rounded-lg px-3 py-2 text-sm text-content-primary"
+          className="h-[42px] rounded-[9px] border border-[#e6e6e9] bg-white px-[13px] text-sm text-[#17181c] focus:outline-none focus:border-accent transition-colors"
         />
-        <p className="text-xs text-content-secondary mt-1 capitalize">{dateLabel}</p>
+        <p className="text-[11.5px] text-[#9b9ca2] mt-1.5 capitalize">{dateLabel}</p>
       </div>
 
       {loading ? (
-        <p className="text-content-muted text-sm text-center py-8">Carregando...</p>
+        <p className="text-[#9b9ca2] text-[13px] text-center py-8">Carregando...</p>
       ) : bookings.length === 0 ? (
         <Card>
-          <p className="text-content-secondary text-sm text-center py-8">
+          <p className="text-[#9b9ca2] text-[13px] text-center py-6">
             Nenhum agendamento para esta data.
           </p>
         </Card>
@@ -116,7 +109,7 @@ export default function RollCallPage() {
         <>
           {pending.length > 0 && (
             <div className="mb-6">
-              <h2 className="text-sm font-semibold text-content-secondary mb-3 uppercase tracking-wider">
+              <h2 className="font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] mb-3">
                 Pendentes ({pending.length})
               </h2>
               <div className="space-y-2">
@@ -135,7 +128,7 @@ export default function RollCallPage() {
 
           {done.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold text-content-secondary mb-3 uppercase tracking-wider">
+              <h2 className="font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] mb-3">
                 Concluídos ({done.length})
               </h2>
               <div className="space-y-2">
@@ -179,28 +172,31 @@ function BookingCard({
     classLabel = b.type === "PRIVATE" ? "Aula Particular" : "Aula Coletiva";
   }
 
-  const currentStatus = b.checkinStatus ? STATUS_CONFIG[b.checkinStatus] : null;
-
   return (
-    <Card className="!p-3">
+    <Card>
       <div className="flex items-center gap-3">
-        <StudentAvatar name={b.user.name} photoUrl={b.user.photoUrl} size={40} />
+        <StudentAvatar name={b.user.name} photoUrl={b.user.photoUrl} size={36} />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-content-primary truncate">{b.user.name}</p>
-          <p className="text-xs text-content-secondary">{classLabel}</p>
+          <p className="font-semibold text-[13px] text-[#17181c] truncate">{b.user.name}</p>
+          <p className="text-[11.5px] text-[#9b9ca2]">{classLabel}</p>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
-          {currentStatus && (
-            <span className={`flex items-center gap-1 text-xs font-medium ${currentStatus.color}`}>
-              {currentStatus.icon}
-              {currentStatus.label}
-            </span>
+          {b.checkinStatus && (
+            <Badge
+              variant={
+                b.checkinStatus === "PRESENTE" ? "green" :
+                b.checkinStatus === "CANCELADO" ? "warning" : "danger"
+              }
+            >
+              {b.checkinStatus === "PRESENTE" ? "Presente" :
+               b.checkinStatus === "CANCELADO" ? "Cancelou" : "Ausente"}
+            </Badge>
           )}
           <button
             onClick={() => onDelete(b.id)}
             disabled={updating}
-            className="text-content-muted hover:text-red-400 transition-colors p-1"
+            className="text-[#9b9ca2] hover:text-[#b42318] transition-colors p-1"
             title="Excluir"
           >
             <Trash2 size={14} />
@@ -212,10 +208,10 @@ function BookingCard({
         <button
           onClick={() => onSetStatus(b.id, "PRESENTE")}
           disabled={updating}
-          className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
+          className={`flex-1 py-2 rounded-[8px] text-[11.5px] font-semibold transition-colors ${
             b.checkinStatus === "PRESENTE"
-              ? "bg-emerald-500 text-white"
-              : "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/30"
+              ? "bg-[#0f7a4d] text-white"
+              : "bg-[#e7f4ec] text-[#0f7a4d] hover:bg-[#d4eddf] border border-[#b9e2cb]"
           }`}
         >
           Presente
@@ -223,10 +219,10 @@ function BookingCard({
         <button
           onClick={() => onSetStatus(b.id, "CANCELADO")}
           disabled={updating}
-          className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
+          className={`flex-1 py-2 rounded-[8px] text-[11.5px] font-semibold transition-colors ${
             b.checkinStatus === "CANCELADO"
-              ? "bg-amber-500 text-white"
-              : "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/30"
+              ? "bg-[#b45309] text-white"
+              : "bg-[#fbf0dd] text-[#b45309] hover:bg-[#f5e5c8] border border-[#f0d9a8]"
           }`}
         >
           Cancelou
@@ -234,10 +230,10 @@ function BookingCard({
         <button
           onClick={() => onSetStatus(b.id, "AUSENTE")}
           disabled={updating}
-          className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-colors ${
+          className={`flex-1 py-2 rounded-[8px] text-[11.5px] font-semibold transition-colors ${
             b.checkinStatus === "AUSENTE"
-              ? "bg-red-500 text-white"
-              : "bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30"
+              ? "bg-[#b42318] text-white"
+              : "bg-[#fdeee9] text-[#b42318] hover:bg-[#fce0d8] border border-[#f5cfc6]"
           }`}
         >
           Ausente

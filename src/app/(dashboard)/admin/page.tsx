@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BeltIcon } from "@/components/belt-icon";
 import { StudentAvatar } from "@/components/student-avatar";
 import { Button } from "@/components/ui/button";
-import { Users, CheckCircle, Calendar, Pencil, RefreshCw, Check, UserPlus, ArrowUpCircle } from "lucide-react";
+import { Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DAY_NAMES, getPlanLabel, isParticular } from "@/lib/utils";
 import { useTenantInfo } from "@/components/tenant-theme";
+import { PageHeader } from "@/components/page-header";
+import { StatCard } from "@/components/stat-card";
+import { Belt } from "@/components/belt";
+import { BELT_COLORS, KIDS_BELT_COLORS } from "@/lib/utils";
 
 interface RescheduleLog {
   id: string;
@@ -43,23 +46,30 @@ interface Student {
 function getPaymentStatus(
   monthlyDueDay: number | null,
   lastPaymentDate: string | null
-): { label: string; variant: "green" | "warning" | "danger" } | null {
+): { label: string; color: string } | null {
   if (!monthlyDueDay) return null;
 
   const now = new Date();
   const currentMonth = now.getFullYear() * 12 + now.getMonth();
 
   if (!lastPaymentDate) {
-    return { label: "Atrasado", variant: "danger" };
+    return { label: "Atrasado", color: "#b42318" };
   }
 
   const payment = new Date(lastPaymentDate);
   const paymentMonth = payment.getFullYear() * 12 + payment.getMonth();
   const diff = currentMonth - paymentMonth;
 
-  if (diff <= 0) return { label: "Em dia", variant: "green" };
-  if (diff === 1) return { label: "Pendente", variant: "warning" };
-  return { label: "Atrasado", variant: "danger" };
+  if (diff <= 0) return { label: "Em dia", color: "#0f7a4d" };
+  if (diff === 1) return { label: "Pendente", color: "#b45309" };
+  return { label: "Atrasado", color: "#b42318" };
+}
+
+function getBeltColor(belt: string): string {
+  if (BELT_COLORS[belt]) return BELT_COLORS[belt];
+  const kids = KIDS_BELT_COLORS[belt];
+  if (kids) return kids[0];
+  return "#FFFFFF";
 }
 
 export default function AdminDashboard() {
@@ -96,194 +106,132 @@ export default function AdminDashboard() {
   }
 
   const totalStudents = students.length;
-  const particular = students.filter(
-    (s) => isParticular(s.studentType)
-  ).length;
-  const totalCheckins = students.reduce(
-    (sum, s) => sum + s._count.bookings + s.initialCheckins,
-    0
-  );
+  const particular = students.filter((s) => isParticular(s.studentType)).length;
+  const totalCheckins = students.reduce((sum, s) => sum + s._count.bookings + s.initialCheckins, 0);
 
   if (loading) {
     return <div className="text-center py-8 text-content-muted">Carregando...</div>;
   }
 
   return (
-    <div className="min-w-0 overflow-hidden">
-      <h1 className="text-2xl font-bold mb-6 text-content-primary">Dashboard</h1>
+    <div className="max-w-[1180px] mx-auto">
+      <PageHeader title="Visão geral">
+        <div className="flex gap-2">
+          <Link href="/admin/roll-call">
+            <Button variant="primary" size="lg">+ Fazer chamada</Button>
+          </Link>
+        </div>
+      </PageHeader>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <Card>
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-accent/10">
-              <Users size={22} className="text-accent" />
-            </div>
-            <div>
-              <p className="text-sm text-content-secondary">Total Alunos</p>
-              <p className="text-2xl font-bold text-content-primary">{totalStudents}</p>
-            </div>
-          </div>
-        </Card>
-        <Card>
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-emerald-500/10">
-              <Calendar size={22} className="text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-sm text-content-secondary">Particulares</p>
-              <p className="text-2xl font-bold text-content-primary">{particular}</p>
-            </div>
-          </div>
-        </Card>
-        <Card>
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-lg bg-blue-500/10">
-              <CheckCircle size={22} className="text-blue-400" />
-            </div>
-            <div>
-              <p className="text-sm text-content-secondary">Check-ins Totais</p>
-              <p className="text-2xl font-bold text-content-primary">{totalCheckins}</p>
-            </div>
-          </div>
-        </Card>
+      {/* Stats */}
+      <div className="flex flex-wrap gap-3 mb-3.5">
+        <StatCard label="Alunos ativos" value={totalStudents} />
+        <StatCard label="Particular" value={particular} badge={<span className="text-[11.5px] text-[#9b9ca2]">alunos</span>} />
+        <StatCard label="Check-ins total" value={totalCheckins} />
       </div>
 
-      {(pendingCounts.pendingStudents > 0 || pendingCounts.pendingUpgrades > 0) && (
-        <div className="space-y-3 mb-6">
-          {pendingCounts.pendingStudents > 0 && (
-            <Link href="/admin/approvals">
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 hover:bg-amber-500/15 transition-colors cursor-pointer">
-                <UserPlus size={20} className="text-amber-400 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-content-primary">
-                    {pendingCounts.pendingStudents === 1
-                      ? "1 novo aluno aguardando aprovação"
-                      : `${pendingCounts.pendingStudents} novos alunos aguardando aprovação`}
-                  </p>
-                </div>
-                <Badge variant="warning">{pendingCounts.pendingStudents}</Badge>
+      {/* Pending alerts */}
+      <div className="flex flex-wrap gap-3 mb-3.5">
+        {pendingCounts.pendingStudents > 0 && (
+          <Link href="/admin/approvals" className="flex-1 min-w-[220px]">
+            <Card className="border-[#f0e3c8] flex items-center gap-3 cursor-pointer hover:bg-[#fafafa] transition-colors">
+              <div className="w-[34px] h-[34px] flex-none rounded-[9px] bg-[#fbf0dd] text-[#b45309] flex items-center justify-center font-archivo font-bold text-[15px]">
+                {pendingCounts.pendingStudents}
               </div>
-            </Link>
-          )}
-          {pendingCounts.pendingUpgrades > 0 && tenantInfo?.enablePlans !== false && (
-            <Link href="/admin/plans">
-              <div className="flex items-center gap-3 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 hover:bg-blue-500/15 transition-colors cursor-pointer">
-                <ArrowUpCircle size={20} className="text-blue-400 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-content-primary">
-                    {pendingCounts.pendingUpgrades === 1
-                      ? "1 solicitação de upgrade de plano"
-                      : `${pendingCounts.pendingUpgrades} solicitações de upgrade de plano`}
-                  </p>
-                </div>
-                <Badge variant="default">{pendingCounts.pendingUpgrades}</Badge>
+              <div className="flex-1">
+                <div className="font-semibold text-[13px] text-[#17181c]">Aprovações pendentes</div>
+                <div className="text-[11.5px] text-[#9b9ca2]">Novos cadastros</div>
               </div>
-            </Link>
-          )}
-        </div>
-      )}
+              <span className="text-accent-dark font-bold">→</span>
+            </Card>
+          </Link>
+        )}
+        {pendingCounts.pendingUpgrades > 0 && tenantInfo?.enablePlans !== false && (
+          <Link href="/admin/plans" className="flex-1 min-w-[220px]">
+            <Card className="flex items-center gap-3 cursor-pointer hover:bg-[#fafafa] transition-colors">
+              <div className="w-[34px] h-[34px] flex-none rounded-[9px] bg-[#fdf0db] text-accent-dark flex items-center justify-center font-archivo font-bold text-[15px]">
+                {pendingCounts.pendingUpgrades}
+              </div>
+              <div className="flex-1">
+                <div className="font-semibold text-[13px] text-[#17181c]">Pedidos de upgrade</div>
+                <div className="text-[11.5px] text-[#9b9ca2]">Mudança de plano</div>
+              </div>
+              <span className="text-[#9b9ca2] font-bold">→</span>
+            </Card>
+          </Link>
+        )}
+      </div>
 
+      {/* Reschedule notifications */}
       {rescheduleLogs.some((l) => !l.readByAdmin) && (
-        <Card className="mb-6">
-          <div className="flex items-center justify-between mb-4">
+        <Card className="mb-3.5">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <RefreshCw size={18} className="text-accent" />
-              <h2 className="text-lg font-semibold text-content-primary">Notificações</h2>
-              {rescheduleLogs.filter((l) => !l.readByAdmin).length > 0 && (
-                <Badge variant="warning">
-                  {rescheduleLogs.filter((l) => !l.readByAdmin).length}
-                </Badge>
-              )}
+              <span className="font-bold text-sm text-[#17181c]">Notificações</span>
+              <span className="h-[18px] min-w-[18px] rounded-[9px] bg-accent text-accent-on text-[10px] font-bold flex items-center justify-center px-1.5">
+                {rescheduleLogs.filter((l) => !l.readByAdmin).length}
+              </span>
             </div>
-            {rescheduleLogs.some((l) => !l.readByAdmin) && (
-              <Button size="sm" variant="secondary" onClick={markAllLogsRead}>
-                <Check size={14} className="mr-1" />
-                Marcar todas
-              </Button>
-            )}
+            <Button size="sm" variant="secondary" onClick={markAllLogsRead}>
+              <Check size={14} className="mr-1" />
+              Marcar todas
+            </Button>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {rescheduleLogs.filter((l) => !l.readByAdmin).slice(0, 10).map((log) => {
               const isReschedule = log.type === "RESCHEDULE" && log.newPrivateSlot;
               const isBooking = log.type === "BOOKING";
               const formatDate = (d: string) => d.split("-").reverse().slice(0, 2).join("/");
 
               if (isReschedule) {
-                // Cascade: cancel (amber) + book (green) linked
                 return (
                   <div key={log.id} className="relative">
-                    <div
-                      className={`flex items-center justify-between p-2.5 sm:p-3 rounded-t-lg text-xs sm:text-sm ${
-                        log.readByAdmin ? "bg-surface-tertiary/50" : "bg-accent/10 border border-accent/20 border-b-0"
-                      }`}
-                    >
+                    <div className="flex items-center justify-between p-3 rounded-t-lg text-[13px] bg-accent/10 border border-accent/20 border-b-0">
                       <div>
-                        <span className="font-medium text-content-primary">{log.user.name}</span>
+                        <span className="font-semibold text-[#17181c]">{log.user.name}</span>
                         {" cancelou "}
-                        <span className="font-medium text-content-primary">
+                        <span className="font-semibold text-[#17181c]">
                           {DAY_NAMES[log.privateSlot.dayOfWeek]} {log.privateSlot.startTime}
                         </span>
                         {" do dia "}
-                        <span className="font-medium text-content-primary">{formatDate(log.date)}</span>
+                        <span className="font-semibold text-[#17181c]">{formatDate(log.date)}</span>
                       </div>
                     </div>
-                    <div
-                      className={`flex items-center justify-between p-2.5 sm:p-3 rounded-b-lg text-xs sm:text-sm ${
-                        log.readByAdmin ? "bg-surface-tertiary/50" : "bg-emerald-500/10 border border-emerald-500/20 border-t-0"
-                      }`}
-                    >
+                    <div className="flex items-center justify-between p-3 rounded-b-lg text-[13px] bg-[#e7f4ec] border border-[#b9e2cb] border-t-0">
                       <div>
-                        <span className="font-medium text-content-primary">{log.user.name}</span>
+                        <span className="font-semibold text-[#17181c]">{log.user.name}</span>
                         {" agendou "}
-                        <span className="font-medium text-content-primary">
+                        <span className="font-semibold text-[#17181c]">
                           {DAY_NAMES[log.newPrivateSlot!.dayOfWeek]} {log.newPrivateSlot!.startTime}
                         </span>
                         {" do dia "}
-                        <span className="font-medium text-content-primary">{formatDate(log.newDate!)}</span>
+                        <span className="font-semibold text-[#17181c]">{formatDate(log.newDate!)}</span>
                       </div>
-                      {!log.readByAdmin && (
-                        <button
-                          onClick={() => markLogRead(log.id)}
-                          className="text-content-secondary hover:text-content-primary p-1"
-                          title="Marcar como lida"
-                        >
-                          <Check size={16} />
-                        </button>
-                      )}
+                      <button onClick={() => markLogRead(log.id)} className="text-[#5c5d63] hover:text-[#17181c] p-1" title="Marcar como lida">
+                        <Check size={16} />
+                      </button>
                     </div>
                   </div>
                 );
               }
 
-              // Single box: green for booking, amber for cancel
-              const bgClass = isBooking
-                ? (log.readByAdmin ? "bg-surface-tertiary/50" : "bg-emerald-500/10 border border-emerald-500/20")
-                : (log.readByAdmin ? "bg-surface-tertiary/50" : "bg-accent/10 border border-accent/20");
+              const bgClass = isBooking ? "bg-[#e7f4ec] border border-[#b9e2cb]" : "bg-accent/10 border border-accent/20";
               const verb = isBooking ? "agendou" : "desmarcou";
 
               return (
-                <div
-                  key={log.id}
-                  className={`flex items-center justify-between p-2.5 sm:p-3 rounded-lg text-xs sm:text-sm ${bgClass}`}
-                >
+                <div key={log.id} className={`flex items-center justify-between p-3 rounded-lg text-[13px] ${bgClass}`}>
                   <div>
-                    <span className="font-medium text-content-primary">{log.user.name}</span>
+                    <span className="font-semibold text-[#17181c]">{log.user.name}</span>
                     {` ${verb} `}
-                    <span className="font-medium text-content-primary">
+                    <span className="font-semibold text-[#17181c]">
                       {DAY_NAMES[log.privateSlot.dayOfWeek]} {log.privateSlot.startTime}
                     </span>
                     {" do dia "}
-                    <span className="font-medium text-content-primary">{formatDate(log.date)}</span>
+                    <span className="font-semibold text-[#17181c]">{formatDate(log.date)}</span>
                   </div>
-                  {!log.readByAdmin && (
-                    <button
-                      onClick={() => markLogRead(log.id)}
-                      className="text-content-secondary hover:text-content-primary p-1"
-                      title="Marcar como lida"
-                    >
-                      <Check size={16} />
-                    </button>
-                  )}
+                  <button onClick={() => markLogRead(log.id)} className="text-[#5c5d63] hover:text-[#17181c] p-1" title="Marcar como lida">
+                    <Check size={16} />
+                  </button>
                 </div>
               );
             })}
@@ -291,104 +239,100 @@ export default function AdminDashboard() {
         </Card>
       )}
 
-      <Card>
-        <h2 className="text-lg font-semibold mb-4 text-content-primary">Alunos</h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium">Aluno</th>
-                <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium hidden sm:table-cell">Tipo</th>
-                <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium hidden sm:table-cell">Modalidades</th>
-                <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium">Faixa</th>
-                <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium hidden sm:table-cell">Check-ins</th>
-                <th className="text-left py-3 px-2 sm:px-3 text-content-secondary font-medium hidden sm:table-cell">Pagamento</th>
-                <th className="text-left py-3 px-1 sm:px-3 text-content-secondary font-medium"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.map((s) => {
-                const paymentStatus = getPaymentStatus(s.monthlyDueDay, s.lastPaymentDate);
-                return (
-                  <tr
-                    key={s.id}
-                    className="border-b border-border hover:bg-surface-tertiary cursor-pointer transition-colors"
-                    onClick={() => router.push(`/admin/students/${s.id}`)}
-                  >
-                    <td className="py-3 px-2 sm:px-3 max-w-[140px] sm:max-w-none">
-                      <div className="flex items-center gap-2 sm:gap-3">
-                        <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={32} />
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium text-content-primary truncate">{s.name}</p>
-                            {s.isKids && <Badge variant="warning">Kids</Badge>}
-                          </div>
-                          <p className="text-xs text-content-muted truncate hidden sm:block">{s.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-3 px-2 sm:px-3 hidden sm:table-cell">
-                      <Badge
-                        variant={
-                          isParticular(s.studentType) ? "success" : "default"
-                        }
-                      >
-                        {getPlanLabel(s.studentType)}
-                      </Badge>
-                    </td>
-                    <td className="py-3 px-2 sm:px-3 hidden sm:table-cell">
-                      <span className="text-xs text-content-secondary">
-                        {(s.modalities || "GRAPPLING").split(",").map((m: string) =>
-                          m === "GRAPPLING" ? "Grappling/JJ" : "MMA/Boxe"
-                        ).join(", ")}
-                      </span>
-                    </td>
-                    <td className="py-3 px-2 sm:px-3">
-                      <div className="flex items-center gap-1 sm:gap-2">
-                        <BeltIcon belt={s.belt} size={16} />
-                        <span className="text-content-secondary text-xs sm:text-sm whitespace-nowrap">
-                          {s.belt}
-                          {s.degrees > 0 ? ` ${s.degrees}°` : ""}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3 px-2 sm:px-3 text-content-secondary hidden sm:table-cell">{s._count.bookings + s.initialCheckins}</td>
-                    <td className="py-3 px-2 sm:px-3 hidden sm:table-cell">
-                      {paymentStatus ? (
-                        <Badge variant={paymentStatus.variant}>
-                          {paymentStatus.label}
-                        </Badge>
-                      ) : (
-                        <span className="text-content-muted text-xs">-</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-1 sm:px-3">
-                      <Link
-                        href={`/admin/students/${s.id}/edit`}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        <Button size="sm" variant="secondary">
-                          <Pencil size={14} className="sm:mr-1.5" />
-                          <span className="hidden sm:inline">Editar</span>
-                        </Button>
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })}
-              {students.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-8 text-center text-content-muted"
-                  >
-                    Nenhum aluno cadastrado
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      {/* Students table */}
+      <Card className="overflow-hidden !p-0">
+        <div className="flex items-center justify-between px-[18px] pt-[15px] pb-3">
+          <span className="font-bold text-sm text-[#17181c]">Alunos recentes</span>
+          <Link href="/admin/approvals" className="text-xs text-accent-dark font-semibold cursor-pointer">Ver todos</Link>
         </div>
+
+        {/* Desktop table */}
+        <div className="hidden sm:block">
+          <div className="grid grid-cols-[1.7fr_1.2fr_.6fr_.9fr_.7fr_.9fr] gap-2.5 px-[18px] py-[9px] font-spline text-[9px] tracking-[.1em] uppercase text-[#a8a8ad] bg-[#fafafa] border-t border-[#f1f1f3]">
+            <div>Aluno</div>
+            <div>Faixa</div>
+            <div>Grau</div>
+            <div>Tipo</div>
+            <div>Pres.</div>
+            <div>Pagto</div>
+          </div>
+          {students.slice(0, 10).map((s) => {
+            const paymentStatus = getPaymentStatus(s.monthlyDueDay, s.lastPaymentDate);
+            const checkins = s._count.bookings + s.initialCheckins;
+            return (
+              <div
+                key={s.id}
+                className="grid grid-cols-[1.7fr_1.2fr_.6fr_.9fr_.7fr_.9fr] gap-2.5 items-center px-[18px] py-[9px] border-t border-[#f1f1f3] cursor-pointer hover:bg-[#fafafa] transition-colors"
+                onClick={() => router.push(`/admin/students/${s.id}`)}
+              >
+                <div className="flex items-center gap-[9px] min-w-0">
+                  <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={28} />
+                  <span className="font-semibold text-[12.5px] text-[#17181c] truncate">{s.name}</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-24">
+                    <Belt color={getBeltColor(s.belt)} degrees={s.degrees} />
+                  </div>
+                </div>
+                <div className="font-archivo font-semibold text-[13px] text-[#5c5d63]">{s.degrees}º</div>
+                <div>
+                  <Badge variant={isParticular(s.studentType) ? "success" : "default"}>
+                    {getPlanLabel(s.studentType)}
+                  </Badge>
+                </div>
+                <div className="font-archivo font-semibold text-[13px] text-[#3d3e44]">{checkins}</div>
+                <div>
+                  {paymentStatus ? (
+                    <span className="text-[11px] font-semibold" style={{ color: paymentStatus.color }}>
+                      ● {paymentStatus.label}
+                    </span>
+                  ) : (
+                    <span className="text-[#9b9ca2] text-xs">-</span>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Mobile list */}
+        <div className="sm:hidden">
+          {students.slice(0, 10).map((s) => {
+            const paymentStatus = getPaymentStatus(s.monthlyDueDay, s.lastPaymentDate);
+            const checkins = s._count.bookings + s.initialCheckins;
+            return (
+              <div
+                key={s.id}
+                className="flex items-center gap-[11px] px-4 py-3 border-t border-[#f1f1f3]"
+                onClick={() => router.push(`/admin/students/${s.id}`)}
+              >
+                <StudentAvatar name={s.name} photoUrl={s.photoUrl} size={36} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-semibold text-[13.5px] text-[#17181c]">{s.name}</span>
+                    {paymentStatus && (
+                      <span className="text-[11px] font-semibold" style={{ color: paymentStatus.color }}>
+                        ● {paymentStatus.label}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2.5 mt-[7px]">
+                    <div className="w-[90px]">
+                      <Belt color={getBeltColor(s.belt)} degrees={s.degrees} />
+                    </div>
+                    <span className="text-[11px] text-[#9b9ca2]">{checkins} pres.</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {students.length === 0 && (
+          <div className="py-8 text-center text-[#9b9ca2] text-[13px] border-t border-[#f1f1f3]">
+            Nenhum aluno cadastrado
+          </div>
+        )}
       </Card>
     </div>
   );

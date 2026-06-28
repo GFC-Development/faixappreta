@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StudentAvatar } from "@/components/student-avatar";
+import { PageHeader } from "@/components/page-header";
 
 export default function AccountPage() {
   const { data: session, update } = useSession();
@@ -100,14 +101,14 @@ export default function AccountPage() {
   const displayPhoto = photoPreview || photoUrl;
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold mb-6 text-content-primary">Minha Conta</h1>
+    <div className="max-w-[520px] mx-auto">
+      <PageHeader title="Minha Conta" />
 
-      <Card className="mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-content-primary">Foto de Perfil</h2>
+      <Card className="mb-4">
+        <h2 className="font-semibold text-[14px] text-[#17181c] mb-3">Foto de Perfil</h2>
         <div className="flex items-center gap-4 mb-4">
           <StudentAvatar name={session.user.name} photoUrl={displayPhoto} size={64} />
-          <label className="cursor-pointer inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200 px-3 py-1.5 text-sm bg-surface-tertiary text-content-primary border border-border hover:bg-surface-tertiary">
+          <label className="cursor-pointer inline-flex items-center justify-center rounded-[9px] font-semibold transition-colors px-3 py-1.5 text-[13px] bg-[#f4f4f6] text-[#17181c] border border-[#e9e9ec] hover:bg-[#eaeaed]">
             {displayPhoto ? "Alterar foto" : "Adicionar foto"}
             <input
               type="file"
@@ -123,12 +124,12 @@ export default function AccountPage() {
           </Button>
         )}
         {photoSuccess && (
-          <p className="text-sm text-emerald-400 mt-2">Foto atualizada!</p>
+          <p className="text-sm text-emerald-600 mt-2">Foto atualizada!</p>
         )}
       </Card>
 
-      <Card className="mb-6">
-        <h2 className="text-lg font-semibold mb-4 text-content-primary">Alterar Senha</h2>
+      <Card className="mb-4">
+        <h2 className="font-semibold text-[14px] text-[#17181c] mb-3">Alterar Senha</h2>
         <form onSubmit={handleChangePassword} className="space-y-4">
           <Input
             label="Senha atual"
@@ -154,10 +155,10 @@ export default function AccountPage() {
             required
           />
           {passwordError && (
-            <p className="text-sm text-red-400">{passwordError}</p>
+            <p className="text-sm text-[#b42318]">{passwordError}</p>
           )}
           {passwordSuccess && (
-            <p className="text-sm text-emerald-400">Senha alterada com sucesso!</p>
+            <p className="text-sm text-emerald-600">Senha alterada com sucesso!</p>
           )}
           <Button type="submit" disabled={savingPassword}>
             {savingPassword ? "Alterando..." : "Alterar Senha"}

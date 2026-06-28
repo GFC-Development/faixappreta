@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { DAY_NAMES, isParticular as checkParticular } from "@/lib/utils";
+import { PageHeader } from "@/components/page-header";
 
 interface Slot {
   id: string;
@@ -115,10 +116,10 @@ export default function BookingPage() {
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6 text-content-primary">Agendar Aula</h1>
+    <div className="max-w-[520px] mx-auto">
+      <PageHeader title="Agendar Aula" />
 
-      <Card className="mb-6">
+      <Card className="mb-4">
         <Input
           label="Selecione a data"
           type="date"
@@ -130,19 +131,19 @@ export default function BookingPage() {
           }}
         />
         {selectedDay !== null && (
-          <p className="text-sm text-content-secondary mt-2">
+          <p className="text-[13px] text-[#5c5d63] mt-2">
             {DAY_NAMES[selectedDay]}
           </p>
         )}
       </Card>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-500/10 text-red-400 text-sm rounded-md">
+        <div className="mb-4 p-3 bg-red-500/10 text-[#b42318] text-[13px] rounded-[9px]">
           {error}
         </div>
       )}
       {success && (
-        <div className="mb-4 p-3 bg-emerald-500/10 text-emerald-400 text-sm rounded-md">
+        <div className="mb-4 p-3 bg-emerald-500/10 text-emerald-600 text-[13px] rounded-[9px]">
           {success}
         </div>
       )}
@@ -150,9 +151,9 @@ export default function BookingPage() {
       {date && (
         <>
           {isParticular && (
-            <div className="mb-6">
+            <div className="mb-5">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold text-content-primary">
+                <h2 className="font-semibold text-[14px] text-[#17181c]">
                   Aulas Particulares
                 </h2>
                 {credits && credits.monthlyCredits > 0 && (
@@ -162,7 +163,7 @@ export default function BookingPage() {
                 )}
               </div>
               {filteredSlots.length === 0 ? (
-                <p className="text-content-secondary text-sm">
+                <p className="text-[#9b9ca2] text-[13px]">
                   Nenhum horário particular disponível neste dia
                 </p>
               ) : (
@@ -171,7 +172,7 @@ export default function BookingPage() {
                     <Card key={slot.id} className="!p-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium text-content-primary">
+                          <p className="font-medium text-[13px] text-[#17181c]">
                             {slot.startTime} - {slot.endTime}
                           </p>
                           <Badge variant="success">Particular</Badge>
@@ -192,9 +193,9 @@ export default function BookingPage() {
           )}
 
           {hasGrappling && <div>
-            <h2 className="text-lg font-semibold mb-3 text-content-primary">Aulas Coletivas</h2>
+            <h2 className="font-semibold text-[14px] text-[#17181c] mb-3">Aulas Coletivas</h2>
             {filteredClasses.length === 0 ? (
-              <p className="text-content-secondary text-sm">
+              <p className="text-[#9b9ca2] text-[13px]">
                 Nenhuma aula coletiva neste dia
               </p>
             ) : (
@@ -203,8 +204,8 @@ export default function BookingPage() {
                   <Card key={gc.id} className="!p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-content-primary">{gc.name}</p>
-                        <p className="text-sm text-content-secondary">
+                        <p className="font-medium text-[13px] text-[#17181c]">{gc.name}</p>
+                        <p className="text-[12px] text-[#5c5d63]">
                           {gc.startTime} - {gc.endTime}
                         </p>
                         <Badge>Coletiva - {gc.capacity} vagas</Badge>

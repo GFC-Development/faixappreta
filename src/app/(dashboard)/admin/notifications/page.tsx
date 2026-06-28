@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
+import { PageHeader } from "@/components/page-header";
 
 interface Notification {
   id: string;
@@ -41,26 +42,27 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-content-primary">Notificações</h1>
+    <div className="max-w-[800px] mx-auto">
+      <PageHeader title="Notificações">
         <Button onClick={() => setModalOpen(true)}>Nova Notificação</Button>
-      </div>
+      </PageHeader>
 
-      <div className="grid gap-4">
+      <div className="space-y-3">
         {notifications.map((n) => (
           <Card key={n.id}>
-            <h3 className="font-semibold text-content-primary">{n.title}</h3>
-            <p className="text-sm text-content-secondary mt-1">{n.message}</p>
-            <p className="text-xs text-content-muted mt-2">
+            <h3 className="font-semibold text-[13.5px] text-[#17181c]">{n.title}</h3>
+            <p className="text-[13px] text-[#5c5d63] mt-1">{n.message}</p>
+            <p className="text-[11px] text-[#9b9ca2] mt-2">
               {new Date(n.createdAt).toLocaleDateString("pt-BR")}
             </p>
           </Card>
         ))}
         {notifications.length === 0 && (
-          <p className="text-center text-content-muted py-8">
-            Nenhuma notificação enviada
-          </p>
+          <Card>
+            <p className="text-center text-[#9b9ca2] text-[13px] py-6">
+              Nenhuma notificação enviada
+            </p>
+          </Card>
         )}
       </div>
 
@@ -77,11 +79,11 @@ export default function NotificationsPage() {
             required
           />
           <div>
-            <label className="block text-sm font-medium text-content-primary mb-1">
+            <label className="block font-spline text-[9.5px] tracking-[.1em] uppercase text-[#9b9ca2] mb-1.5">
               Mensagem
             </label>
             <textarea
-              className="w-full rounded-md border border-border bg-surface-tertiary px-3 py-2 text-sm text-content-primary focus:outline-none focus:ring-2 focus:ring-accent/40 focus:border-accent/40"
+              className="w-full rounded-[9px] border border-[#e6e6e9] bg-white px-[13px] py-3 text-sm text-[#17181c] placeholder-[#9b9ca2] focus:outline-none focus:border-accent transition-colors"
               rows={4}
               value={form.message}
               onChange={(e) =>

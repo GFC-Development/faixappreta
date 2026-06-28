@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { Teko, Inter } from "next/font/google";
+import { Archivo, Hanken_Grotesk } from "next/font/google";
 import { MessageCircle } from "lucide-react";
 
-const teko = Teko({ subsets: ["latin"], variable: "--font-teko" });
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const archivo = Archivo({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-archivo",
+});
+const hanken = Hanken_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-hanken",
+});
 
 const WHATSAPP_LINK = "https://wa.me/5551997736652?text=Ol%C3%A1%2C%20quero%20conhecer%20o%20faixappreta";
 
@@ -20,7 +28,7 @@ function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2">
           <Image src="/faixappreta-logo.png" alt="faixappreta" width={40} height={40} className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg" />
-          <span className="font-teko text-2xl sm:text-3xl font-bold uppercase tracking-tight text-white">
+          <span className="font-archivo text-2xl sm:text-3xl font-bold uppercase tracking-tight text-white">
             faix<span className="text-red-600">app</span>reta
           </span>
         </a>
@@ -61,7 +69,7 @@ function Footer() {
           <div className="max-w-xs">
             <a href="/" className="flex items-center gap-2 mb-4">
               <Image src="/faixappreta-logo.png" alt="faixappreta" width={36} height={36} className="w-9 h-9 rounded-lg" />
-              <span className="font-teko text-2xl font-bold uppercase tracking-tight text-white">
+              <span className="font-archivo text-2xl font-bold uppercase tracking-tight text-white">
                 faix<span className="text-red-600">app</span>reta
               </span>
             </a>
@@ -130,7 +138,7 @@ export default function SiteLayout({
 }) {
   return (
     <div
-      className={`${teko.variable} ${inter.variable} font-inter min-h-screen flex flex-col bg-[#050505] text-zinc-300`}
+      className={`${archivo.variable} ${hanken.variable} font-hanken min-h-screen flex flex-col bg-[#050505] text-zinc-300`}
     >
       <Header />
       <main className="flex-1">{children}</main>
