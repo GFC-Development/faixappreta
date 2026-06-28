@@ -85,6 +85,7 @@ export default async function middleware(req: NextRequest) {
       pathname.startsWith("/register") ||
       pathname.startsWith("/admin") ||
       pathname.startsWith("/student") ||
+      pathname.startsWith("/promocao") ||
       pathname === "/logo.png"
     ) {
       return NextResponse.next();
