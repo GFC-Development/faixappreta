@@ -115,7 +115,7 @@ export function NavSidebar() {
             />
           ) : (
             <div
-              className="w-9 h-9 flex-none rounded-[10px] bg-accent flex items-center justify-center font-archivo font-extrabold text-lg text-[#17181c]"
+              className="w-9 h-9 flex-none rounded-[10px] bg-accent flex items-center justify-center font-archivo font-extrabold text-lg text-accent-on"
               style={{ boxShadow: "0 4px 12px rgba(224,138,30,.32)" }}
             >
               {initial}
@@ -172,7 +172,7 @@ export function NavSidebar() {
             photoUrl={session.user.photoUrl}
             size={32}
           />
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="font-semibold text-[12.5px] text-[#fbfbf8] truncate">
               {session.user.name}
             </div>
@@ -180,6 +180,16 @@ export function NavSidebar() {
               {isOwner ? "Owner" : isAdmin ? "Professor" : "Aluno"}
             </div>
           </div>
+          <button
+            onClick={async () => {
+              await signOut({ redirect: false });
+              window.location.href = "/login";
+            }}
+            className="text-[#76787f] hover:text-[#fbfbf8] transition-colors text-[11px] font-medium px-2 py-1 rounded-md hover:bg-[#26282e]"
+            title="Sair"
+          >
+            Sair
+          </button>
         </div>
       </aside>
 
@@ -196,7 +206,7 @@ export function NavSidebar() {
               style={{ width: 32, height: 32 }}
             />
           ) : (
-            <div className="w-8 h-8 flex-none rounded-[9px] bg-accent flex items-center justify-center font-archivo font-extrabold text-base text-[#17181c]">
+            <div className="w-8 h-8 flex-none rounded-[9px] bg-accent flex items-center justify-center font-archivo font-extrabold text-base text-accent-on">
               {initial}
             </div>
           )}

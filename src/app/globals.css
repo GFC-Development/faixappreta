@@ -13,6 +13,17 @@
   --color-accent: #e08a1e;
   --color-accent-light: #f0c48a;
   --color-accent-dark: #c9781a;
+  --color-accent-on: #ffffff;
+  --color-accent-dark-on: #ffffff;
+}
+
+@layer utilities {
+  .text-accent-on {
+    color: var(--color-accent-on);
+  }
+  .text-accent-dark-on {
+    color: var(--color-accent-dark-on);
+  }
 }
 
 body {

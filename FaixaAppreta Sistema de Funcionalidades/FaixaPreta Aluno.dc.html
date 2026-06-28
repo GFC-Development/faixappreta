@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#e7e5df}
+body{font-family:'Hanken Grotesk',sans-serif;-webkit-font-smoothing:antialiased;color:#17181c}
+input{font-family:inherit}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-thumb{background:#d6d6da;border-radius:8px}
+@keyframes fp-pop{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+</style>
+</helmet>
+
+<div style="display:flex;justify-content:center;min-height:100vh;background:#e7e5df">
+  <div style="width:100%;max-width:480px;min-height:100vh;background:#f7f7f8;display:flex;flex-direction:column;position:relative;box-shadow:0 0 60px rgba(0,0,0,.08)">
+
+    <!-- ===== HEADER ===== -->
+    <div style="position:sticky;top:0;z-index:30;background:#17181c;padding:16px 18px;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="width:34px;height:34px;flex:none;border-radius:9px;background:#e08a1e;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;color:#17181c">V</div>
+        <div><div style="font-weight:700;font-size:14px;color:#fbfbf8;line-height:1.05">{{ screenTitle }}</div><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;color:#76787f">Vértice Team</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="position:relative;width:36px;height:36px;border-radius:10px;background:#26282e;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ goTo.conta }}"><span style="width:14px;height:14px;border-radius:5px 5px 3px 3px;border:1.5px solid #c9cace"></span><sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:50%;background:#e08a1e;border:1.5px solid #26282e"></span></sc-if></div>
+        <div style="width:36px;height:36px;flex:none;border-radius:50%;background:#dfe6f5;color:#3457a6;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">RL</div>
+      </div>
+    </div>
+
+    <div style="flex:1;overflow-y:auto;padding-bottom:8px">
+
+      <!-- ============ HOME ============ -->
+      <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:18px 16px 8px">
+          <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:22px;letter-spacing:-.01em;color:#17181c">Bom treino, Rafael 🥋</div>
+          <div style="font-size:13px;color:#8b8c92;margin-top:2px">Terça-feira, 23 de junho</div>
+        </div>
+
+        <!-- notif banner -->
+        <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ true }}">
+          <div style="margin:8px 16px 0;background:#17181c;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+            <div style="width:34px;height:34px;flex:none;border-radius:9px;background:#3a2e1c;color:#f3b765;display:flex;align-items:center;justify-content:center;font-size:15px">!</div>
+            <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px;color:#fbfbf8">{{ topNotif.title }}</div><div style="font-size:11.5px;color:#9b9ca2;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ topNotif.msg }}</div></div>
+            <div style="font-size:18px;color:#76787f;cursor:pointer;padding:0 2px" onClick="{{ dismissBanner }}">×</div>
+          </div>
+        </sc-if>
+
+        <!-- faixa card -->
+        <div style="margin:14px 16px 0;background:#17181c;border-radius:16px;padding:18px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><span style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#76787f">Sua faixa</span><span style="font-size:11px;font-weight:600;color:#f3b765;cursor:pointer" onClick="{{ goTo.graus }}">Histórico →</span></div>
+          <dc-import name="Belt" color="#1d4ed8" degrees="4" style="width:100%;height:24px" hint-size="100%,24px"></dc-import>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px"><div><div style="font-weight:700;font-size:16px;color:#fbfbf8">Faixa Azul · 4º grau</div><div style="font-size:11.5px;color:#9b9ca2;margin-top:2px">{{ rankNote }}</div></div><div style="text-align:right"><div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:24px;color:#f3b765;line-height:1">#{{ rankPos }}</div><div style="font-size:10px;color:#76787f">no ranking</div></div></div>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid #26282e">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><span style="font-size:12px;color:#c9cace">Progresso para {{ nextGrad }}</span><span style="font-family:'Spline Sans Mono',monospace;font-size:11px;color:#9b9ca2">{{ pc }}/{{ pr }} aulas</span></div>
+            <div style="height:9px;border-radius:5px;background:#26282e;overflow:hidden"><div style="height:100%;border-radius:5px;background:#0f9d6b;width:{{ pct }}"></div></div>
+            <div style="font-size:11.5px;color:#6fcf9b;margin-top:8px">{{ aptoNote }}</div>
+          </div>
+        </div>
+
+        <!-- credits -->
+        <div style="margin:14px 16px 0;background:#fff;border:1px solid #e9e9ec;border-radius:14px;padding:16px;display:flex;align-items:center;gap:14px">
+          <div style="flex:1"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2">Créditos do mês · particular</div><div style="display:flex;align-items:baseline;gap:6px;margin-top:6px"><span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:28px;color:#17181c;line-height:1">3</span><span style="font-size:12.5px;color:#8b8c92">de 4 restantes</span></div></div>
+          <div style="display:flex;gap:5px">
+            <sc-for list="{{ creditDots }}" as="c" hint-placeholder-count="4"><div style="width:11px;height:34px;border-radius:6px;background:{{ c.bg }}"></div></sc-for>
+          </div>
+        </div>
+
+        <!-- eventos -->
+        <div style="margin:18px 16px 8px;display:flex;align-items:center;justify-content:space-between"><span style="font-weight:700;font-size:15px;color:#17181c">Próximos eventos</span></div>
+        <div style="padding:0 16px;display:flex;gap:10px;overflow-x:auto">
+          <sc-for list="{{ eventos }}" as="e" hint-placeholder-count="2">
+            <div style="flex:none;width:230px;background:#fff;border:1px solid #e9e9ec;border-radius:14px;padding:14px;display:flex;gap:12px">
+              <div style="width:50px;flex:none;text-align:center;background:#17181c;border-radius:10px;padding:8px 0;align-self:flex-start"><div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;color:#f3b765;line-height:1">{{ e.dayNum }}</div><div style="font-family:'Spline Sans Mono',monospace;font-size:8.5px;text-transform:uppercase;color:#9b9ca2;margin-top:2px">{{ e.monL }}</div></div>
+              <div style="min-width:0"><div style="font-weight:700;font-size:13px;color:#17181c;line-height:1.25">{{ e.title }}</div><div style="font-size:11px;color:#8b8c92;margin-top:5px;line-height:1.4">{{ e.short }}</div></div>
+            </div>
+          </sc-for>
+        </div>
+
+        <!-- week strip -->
+        <div style="margin:20px 16px 8px;font-weight:700;font-size:15px;color:#17181c">Agenda da semana</div>
+        <div style="padding:0 16px;display:flex;gap:6px;overflow-x:auto">
+          <sc-for list="{{ week }}" as="d" hint-placeholder-count="7"><div style="{{ d.style }}" onClick="{{ d.onClick }}"><div style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;opacity:.75">{{ d.dow }}</div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:16px;margin-top:2px">{{ d.num }}</div><div style="display:flex;gap:3px;margin-top:5px;height:5px;justify-content:center"><sc-for list="{{ d.dots }}" as="dot" hint-placeholder-count="0"><span style="width:5px;height:5px;border-radius:50%;background:{{ dot.bg }}"></span></sc-for></div></div></sc-for>
+        </div>
+
+        <!-- day view -->
+        <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ dayItems }}" as="it" hint-placeholder-count="2">
+            <div style="{{ it.cardStyle }}">
+              <div style="display:flex;align-items:flex-start;gap:13px">
+                <div style="width:48px;flex:none;text-align:center"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;color:#17181c">{{ it.time }}</div></div>
+                <div style="width:1px;align-self:stretch;background:#ededf0;flex:none"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="font-weight:700;font-size:14px;color:#17181c">{{ it.name }}</span><span style="{{ it.tagStyle }}">{{ it.tag }}</span></div>
+                  <div style="font-size:12px;color:#8b8c92;margin-top:4px">{{ it.sub }}</div>
+                </div>
+              </div>
+              <sc-if value="{{ it.hasActions }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;gap:8px;margin-top:12px">
+                  <sc-for list="{{ it.actions }}" as="a" hint-placeholder-count="1"><div style="{{ a.style }}" onClick="{{ a.onClick }}">{{ a.label }}</div></sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ dayEmpty }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px dashed #dcdce0;border-radius:14px;padding:26px;text-align:center"><div style="font-size:14px;font-weight:600;color:#17181c">Dia de descanso</div><div style="font-size:12px;color:#9b9ca2;margin-top:3px">Nenhuma atividade marcada.</div></div></sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ============ MINHA AGENDA ============ -->
+      <sc-if value="{{ isAgenda }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:18px 16px 8px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:22px;color:#17181c">Minha agenda</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Toque num dia para ver as atividades</div></div>
+        <div style="padding:8px 16px 0;display:flex;gap:6px;overflow-x:auto">
+          <sc-for list="{{ week }}" as="d" hint-placeholder-count="7"><div style="{{ d.style }}" onClick="{{ d.onClick }}"><div style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;opacity:.75">{{ d.dow }}</div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:16px;margin-top:2px">{{ d.num }}</div><div style="display:flex;gap:3px;margin-top:5px;height:5px;justify-content:center"><sc-for list="{{ d.dots }}" as="dot" hint-placeholder-count="0"><span style="width:5px;height:5px;border-radius:50%;background:{{ dot.bg }}"></span></sc-for></div></div></sc-for>
+        </div>
+        <div style="padding:6px 16px 4px;font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2">{{ dayLabel }}</div>
+        <div style="padding:8px 16px 16px;display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ dayItems }}" as="it" hint-placeholder-count="3">
+            <div style="{{ it.cardStyle }}">
+              <div style="display:flex;align-items:flex-start;gap:13px">
+                <div style="width:48px;flex:none;text-align:center"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;color:#17181c">{{ it.time }}</div></div>
+                <div style="width:1px;align-self:stretch;background:#ededf0;flex:none"></div>
+                <div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="font-weight:700;font-size:14px;color:#17181c">{{ it.name }}</span><span style="{{ it.tagStyle }}">{{ it.tag }}</span></div><div style="font-size:12px;color:#8b8c92;margin-top:4px">{{ it.sub }}</div></div>
+              </div>
+              <sc-if value="{{ it.hasActions }}" hint-placeholder-val="{{ true }}"><div style="display:flex;gap:8px;margin-top:12px"><sc-for list="{{ it.actions }}" as="a" hint-placeholder-count="1"><div style="{{ a.style }}" onClick="{{ a.onClick }}">{{ a.label }}</div></sc-for></div></sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ dayEmpty }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px dashed #dcdce0;border-radius:14px;padding:26px;text-align:center"><div style="font-size:14px;font-weight:600;color:#17181c">Dia de descanso</div><div style="font-size:12px;color:#9b9ca2;margin-top:3px">Nenhuma atividade marcada.</div></div></sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ============ GRADUAÇÕES ============ -->
+      <sc-if value="{{ isGraus }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:18px 16px 8px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:22px;color:#17181c">Graduações</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Sua linha do tempo no jiu-jitsu</div></div>
+        <div style="margin:8px 16px 0;background:#17181c;border-radius:16px;padding:18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#76787f;margin-bottom:12px">Faixa atual</div><dc-import name="Belt" color="#1d4ed8" degrees="4" style="width:100%;height:22px" hint-size="100%,22px"></dc-import><div style="font-weight:700;font-size:15px;color:#fbfbf8;margin-top:12px">Faixa Azul · 4º grau</div><div style="font-size:11.5px;color:#9b9ca2;margin-top:2px">Desde mar/2022 · 4 anos de treino</div></div>
+        <div style="padding:20px 16px 8px;font-weight:700;font-size:15px;color:#17181c">Histórico de promoções</div>
+        <div style="padding:0 16px 16px">
+          <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="5">
+            <div style="display:flex;gap:14px">
+              <div style="display:flex;flex-direction:column;align-items:center;flex:none;width:14px"><div style="width:13px;height:13px;border-radius:50%;background:{{ t.dot }};border:2px solid #f7f7f8;box-shadow:0 0 0 1.5px {{ t.dot }};margin-top:18px"></div><div style="{{ t.lineStyle }}"></div></div>
+              <div style="flex:1;background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:13px 15px;margin-bottom:10px">
+                <div style="display:flex;align-items:center;justify-content:space-between gap:10px"><span style="font-weight:700;font-size:14px;color:#17181c">{{ t.title }}</span></div>
+                <div style="margin:9px 0 7px"><dc-import name="Belt" color="{{ t.color }}" degrees="{{ t.degrees }}" style="width:120px;height:13px" hint-size="120px,13px"></dc-import></div>
+                <div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;color:#9b9ca2">{{ t.date }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ============ PLANOS ============ -->
+      <sc-if value="{{ isPlanos }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:18px 16px 8px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:22px;color:#17181c">Planos</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Seu plano atual e opções de upgrade</div></div>
+        <div style="padding:8px 16px 16px;display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ planos }}" as="p" hint-placeholder-count="3">
+            <div style="{{ p.cardStyle }}">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+                <div><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:16px;color:#17181c">{{ p.name }}</span><span style="{{ p.tagStyle }}">{{ p.tag }}</span></div><div style="font-size:12px;color:#8b8c92;margin-top:4px">{{ p.freq }} · {{ p.creditsLabel }}</div></div>
+                <div style="text-align:right;flex:none"><div style="display:flex;align-items:baseline;gap:2px;justify-content:flex-end"><span style="font-size:12px;color:#8b8c92">R$</span><span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:24px;color:#17181c">{{ p.price }}</span></div><div style="font-size:10.5px;color:#9b9ca2">/mês</div></div>
+              </div>
+              <sc-if value="{{ p.showAction }}" hint-placeholder-val="{{ false }}"><div style="{{ p.actionStyle }}" onClick="{{ p.action }}">{{ p.actionLabel }}</div></sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ============ CONTA ============ -->
+      <sc-if value="{{ isConta }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:18px 16px 8px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:22px;color:#17181c">Minha conta</div></div>
+        <div style="margin:8px 16px 0;background:#fff;border:1px solid #e9e9ec;border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:12px">
+          <div style="position:relative"><div style="width:84px;height:84px;border-radius:24px;background:#dfe6f5;color:#3457a6;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:30px">RL</div><div style="position:absolute;bottom:-4px;right:-4px;width:30px;height:30px;border-radius:50%;background:#e08a1e;border:3px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer"><span style="width:13px;height:13px;border-radius:3px 3px 2px 2px;border:1.5px solid #17181c"></span></div></div>
+          <div style="text-align:center"><div style="font-weight:700;font-size:18px;color:#17181c">Rafael Lima</div><div style="font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:#9b9ca2;margin-top:3px">rafael.lima@email.com</div></div>
+          <div style="height:36px;padding:0 16px;border-radius:9px;border:1px solid #e6e6e9;font-size:12.5px;font-weight:600;color:#17181c;display:flex;align-items:center;cursor:pointer" style-hover="border-color:#cfcfd4">Trocar foto</div>
+        </div>
+        <div style="margin:14px 16px 0;background:#fff;border:1px solid #e9e9ec;border-radius:16px;padding:18px">
+          <div style="font-weight:700;font-size:14px;color:#17181c;margin-bottom:14px">Alterar senha</div>
+          <input type="password" placeholder="Senha atual" style="width:100%;height:42px;border:1px solid #e6e6e9;border-radius:10px;padding:0 13px;font-size:14px;outline:none;margin-bottom:10px" />
+          <input type="password" placeholder="Nova senha" style="width:100%;height:42px;border:1px solid #e6e6e9;border-radius:10px;padding:0 13px;font-size:14px;outline:none;margin-bottom:10px" />
+          <input type="password" placeholder="Confirmar nova senha" style="width:100%;height:42px;border:1px solid #e6e6e9;border-radius:10px;padding:0 13px;font-size:14px;outline:none;margin-bottom:14px" />
+          <div style="height:44px;border-radius:10px;background:#e08a1e;color:#17181c;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer">Salvar nova senha</div>
+        </div>
+        <div style="margin:14px 16px 16px"><div style="height:46px;border-radius:12px;background:#fff;border:1px solid #f0d2cb;color:#b42318;font-size:13.5px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer" style-hover="background:#fdeee9">Sair da conta</div></div>
+      </sc-if>
+
+    </div>
+
+    <!-- ===== BOTTOM NAV ===== -->
+    <div style="position:sticky;bottom:0;z-index:30;display:flex;background:#17181c;padding:8px 4px;padding-bottom:calc(8px + env(safe-area-inset-bottom))">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;cursor:pointer" onClick="{{ goTo.home }}"><span style="width:18px;height:18px;border-radius:5px;border:2px solid {{ nc.home }}"></span><span style="font-size:9.5px;font-weight:600;color:{{ nc.home }}">Início</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;cursor:pointer" onClick="{{ goTo.agenda }}"><span style="width:18px;height:18px;border-radius:5px;border:2px solid {{ nc.agenda }};position:relative"><span style="position:absolute;left:3px;top:-3px;width:3px;height:5px;background:{{ nc.agenda }};border-radius:1px"></span><span style="position:absolute;right:3px;top:-3px;width:3px;height:5px;background:{{ nc.agenda }};border-radius:1px"></span></span><span style="font-size:9.5px;font-weight:600;color:{{ nc.agenda }}">Agenda</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;cursor:pointer" onClick="{{ goTo.graus }}"><span style="width:20px;height:11px;border-radius:2px;background:{{ nc.graus }};position:relative;display:flex;align-items:center;justify-content:center"><span style="width:2px;height:7px;background:#17181c"></span></span><span style="font-size:9.5px;font-weight:600;color:{{ nc.graus }}">Graus</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;cursor:pointer" onClick="{{ goTo.planos }}"><span style="width:18px;height:18px;display:flex;align-items:center;justify-content:center"><span style="width:13px;height:15px;border-radius:3px;border:2px solid {{ nc.planos }}"></span></span><span style="font-size:9.5px;font-weight:600;color:{{ nc.planos }}">Planos</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;cursor:pointer" onClick="{{ goTo.conta }}"><span style="width:18px;height:18px;display:flex;align-items:center;justify-content:center"><span style="width:9px;height:9px;border-radius:50%;border:2px solid {{ nc.conta }}"></span></span><span style="font-size:9.5px;font-weight:600;color:{{ nc.conta }}">Conta</span></div>
+    </div>
+
+  </div>
+
+  <!-- ===== RESCHEDULE MODAL ===== -->
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:70;background:rgba(15,15,18,.55);display:flex;align-items:flex-end;justify-content:center" onClick="{{ closeModal }}">
+      <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 18px calc(20px + env(safe-area-inset-bottom));animation:fp-pop .2s ease-out" onClick="{{ stop }}">
+        <div style="width:38px;height:4px;border-radius:3px;background:#e0e0e4;margin:0 auto 16px"></div>
+        <div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:18px;color:#17181c">Reagendar aula particular</div>
+        <div style="font-size:13px;color:#8b8c92;margin-top:3px;margin-bottom:16px">{{ rescheduleSub }}</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ rescheduleOptions }}" as="o" hint-placeholder-count="3">
+            <div style="{{ o.style }}" onClick="{{ o.pick }}"><div><div style="font-weight:600;font-size:14px;color:#17181c">{{ o.day }} · {{ o.time }}</div><div style="font-size:12px;color:#8b8c92;margin-top:2px">{{ o.instr }}</div></div><span style="{{ o.checkStyle }}">{{ o.check }}</span></div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px"><div style="flex:1;height:46px;border-radius:11px;background:#f4f4f6;color:#5c5d63;font-size:13.5px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ closeModal }}">Cancelar</div><div style="flex:1.4;height:46px;border-radius:11px;background:#e08a1e;color:#17181c;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ confirmReschedule }}">Confirmar</div></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===== TOAST ===== -->
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:90;background:#17181c;color:#fff;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,.3);animation:fp-pop .2s ease-out;white-space:nowrap">{{ toast }}</div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    screen:'home', vw:1280, day:1, book:{}, bannerDismissed:false,
+    modal:null, rescPick:null, reqPlan:null, toast:'',
+  };
+  componentDidMount(){ this._onR=()=>this.setState({vw:window.innerWidth}); this._onR(); window.addEventListener('resize',this._onR); }
+  componentWillUnmount(){ window.removeEventListener('resize',this._onR); clearTimeout(this._tt); }
+
+  go(s){ this.setState({screen:s}); const sc=this._scroll; if(sc) sc.scrollTop=0; window.scrollTo(0,0); }
+  showToast(msg){ this.setState({toast:msg}); clearTimeout(this._tt); this._tt=setTimeout(()=>this.setState({toast:''}),2200); }
+  setBook(id,val){ this.setState(s=>({book:{...s.book,[id]:val}})); }
+  openResc(item){ this.setState({modal:{type:'resc',item}, rescPick:null}); }
+  closeModal(){ this.setState({modal:null}); }
+  confirmReschedule(){ const m=this.state.modal; const p=this.state.rescPick; if(m&&p!=null){ this.setBook(m.item.id,'booked'); this.showToast('Aula reagendada ✓'); } this.closeModal(); }
+
+  renderVals(){
+    const A='#e08a1e';
+    const screen=this.state.screen;
+    const NC=k=> screen===k ? A : '#6b6d75';
+    const nc={ home:NC('home'), agenda:NC('agenda'), graus:NC('graus'), planos:NC('planos'), conta:NC('conta') };
+    const goTo={ home:()=>this.go('home'), agenda:()=>this.go('agenda'), graus:()=>this.go('graus'), planos:()=>this.go('planos'), conta:()=>this.go('conta') };
+    const TITLES={ home:'Início', agenda:'Minha agenda', graus:'Graduações', planos:'Planos', conta:'Minha conta' };
+
+    const hasUnread = !this.state.bannerDismissed;
+    const topNotif = { title:'Aula de sábado remarcada', msg:'A competição de sábado será às 11h em vez de 10h.' };
+
+    // faixa / progress (Rafael: azul 4º, 52/40 -> apto p/ roxa)
+    const pc=52, pr=40, pct=Math.min(100,Math.round(pc/pr*100))+'%';
+    const apto = pc>=pr;
+    const creditDots=[0,1,2,3].map(i=>({ bg: i<1 ? '#e0e0e4' : '#e08a1e' })); // 1 usado, 3 restantes
+
+    // eventos
+    const eventos=[
+      { dayNum:'12', monL:'JUL', title:'Exame de Faixa — 1º Sem.', short:'Avaliação de graduação' },
+      { dayNum:'26', monL:'JUL', title:'Seminário Faixa-Preta', short:'Workshop de guarda · 3h' },
+      { dayNum:'09', monL:'AGO', title:'Open Interno Vértice', short:'Campeonato por categorias' },
+    ];
+
+    // schedule
+    const dow=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom']; const nums=[22,23,24,25,26,27,28]; const today=1;
+    const SCHED={
+      0:[ {id:'d0a',type:'fixa',name:'Fundamentos Gi',time:'19h00',instr:'Renata Dias',def:'out'}, {id:'d0b',type:'aberta',name:'No-Gi',time:'20h00',instr:'Marcos Vieira',def:'free'} ],
+      1:[ {id:'d1a',type:'slot',name:'Aula particular',time:'19h00',instr:'Carlos Tavares',def:'booked'}, {id:'d1b',type:'aberta',name:'Avançada',time:'20h00',instr:'Carlos Tavares',def:'free'} ],
+      2:[ {id:'d2a',type:'fixa',name:'Fundamentos Gi',time:'19h00',instr:'Renata Dias',def:'out'} ],
+      3:[ {id:'d3a',type:'slot',name:'Aula particular',time:'07h00',instr:'Marcos Vieira',def:'free'}, {id:'d3b',type:'aberta',name:'No-Gi',time:'20h00',instr:'Marcos Vieira',def:'free'} ],
+      4:[ {id:'d4a',type:'fixa',name:'Fundamentos Gi',time:'19h00',instr:'Renata Dias',def:'out'} ],
+      5:[ {id:'d5e',type:'evento',name:'Open Interno Vértice',time:'09h00',instr:'Evento da academia'}, {id:'d5a',type:'fixa',name:'Competição',time:'10h00',instr:'Carlos Tavares',def:'booked'} ],
+      6:[],
+    };
+    const eff=(it)=> this.state.book[it.id]!==undefined ? this.state.book[it.id] : it.def;
+
+    const week = dow.map((d,i)=>{
+      const items=SCHED[i]||[]; const active=i===this.state.day;
+      const dots=[]; if(items.some(x=>x.type==='evento')) dots.push({bg:'#e08a1e'}); if(items.some(x=>x.type!=='evento')) dots.push({bg: active?'#fff':'#bdbdc4'});
+      return { dow:d, num:nums[i], dots, onClick:()=>this.setState({day:i}),
+        style:`flex:none;width:54px;padding:8px 0;border-radius:12px;text-align:center;cursor:pointer;color:${active?'#fff':'#5c5d63'};background:${active?'#17181c':'#fff'};border:1px solid ${active?'#17181c':'#e9e9ec'}${i===today&&!active?';box-shadow:inset 0 0 0 1.5px #f0d9b4':''}` };
+    });
+    const dayLabel = `${['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'][this.state.day]}, ${nums[this.state.day]} de junho`;
+
+    // build day items with actions
+    const TAG={ fixa:{t:'Turma fixa',s:'font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:#f1ecfb;color:#6d28d9'}, aberta:{t:'Aula aberta',s:'font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:#eaf6f0;color:#0c7a52'}, slot:{t:'Particular',s:'font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:#fbf0dd;color:#b45309'}, evento:{t:'Evento',s:'font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:#eef0ff;color:#3457a6'} };
+    const primary='flex:1;height:38px;border-radius:9px;background:#e08a1e;color:#17181c;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer';
+    const ghost='flex:1;height:38px;border-radius:9px;background:#fff;border:1px solid #e6e6e9;color:#17181c;font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer';
+    const danger='flex:1;height:38px;border-radius:9px;background:#fff;border:1px solid #f0d2cb;color:#b42318;font-size:12.5px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer';
+    const doneTag='flex:1;height:38px;border-radius:9px;background:#e7f4ec;border:1px solid #b9e2cb;color:#0f7a4d;font-size:12.5px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer';
+
+    const items=(SCHED[this.state.day]||[]);
+    const dayItems = items.map(it=>{
+      const st=eff(it);
+      let actions=[], sub=it.instr;
+      const base={ id:it.id, time:it.time, name:it.name, tag:TAG[it.type].t, tagStyle:TAG[it.type].s };
+      if(it.type==='evento'){ return { ...base, sub, hasActions:false, actions:[], cardStyle:cardOf(false) }; }
+      if(it.type==='fixa'){
+        if(st==='in'){ actions=[{label:'✓ Check-in feito',style:doneTag,onClick:()=>this.setBook(it.id,'out')}]; }
+        else { actions=[{label:'Fazer check-in',style:primary,onClick:()=>{this.setBook(it.id,'in');this.showToast('Check-in confirmado ✓');}}]; }
+      } else if(it.type==='aberta'){
+        if(st==='booked'){ actions=[{label:'Agendado',style:doneTag,onClick:()=>{}},{label:'Cancelar',style:danger,onClick:()=>{this.setBook(it.id,'free');this.showToast('Agendamento cancelado');}}]; }
+        else { actions=[{label:'Agendar',style:primary,onClick:()=>{this.setBook(it.id,'booked');this.showToast('Aula agendada ✓');}}]; }
+      } else if(it.type==='slot'){
+        if(st==='booked'){ sub=it.instr+' · você está nesta aula'; actions=[{label:'Reagendar',style:ghost,onClick:()=>this.openResc(it)},{label:'Cancelar',style:danger,onClick:()=>{this.setBook(it.id,'free');this.showToast('Aula cancelada');}}]; }
+        else { sub=it.instr+' · horário disponível'; actions=[{label:'Agendar particular',style:primary,onClick:()=>{this.setBook(it.id,'booked');this.showToast('Particular agendada ✓');}}]; }
+      }
+      const highlight = (it.type==='slot'&&st==='booked')||(it.type==='aberta'&&st==='booked')||(it.type==='fixa'&&st==='in');
+      return { ...base, sub, hasActions:actions.length>0, actions, cardStyle:cardOf(highlight) };
+    });
+    function cardOf(hl){ return `background:#fff;border:1px solid ${hl?'#f0d9b4':'#e9e9ec'};border-radius:14px;padding:14px 16px${hl?';box-shadow:0 0 0 1px #f0d9b4':''}`; }
+
+    // timeline
+    const TL=[
+      { title:'4º grau · Faixa Azul', color:'#1d4ed8', degrees:4, date:'abr/2026', dot:'#1d4ed8' },
+      { title:'3º grau · Faixa Azul', color:'#1d4ed8', degrees:3, date:'out/2025', dot:'#1d4ed8' },
+      { title:'2º grau · Faixa Azul', color:'#1d4ed8', degrees:2, date:'mar/2025', dot:'#1d4ed8' },
+      { title:'1º grau · Faixa Azul', color:'#1d4ed8', degrees:1, date:'set/2024', dot:'#1d4ed8' },
+      { title:'Promoção à Faixa Azul', color:'#1d4ed8', degrees:0, date:'mar/2022', dot:'#1d4ed8' },
+      { title:'Início · Faixa Branca', color:'#efeee9', degrees:0, date:'jan/2022', dot:'#c9c7be' },
+    ];
+    const timeline = TL.map((t,i)=>({ ...t, lineStyle: i===TL.length-1 ? 'display:none' : 'flex:1;width:2px;background:#e6e6e9;margin-top:2px' }));
+
+    // planos
+    const PL=[
+      { id:1, name:'Coletiva Mensal', price:'149', freq:'2x/semana', credits:'—', type:'col' },
+      { id:2, name:'Coletiva Full', price:'199', freq:'Ilimitado', credits:'—', type:'col' },
+      { id:3, name:'Particular 4', price:'480', freq:'Mensal', credits:'4 créditos', type:'part', current:true },
+      { id:4, name:'Particular 8', price:'880', freq:'Mensal', credits:'8 créditos', type:'part' },
+    ];
+    const requested=this.state.reqPlan;
+    const planos = PL.map(p=>{
+      const current=!!p.current;
+      const req = requested===p.id;
+      return { ...p, creditsLabel: p.credits==='—'?'sem créditos':p.credits,
+        cardStyle:`background:#fff;border:1.5px solid ${current?'#e08a1e':'#e9e9ec'};border-radius:16px;padding:16px 18px`,
+        tag: current?'Plano atual':(p.type==='part'?'Particular':'Coletiva'),
+        tagStyle: current?'font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:#fbf0dd;color:#b45309':'font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:#f1f1f3;color:#5c5d63',
+        showAction: !current,
+        actionLabel: req?'✓ Upgrade solicitado':'Solicitar upgrade',
+        actionStyle: req?'margin-top:13px;height:42px;border-radius:10px;background:#e7f4ec;border:1px solid #b9e2cb;color:#0f7a4d;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center':'margin-top:13px;height:42px;border-radius:10px;background:#17181c;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer',
+        action: ()=>{ this.setState({reqPlan:p.id}); this.showToast('Pedido enviado ao admin ✓'); } };
+    });
+
+    // reschedule modal
+    const modal=this.state.modal;
+    const RESC=[
+      { day:'Qua', time:'07h00', instr:'Carlos Tavares' },
+      { day:'Qui', time:'07h00', instr:'Marcos Vieira' },
+      { day:'Sex', time:'18h00', instr:'Carlos Tavares' },
+      { day:'Sáb', time:'09h00', instr:'Renata Dias' },
+    ];
+    const rescheduleOptions = RESC.map((o,i)=>{ const sel=this.state.rescPick===i; return { ...o, pick:()=>this.setState({rescPick:i}),
+      style:`display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-radius:12px;cursor:pointer;border:1.5px solid ${sel?'#e08a1e':'#ededf0'};background:${sel?'#fdf6ec':'#fff'}`,
+      check: sel?'✓':'', checkStyle: sel?'width:24px;height:24px;border-radius:50%;background:#e08a1e;color:#17181c;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px':'width:24px;height:24px;border-radius:50%;border:1.5px solid #d8d8dd' }; });
+
+    return {
+      screenTitle: TITLES[screen]||'Início', nc, goTo, hasUnread, topNotif, dismissBanner:()=>this.setState({bannerDismissed:true}),
+      isHome:screen==='home', isAgenda:screen==='agenda', isGraus:screen==='graus', isPlanos:screen==='planos', isConta:screen==='conta',
+      pc, pr, pct, nextGrad:'Faixa Roxa', aptoNote: apto?'Você atingiu o mínimo de aulas — aguarde a avaliação do professor.':'Continue treinando!', rankPos:2, rankNote:'2º lugar este mês · 31 check-ins',
+      creditDots, eventos, week, dayLabel,
+      dayItems, dayEmpty: dayItems.length===0,
+      timeline, planos,
+      modalOpen: !!modal, closeModal:()=>this.closeModal(), stop:e=>e.stopPropagation(),
+      rescheduleSub: modal&&modal.item ? `Atual: ${dow[1]} · ${modal.item.time} · escolha um novo horário` : '',
+      rescheduleOptions, confirmReschedule:()=>this.confirmReschedule(),
+      toast:this.state.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

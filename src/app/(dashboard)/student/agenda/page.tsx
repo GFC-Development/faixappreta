@@ -325,17 +325,17 @@ export default function AgendaPage() {
                 onClick={() => setSelectedDate(day)}
                 className={`flex flex-col items-center p-1.5 sm:p-2 rounded-[8px] text-sm transition-colors ${
                   isSelected
-                    ? "bg-accent text-white"
+                    ? "bg-accent text-accent-on"
                     : isToday
                     ? "bg-[#f4f4f6]"
                     : "hover:bg-[#f4f4f6]"
                 }`}
               >
-                <span className={`text-[10px] sm:text-[11px] uppercase ${isSelected ? "text-white/80" : "text-[#9b9ca2]"}`}>
+                <span className={`text-[10px] sm:text-[11px] uppercase transition-colors ${isSelected ? "opacity-80" : "text-[#9b9ca2]"}`}>
                   <span className="sm:hidden">{format(day, "EEEEE", { locale: ptBR })}</span>
                   <span className="hidden sm:inline">{format(day, "EEE", { locale: ptBR })}</span>
                 </span>
-                <span className={`font-medium text-sm sm:text-base ${isSelected ? "text-white" : "text-[#17181c]"}`}>{format(day, "d")}</span>
+                <span className={`font-medium text-sm sm:text-base transition-colors ${!isSelected && "text-[#17181c]"}`}>{format(day, "d")}</span>
                 {has && (
                   <div
                     className={`w-1.5 h-1.5 rounded-full mt-0.5 sm:mt-1 ${

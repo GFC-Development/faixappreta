@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#f7f7f8}
+body{font-family:'Hanken Grotesk',sans-serif;-webkit-font-smoothing:antialiased;color:#17181c}
+input,select,textarea,button{font-family:inherit}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#d6d6da;border-radius:9px;border:2px solid #f7f7f8}
+@keyframes fp-pop{from{transform:scale(.96);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+</helmet>
+
+<div style="display:flex;min-height:100vh;background:#f7f7f8">
+
+  <!-- ===================== DESKTOP SIDEBAR ===================== -->
+  <sc-if value="{{ showSidebar }}" hint-placeholder-val="{{ true }}">
+    <div style="width:226px;flex:none;background:#17181c;display:flex;flex-direction:column;position:sticky;top:0;height:100vh">
+      <div style="display:flex;align-items:center;gap:10px;padding:20px 18px 16px">
+        <div style="width:36px;height:36px;flex:none;border-radius:10px;background:#e08a1e;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:800;font-size:18px;color:#17181c;box-shadow:0 4px 12px rgba(224,138,30,.32)">V</div>
+        <div style="min-width:0"><div style="font-weight:700;font-size:14px;color:#fbfbf8;line-height:1.1">Vértice Team</div><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;color:#76787f">vertice.faixappreta</div></div>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:4px 12px 12px">
+        <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="6">
+          <div style="margin-bottom:14px">
+            <div style="font-family:'Spline Sans Mono',monospace;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#5c5e66;padding:0 12px 6px">{{ g.title }}</div>
+            <sc-for list="{{ g.items }}" as="n" hint-placeholder-count="2">
+              <div style="{{ n.itemStyle }}" onClick="{{ n.onClick }}"><span style="{{ n.dotStyle }}"></span><span style="flex:1">{{ n.label }}</span><span style="{{ n.badgeStyle }}">{{ n.badgeText }}</span></div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 18px;border-top:1px solid #26282e">
+        <div style="width:32px;height:32px;flex:none;border-radius:50%;background:#3a2e1c;color:#f3b765;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px">CT</div>
+        <div style="min-width:0"><div style="font-weight:600;font-size:12.5px;color:#fbfbf8">Carlos Tavares</div><div style="font-size:10.5px;color:#76787f">Owner</div></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== MAIN COLUMN ===================== -->
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+    <!-- MOBILE TOP BAR -->
+    <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+      <div style="position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;padding:13px 18px;background:#17181c">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;flex:none;border-radius:9px;background:#e08a1e;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;color:#17181c">V</div>
+          <div style="font-weight:700;font-size:14px;color:#fbfbf8">Vértice Team</div>
+        </div>
+        <div style="position:relative;width:34px;height:34px;border-radius:9px;background:#26282e;display:flex;align-items:center;justify-content:center"><span style="width:13px;height:13px;border-radius:5px 5px 3px 3px;border:1.5px solid #c9cace"></span><span style="position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:#e08a1e;border:1.5px solid #26282e"></span></div>
+      </div>
+    </sc-if>
+
+    <!-- ============ DASHBOARD ============ -->
+    <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
+      <div style="padding:22px 26px 26px;max-width:1180px;width:100%;margin:0 auto">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:18px">
+          <div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;letter-spacing:-.01em;color:#17181c">Visão geral</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Segunda, 23 de junho · atualizado agora</div></div>
+          <div style="display:flex;gap:8px"><div style="height:36px;padding:0 14px;border-radius:9px;background:#fff;border:1px solid #e6e6e9;color:#5c5d63;font-size:12.5px;font-weight:600;display:flex;align-items:center">Esta semana</div><div style="height:36px;padding:0 15px;border-radius:9px;background:#e08a1e;color:#17181c;font-size:12.5px;font-weight:700;display:flex;align-items:center;cursor:pointer" onClick="{{ goTo.chamada }}">+ Fazer chamada</div></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+          <div style="flex:1;min-width:150px;background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:16px 18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2">Alunos ativos</div><div style="display:flex;align-items:baseline;gap:8px;margin-top:7px"><span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:32px;letter-spacing:-.02em;color:#17181c;line-height:1">211</span><span style="font-size:11.5px;font-weight:600;color:#0f7a4d;background:#e7f4ec;padding:2px 7px;border-radius:20px">+8</span></div></div>
+          <div style="flex:1;min-width:150px;background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:16px 18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2">Particular</div><div style="display:flex;align-items:baseline;gap:8px;margin-top:7px"><span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:32px;letter-spacing:-.02em;color:#17181c;line-height:1">27</span><span style="font-size:11.5px;color:#9b9ca2">alunos</span></div></div>
+          <div style="flex:1;min-width:150px;background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:16px 18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2">Check-ins hoje</div><div style="display:flex;align-items:baseline;gap:8px;margin-top:7px"><span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:32px;letter-spacing:-.02em;color:#17181c;line-height:1">84</span></div></div>
+          <div style="flex:1;min-width:150px;background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:16px 18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2">Check-ins semana</div><div style="display:flex;align-items:baseline;gap:8px;margin-top:7px"><span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:32px;letter-spacing:-.02em;color:#17181c;line-height:1">512</span><span style="font-size:11.5px;font-weight:600;color:#0f7a4d;background:#e7f4ec;padding:2px 7px;border-radius:20px">+12%</span></div></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px">
+          <div style="flex:1.6;min-width:280px;background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:16px 18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><span style="font-weight:700;font-size:14px;color:#17181c">Check-ins · 7 dias</span><span style="font-family:'Spline Sans Mono',monospace;font-size:10px;color:#9b9ca2">512 total</span></div>
+            <div style="display:flex;align-items:flex-end;gap:10px;height:74px">
+              <sc-for list="{{ bars }}" as="b" hint-placeholder-count="7"><div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end"><div style="width:100%;max-width:34px;border-radius:4px;background:{{ b.bg }};height:{{ b.h }}"></div><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;color:#a8a8ad">{{ b.day }}</div></div></sc-for>
+            </div>
+          </div>
+          <div style="flex:1;min-width:220px;display:flex;flex-direction:column;gap:12px">
+            <div style="flex:1;background:#fff;border:1px solid #f0e3c8;border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer" onClick="{{ goTo.aprovacoes }}"><div style="width:34px;height:34px;flex:none;border-radius:9px;background:#fbf0dd;color:#b45309;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:15px">{{ counts.aprovacoes }}</div><div style="flex:1"><div style="font-weight:600;font-size:13px;color:#17181c">Aprovações pendentes</div><div style="font-size:11.5px;color:#9b9ca2">Novos cadastros</div></div><span style="color:#c9781a;font-weight:700">→</span></div>
+            <div style="flex:1;background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer" onClick="{{ goTo.planos }}"><div style="width:34px;height:34px;flex:none;border-radius:9px;background:#fdf0db;color:#c9781a;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:15px">{{ counts.upgrades }}</div><div style="flex:1"><div style="font-weight:600;font-size:13px;color:#17181c">Pedidos de upgrade</div><div style="font-size:11.5px;color:#9b9ca2">Mudança de plano</div></div><span style="color:#9b9ca2;font-weight:700">→</span></div>
+          </div>
+        </div>
+        <div style="background:#fff;border:1px solid #e9e9ec;border-radius:13px;overflow:hidden">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 18px 12px"><span style="font-weight:700;font-size:14px;color:#17181c">Alunos recentes</span><span style="font-size:12px;color:#c9781a;font-weight:600;cursor:pointer" onClick="{{ goTo.alunos }}">Ver todos</span></div>
+          <sc-if value="{{ showTable }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;grid-template-columns:1.7fr 1.2fr .6fr .9fr .7fr .9fr;gap:10px;padding:9px 18px;font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#a8a8ad;background:#fafafa;border-top:1px solid #f1f1f3"><div>Aluno</div><div>Faixa</div><div>Grau</div><div>Tipo</div><div>Pres.</div><div>Pagto</div></div>
+            <sc-for list="{{ topStudents }}" as="s" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:1.7fr 1.2fr .6fr .9fr .7fr .9fr;gap:10px;align-items:center;padding:9px 18px;border-top:1px solid #f1f1f3;cursor:pointer" onClick="{{ s.open }}" style-hover="background:#fafafa">
+                <div style="display:flex;align-items:center;gap:9px;min-width:0"><div style="width:28px;height:28px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10.5px;background:{{ s.avBg }};color:{{ s.avFg }}">{{ s.initials }}</div><div style="font-weight:600;font-size:12.5px;color:#17181c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.name }}</div></div>
+                <div style="display:flex;align-items:center"><dc-import name="Belt" color="{{ s.beltColor }}" degrees="{{ s.degrees }}" style="width:96px;height:13px" hint-size="96px,13px"></dc-import></div>
+                <div style="font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;color:#5c5d63">{{ s.degrees }}º</div>
+                <div><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:{{ s.typeBg }};color:{{ s.typeFg }}">{{ s.type }}</span></div>
+                <div style="font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;color:#3d3e44">{{ s.presencas }}</div>
+                <div><span style="font-size:11px;font-weight:600;color:{{ s.payFg }}">● {{ s.payLabel }}</span></div>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ topStudents }}" as="s" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:11px;padding:12px 16px;border-top:1px solid #f1f1f3" onClick="{{ s.open }}"><div style="width:36px;height:36px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;background:{{ s.avBg }};color:{{ s.avFg }}">{{ s.initials }}</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-weight:600;font-size:13.5px;color:#17181c">{{ s.name }}</span><span style="font-size:11px;font-weight:600;color:{{ s.payFg }}">● {{ s.payLabel }}</span></div><div style="display:flex;align-items:center;gap:10px;margin-top:7px"><dc-import name="Belt" color="{{ s.beltColor }}" degrees="{{ s.degrees }}" style="width:90px;height:12px" hint-size="90px,12px"></dc-import><span style="font-size:11px;color:#9b9ca2">{{ s.presencas }} pres.</span></div></div></div>
+            </sc-for>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ AGENDA DO DIA ============ -->
+    <sc-if value="{{ isAgenda }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:980px;width:100%;margin:0 auto">
+        <div style="margin-bottom:16px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Agenda do dia</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Aulas em grupo e slots particulares do dia selecionado</div></div>
+        <div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px">
+          <sc-for list="{{ agendaWeek }}" as="d" hint-placeholder-count="7"><div style="{{ d.style }}" onClick="{{ d.onClick }}"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.7">{{ d.dow }}</div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:17px;margin-top:2px">{{ d.num }}</div></div></sc-for>
+        </div>
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2;margin-bottom:10px">Aulas em grupo</div>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:22px">
+          <sc-for list="{{ agendaGrupos }}" as="c" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+              <div style="width:52px;text-align:center;flex:none"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;color:#17181c">{{ c.time }}</div></div>
+              <div style="width:1px;height:34px;background:#ededf0;flex:none"></div>
+              <div style="flex:1;min-width:140px"><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:14px;color:#17181c">{{ c.name }}</span><span style="{{ c.kidsStyle }}">Kids</span></div><div style="font-size:12px;color:#8b8c92;margin-top:3px">{{ c.instr }}</div></div>
+              <div style="display:flex;align-items:center;gap:9px"><span style="{{ c.modeStyle }}">{{ c.mode }}</span><span style="font-family:'Spline Sans Mono',monospace;font-size:11px;color:#5c5d63">{{ c.enrolled }}/{{ c.cap }}</span><div style="height:32px;padding:0 12px;border-radius:8px;border:1px solid #e6e6e9;font-size:12px;font-weight:600;color:#17181c;display:flex;align-items:center;cursor:pointer" onClick="{{ c.manage }}" style-hover="border-color:#cfcfd4">Gerenciar</div></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ agendaGruposEmpty }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px dashed #dcdce0;border-radius:13px;padding:20px;text-align:center;font-size:13px;color:#9b9ca2">Nenhuma aula em grupo neste dia.</div></sc-if>
+        </div>
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2;margin-bottom:10px">Slots particulares</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ agendaSlots }}" as="sl" hint-placeholder-count="2">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+              <div style="width:52px;text-align:center;flex:none"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;color:#17181c">{{ sl.time }}</div></div>
+              <div style="width:1px;height:34px;background:#ededf0;flex:none"></div>
+              <div style="flex:1;min-width:140px"><div style="font-weight:700;font-size:14px;color:#17181c">Particular · {{ sl.instr }}</div><div style="font-size:12px;color:#8b8c92;margin-top:3px">{{ sl.label }}</div></div>
+              <div style="display:flex;align-items:center;gap:9px"><span style="{{ sl.statusStyle }}">{{ sl.status }}</span><div style="height:32px;padding:0 12px;border-radius:8px;border:1px solid #e6e6e9;font-size:12px;font-weight:600;color:#17181c;display:flex;align-items:center;cursor:pointer" onClick="{{ sl.manage }}" style-hover="border-color:#cfcfd4">Gerenciar</div></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ agendaSlotsEmpty }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px dashed #dcdce0;border-radius:13px;padding:20px;text-align:center;font-size:13px;color:#9b9ca2">Nenhum slot particular neste dia.</div></sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ ALUNOS ============ -->
+    <sc-if value="{{ isAlunos }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:1080px;width:100%;margin:0 auto">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:16px">
+          <div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Alunos</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">211 cadastrados · {{ counts.aprovacoes }} aguardando aprovação</div></div>
+          <div style="display:flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:9px;background:#fff;border:1px solid #e6e6e9;color:#a09c91;font-size:13px;min-width:200px"><span style="width:13px;height:13px;border-radius:50%;border:1.5px solid #bdb9ad"></span>Buscar aluno…</div>
+        </div>
+        <div style="background:#fff;border:1px solid #e9e9ec;border-radius:13px;overflow:hidden">
+          <sc-if value="{{ showTable }}" hint-placeholder-val="{{ true }}">
+            <div style="display:grid;grid-template-columns:1.7fr 1.2fr .6fr .9fr .7fr .9fr;gap:10px;padding:11px 18px;font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#a8a8ad;background:#fafafa"><div>Aluno</div><div>Faixa</div><div>Grau</div><div>Tipo</div><div>Pres.</div><div>Pagto</div></div>
+            <sc-for list="{{ students }}" as="s" hint-placeholder-count="8">
+              <div style="display:grid;grid-template-columns:1.7fr 1.2fr .6fr .9fr .7fr .9fr;gap:10px;align-items:center;padding:10px 18px;border-top:1px solid #f1f1f3;cursor:pointer" onClick="{{ s.open }}" style-hover="background:#fafafa">
+                <div style="display:flex;align-items:center;gap:9px;min-width:0"><div style="width:28px;height:28px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10.5px;background:{{ s.avBg }};color:{{ s.avFg }}">{{ s.initials }}</div><div style="font-weight:600;font-size:12.5px;color:#17181c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.name }}</div></div>
+                <div style="display:flex;align-items:center"><dc-import name="Belt" color="{{ s.beltColor }}" degrees="{{ s.degrees }}" style="width:96px;height:13px" hint-size="96px,13px"></dc-import></div>
+                <div style="font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;color:#5c5d63">{{ s.degrees }}º</div>
+                <div><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:{{ s.typeBg }};color:{{ s.typeFg }}">{{ s.type }}</span></div>
+                <div style="font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;color:#3d3e44">{{ s.presencas }}</div>
+                <div><span style="font-size:11px;font-weight:600;color:{{ s.payFg }}">● {{ s.payLabel }}</span></div>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+            <sc-for list="{{ students }}" as="s" hint-placeholder-count="8">
+              <div style="display:flex;align-items:center;gap:11px;padding:12px 16px;border-top:1px solid #f1f1f3" onClick="{{ s.open }}"><div style="width:36px;height:36px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;background:{{ s.avBg }};color:{{ s.avFg }}">{{ s.initials }}</div><div style="flex:1;min-width:0"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span style="font-weight:600;font-size:13.5px;color:#17181c">{{ s.name }}</span><span style="font-size:11px;font-weight:600;color:{{ s.payFg }}">● {{ s.payLabel }}</span></div><div style="display:flex;align-items:center;gap:10px;margin-top:7px"><dc-import name="Belt" color="{{ s.beltColor }}" degrees="{{ s.degrees }}" style="width:90px;height:12px" hint-size="90px,12px"></dc-import><span style="font-size:11px;color:#9b9ca2">{{ s.type }} · {{ s.presencas }} pres.</span></div></div></div>
+            </sc-for>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ APROVAÇÕES ============ -->
+    <sc-if value="{{ isAprovacoes }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:760px;width:100%;margin:0 auto">
+        <div style="margin-bottom:16px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Aprovações</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">{{ counts.aprovacoes }} cadastros aguardando sua decisão</div></div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ aprovacoes }}" as="a" hint-placeholder-count="4">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+              <div style="width:42px;height:42px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;background:{{ a.avBg }};color:{{ a.avFg }}">{{ a.initials }}</div>
+              <div style="flex:1;min-width:160px"><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:14px;color:#17181c">{{ a.name }}</span><span style="{{ a.kidsStyle }}">Kids</span></div><div style="font-family:'Spline Sans Mono',monospace;font-size:11px;color:#9b9ca2;margin-top:3px">{{ a.email }} · {{ a.when }}</div></div>
+              <div style="display:flex;gap:8px"><div style="height:36px;padding:0 16px;border-radius:8px;background:#e7f4ec;color:#0f7a4d;border:1px solid #b9e2cb;font-size:12.5px;font-weight:700;display:flex;align-items:center;cursor:pointer" onClick="{{ a.approve }}">Aprovar</div><div style="height:36px;padding:0 14px;border-radius:8px;background:#fff;color:#b42318;border:1px solid #f0d2cb;font-size:12.5px;font-weight:600;display:flex;align-items:center;cursor:pointer" onClick="{{ a.reject }}">Rejeitar</div></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ aprovacoesEmpty }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px dashed #dcdce0;border-radius:13px;padding:30px;text-align:center"><div style="font-size:14px;font-weight:600;color:#17181c">Tudo em dia 🥋</div><div style="font-size:12.5px;color:#9b9ca2;margin-top:4px">Nenhum cadastro pendente.</div></div></sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ PROFESSORES ============ -->
+    <sc-if value="{{ isProfessores }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:840px;width:100%;margin:0 auto">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:16px">
+          <div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Professores</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Apenas o owner gerencia a equipe</div></div>
+          <div style="height:38px;padding:0 16px;border-radius:9px;background:#e08a1e;color:#17181c;font-size:12.5px;font-weight:700;display:flex;align-items:center;cursor:pointer" onClick="{{ openAddProf }}">+ Novo professor</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ profs }}" as="p" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+              <div style="width:42px;height:42px;flex:none;border-radius:50%;background:#26282e;color:#f3b765;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px">{{ p.initials }}</div>
+              <div style="flex:1;min-width:150px"><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:600;font-size:14px;color:#17181c">{{ p.name }}</span><span style="{{ p.roleStyle }}">{{ p.role }}</span></div><div style="font-family:'Spline Sans Mono',monospace;font-size:11px;color:#9b9ca2;margin-top:3px">{{ p.email }}</div></div>
+              <div style="font-size:12px;color:#5c5d63"><b style="font-family:'Archivo',sans-serif">{{ p.turmas }}</b> turmas</div>
+              <div style="display:flex;gap:7px"><div style="width:34px;height:34px;border-radius:8px;border:1px solid #e6e6e9;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#5c5d63" style-hover="border-color:#cfcfd4"><span style="width:13px;height:13px;border:1.5px solid currentColor;border-radius:3px"></span></div><div style="{{ p.delStyle }}" onClick="{{ p.del }}"><span style="width:11px;height:11px;border-radius:1px;border:1.5px solid currentColor;border-top:3px solid currentColor"></span></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ AULAS EM GRUPO ============ -->
+    <sc-if value="{{ isGrupo }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:980px;width:100%;margin:0 auto">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:16px">
+          <div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Aulas em grupo</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Turmas abertas (aluno se inscreve) ou fixas (você matricula)</div></div>
+          <div style="height:38px;padding:0 16px;border-radius:9px;background:#e08a1e;color:#17181c;font-size:12.5px;font-weight:700;display:flex;align-items:center;cursor:pointer" onClick="{{ openAddAula }}">+ Nova aula</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">
+          <sc-for list="{{ grupos }}" as="c" hint-placeholder-count="4">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:14px;padding:16px 18px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px"><div><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:700;font-size:15px;color:#17181c">{{ c.name }}</span><span style="{{ c.kidsStyle }}">Kids</span></div><div style="font-family:'Spline Sans Mono',monospace;font-size:11px;color:#9b9ca2;margin-top:4px">{{ c.day }} · {{ c.time }}</div></div><span style="{{ c.modeStyle }}">{{ c.mode }}</span></div>
+              <div style="display:flex;align-items:center;gap:8px;margin:14px 0 12px"><div style="width:26px;height:26px;border-radius:50%;background:#26282e;color:#f3b765;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:9.5px">{{ c.instrInitials }}</div><span style="font-size:12.5px;color:#5c5d63">{{ c.instr }}</span></div>
+              <div style="height:7px;border-radius:5px;background:#efeff1;overflow:hidden;margin-bottom:7px"><div style="height:100%;border-radius:5px;background:#e08a1e;width:{{ c.fillPct }}"></div></div>
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:11.5px;color:#9b9ca2">{{ c.enrolled }} / {{ c.cap }} alunos</span><span style="font-size:12px;font-weight:600;color:#c9781a;cursor:pointer" onClick="{{ c.manage }}">{{ c.manageLabel }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ AULAS PARTICULARES / SLOTS ============ -->
+    <sc-if value="{{ isParticulares }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:980px;width:100%;margin:0 auto">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:16px">
+          <div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Aulas particulares</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Slots com até 4 alunos vinculados ou abertos</div></div>
+          <div style="height:38px;padding:0 16px;border-radius:9px;background:#e08a1e;color:#17181c;font-size:12.5px;font-weight:700;display:flex;align-items:center;cursor:pointer" onClick="{{ openAddSlot }}">+ Novo slot</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">
+          <sc-for list="{{ slots }}" as="sl" hint-placeholder-count="4">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:14px;padding:16px 18px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px"><div><div style="font-weight:700;font-size:15px;color:#17181c">{{ sl.day }} · {{ sl.time }}</div><div style="font-family:'Spline Sans Mono',monospace;font-size:11px;color:#9b9ca2;margin-top:4px">{{ sl.instr }}</div></div><span style="{{ sl.toggleStyle }}" onClick="{{ sl.toggle }}">{{ sl.toggleLabel }}</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;min-height:28px">
+                <sc-for list="{{ sl.chips }}" as="ch" hint-placeholder-count="2"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;background:#f4f4f6;font-size:11.5px;font-weight:600;color:#3d3e44">{{ ch.name }}</span></sc-for>
+                <sc-if value="{{ sl.hasFree }}" hint-placeholder-val="{{ false }}"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1px dashed #cfcfd4;font-size:11.5px;font-weight:600;color:#9b9ca2;cursor:pointer" onClick="{{ sl.manage }}">+ vincular</span></sc-if>
+              </div>
+              <div style="font-size:11px;color:#9b9ca2;margin-top:11px">{{ sl.countLabel }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ CHAMADA ============ -->
+    <sc-if value="{{ isChamada }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:920px;width:100%;margin:0 auto">
+        <div style="margin-bottom:16px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Chamada</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Marque a presença dos alunos do dia</div></div>
+        <div style="display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px">
+          <sc-for list="{{ weekDays }}" as="d" hint-placeholder-count="7"><div style="{{ d.style }}" onClick="{{ d.onClick }}"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;opacity:.7">{{ d.dow }}</div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:17px;margin-top:2px">{{ d.num }}</div></div></sc-for>
+        </div>
+        <div style="display:flex;gap:12px;margin-bottom:14px">
+          <div style="flex:1;background:#fff;border:1px solid #e9e9ec;border-radius:11px;padding:12px 15px;display:flex;align-items:center;gap:10px"><div style="width:9px;height:9px;border-radius:50%;background:#0f9d6b"></div><div><span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:18px;color:#17181c">{{ callCounts.presente }}</span><span style="font-size:12px;color:#8b8c92;margin-left:6px">presentes</span></div></div>
+          <div style="flex:1;background:#fff;border:1px solid #e9e9ec;border-radius:11px;padding:12px 15px;display:flex;align-items:center;gap:10px"><div style="width:9px;height:9px;border-radius:50%;background:#cdcdd2"></div><div><span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:18px;color:#17181c">{{ callCounts.pendente }}</span><span style="font-size:12px;color:#8b8c92;margin-left:6px">pendentes</span></div></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ bookings }}" as="b" hint-placeholder-count="6">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:11px;flex:1;min-width:180px"><div style="width:38px;height:38px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;background:{{ b.avBg }};color:{{ b.avFg }}">{{ b.initials }}</div><div style="min-width:0"><div style="font-weight:600;font-size:14px;color:#17181c">{{ b.name }}</div><div style="display:flex;align-items:center;gap:8px;margin-top:5px"><dc-import name="Belt" color="{{ b.beltColor }}" degrees="{{ b.degrees }}" style="width:64px;height:11px" hint-size="64px,11px"></dc-import><span style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;color:#9b9ca2">{{ b.cls }} · {{ b.time }}</span></div></div></div>
+              <div style="display:flex;align-items:center;gap:7px"><div style="{{ b.presenteStyle }}" onClick="{{ b.onPresente }}">Presente</div><div style="{{ b.cancelouStyle }}" onClick="{{ b.onCancelou }}">Cancelou</div><div style="{{ b.ausenteStyle }}" onClick="{{ b.onAusente }}">Ausente</div><div style="width:34px;height:34px;flex:none;border-radius:8px;border:1px solid #ececef;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#b42318" onClick="{{ b.onDelete }}" style-hover="background:#fdeee9;border-color:#f3c9bd"><span style="width:11px;height:11px;border-radius:1px;border:1.5px solid currentColor;border-top:3px solid currentColor;position:relative"></span></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ PRESENÇAS ============ -->
+    <sc-if value="{{ isPresencas }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:1080px;width:100%;margin:0 auto">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:16px">
+          <div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Presenças</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">{{ period.label }}</div></div>
+          <div style="display:flex;gap:6px;background:#efeff1;padding:4px;border-radius:10px"><sc-for list="{{ periods }}" as="p" hint-placeholder-count="4"><div style="{{ p.style }}" onClick="{{ p.onClick }}">{{ p.label }}</div></sc-for></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px">
+          <div style="flex:1;min-width:150px;background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:16px 18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2">Total check-ins</div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:30px;color:#17181c;margin-top:7px">{{ period.total }}</div></div>
+          <div style="flex:1;min-width:150px;background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:16px 18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2">Alunos ativos</div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:30px;color:#17181c;margin-top:7px">{{ period.ativos }}</div></div>
+          <div style="flex:1;min-width:150px;background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:16px 18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2">Média / aluno</div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:30px;color:#17181c;margin-top:7px">{{ period.media }}</div></div>
+          <div style="flex:1.4;min-width:190px;background:#17181c;border-radius:13px;padding:16px 18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2">Mais frequente</div><div style="display:flex;align-items:center;gap:10px;margin-top:10px"><div style="width:32px;height:32px;flex:none;border-radius:50%;background:#3a2e1c;color:#f3b765;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px">{{ period.topInitials }}</div><div><div style="font-weight:700;font-size:14px;color:#fbfbf8">{{ period.top }}</div><div style="font-size:11px;color:#9b9ca2">{{ period.topCount }} check-ins</div></div></div></div>
+        </div>
+        <div style="background:#fff;border:1px solid #e9e9ec;border-radius:14px;overflow:hidden">
+          <div style="padding:16px 20px 10px;font-weight:700;font-size:15px;color:#17181c">Ranking de presenças</div>
+          <div style="display:flex;gap:10px;padding:6px 20px 16px;align-items:flex-end">
+            <sc-for list="{{ podium }}" as="p" hint-placeholder-count="3"><div style="flex:1;background:{{ p.bg }};border:1px solid {{ p.border }};border-radius:12px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;height:{{ p.h }}"><div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;color:{{ p.medal }}">{{ p.rank }}º</div><div style="width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;background:{{ p.avBg }};color:{{ p.avFg }};border:2px solid {{ p.medal }}">{{ p.initials }}</div><div style="font-weight:600;font-size:12.5px;color:#17181c;text-align:center;line-height:1.2">{{ p.name }}</div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:18px;color:#17181c">{{ p.presencas }}</div></div></sc-for>
+          </div>
+          <sc-for list="{{ rankRest }}" as="r" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:13px;padding:11px 20px;border-top:1px solid #f1f1f3;cursor:pointer" onClick="{{ r.open }}" style-hover="background:#fafafa"><div style="width:26px;font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;color:#a8a8ad;text-align:center">{{ r.rank }}</div><div style="width:32px;height:32px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;background:{{ r.avBg }};color:{{ r.avFg }}">{{ r.initials }}</div><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13.5px;color:#17181c">{{ r.name }}</div></div><dc-import name="Belt" color="{{ r.beltColor }}" degrees="{{ r.degrees }}" style="width:80px;height:12px" hint-size="80px,12px"></dc-import><div style="width:54px;text-align:right;font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;color:#17181c">{{ r.presencas }}</div></div></sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ RANKING MENSAL ============ -->
+    <sc-if value="{{ isRanking }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:840px;width:100%;margin:0 auto">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:18px">
+          <div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Ranking mensal</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Pódio de presenças · {{ rankMonth }} 2026</div></div>
+          <div style="display:flex;gap:6px"><div style="{{ rankPrevStyle }}" onClick="{{ rankPrev }}">‹</div><div style="height:36px;padding:0 16px;border-radius:9px;background:#fff;border:1px solid #e6e6e9;font-size:13px;font-weight:700;color:#17181c;display:flex;align-items:center">{{ rankMonth }}</div><div style="{{ rankNextStyle }}" onClick="{{ rankNext }}">›</div></div>
+        </div>
+        <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:18px">
+          <sc-for list="{{ podiumBig }}" as="p" hint-placeholder-count="3">
+            <div style="flex:1;background:{{ p.bg }};border:1px solid {{ p.border }};border-radius:16px;padding:18px 12px;display:flex;flex-direction:column;align-items:center;gap:9px;height:{{ p.h }}">
+              <div style="font-size:22px">{{ p.medalEmoji }}</div>
+              <div style="width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;background:{{ p.avBg }};color:{{ p.avFg }};border:3px solid {{ p.medal }}">{{ p.initials }}</div>
+              <div style="font-weight:700;font-size:13.5px;color:#17181c;text-align:center;line-height:1.2">{{ p.name }}</div>
+              <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:24px;color:#17181c">{{ p.presencas }}</div>
+              <div style="font-size:10.5px;color:#8b8c92">check-ins</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:#fff;border:1px solid #e9e9ec;border-radius:14px;overflow:hidden">
+          <sc-for list="{{ rankRest }}" as="r" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:13px;padding:12px 20px;border-top:1px solid #f1f1f3;cursor:pointer" onClick="{{ r.open }}" style-hover="background:#fafafa"><div style="width:26px;font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;color:#a8a8ad;text-align:center">{{ r.rank }}</div><div style="width:34px;height:34px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;background:{{ r.avBg }};color:{{ r.avFg }}">{{ r.initials }}</div><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13.5px;color:#17181c">{{ r.name }}</div></div><dc-import name="Belt" color="{{ r.beltColor }}" degrees="{{ r.degrees }}" style="width:84px;height:12px" hint-size="84px,12px"></dc-import><div style="width:54px;text-align:right;font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;color:#17181c">{{ r.presencas }}</div></div></sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ REQUISITOS ============ -->
+    <sc-if value="{{ isRequisitos }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:840px;width:100%;margin:0 auto">
+        <div style="margin-bottom:16px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Requisitos de graduação</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Mínimo de aulas para cada grau dentro de cada faixa</div></div>
+        <div style="display:flex;gap:6px;background:#efeff1;padding:4px;border-radius:10px;width:max-content;margin-bottom:16px">
+          <sc-for list="{{ reqTracks }}" as="t" hint-placeholder-count="2"><div style="{{ t.style }}" onClick="{{ t.onClick }}">{{ t.label }}</div></sc-for>
+        </div>
+        <div style="background:#fff;border:1px solid #e9e9ec;border-radius:14px;overflow:hidden">
+          <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:8px;padding:12px 18px;font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#a8a8ad;background:#fafafa"><div>Faixa</div><div style="text-align:center">1º grau</div><div style="text-align:center">2º grau</div><div style="text-align:center">3º grau</div><div style="text-align:center">4º grau</div></div>
+          <sc-for list="{{ reqRows }}" as="row" hint-placeholder-count="5">
+            <div style="display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr 1fr;gap:8px;align-items:center;padding:12px 18px;border-top:1px solid #f1f1f3">
+              <div style="display:flex;align-items:center;gap:10px"><dc-import name="Belt" color="{{ row.color }}" degrees="0" style="width:54px;height:12px" hint-size="54px,12px"></dc-import><span style="font-weight:600;font-size:13px;color:#17181c">{{ row.name }}</span></div>
+              <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="4">
+                <div style="display:flex;align-items:center;justify-content:center;gap:7px"><div style="width:26px;height:26px;border-radius:7px;border:1px solid #e6e6e9;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#5c5d63;font-weight:700;font-size:14px;user-select:none" onClick="{{ c.dec }}" style-hover="background:#f4f4f6">−</div><span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;color:#17181c;width:26px;text-align:center">{{ c.val }}</span><div style="width:26px;height:26px;border-radius:7px;border:1px solid #e6e6e9;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#5c5d63;font-weight:700;font-size:14px;user-select:none" onClick="{{ c.inc }}" style-hover="background:#f4f4f6">+</div></div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:12px;color:#9b9ca2;margin-top:12px">Valores em número de aulas. Alterações são aplicadas imediatamente ao cálculo de aptidão dos alunos.</div>
+      </div>
+    </sc-if>
+
+    <!-- ============ PLANOS ============ -->
+    <sc-if value="{{ isPlanos }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:1000px;width:100%;margin:0 auto">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;gap:10px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Planos</div><span style="font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:#eaf6f0;color:#0c7a52">módulo ativo</span></div>
+          <div style="height:38px;padding:0 16px;border-radius:9px;background:#e08a1e;color:#17181c;font-size:12.5px;font-weight:700;display:flex;align-items:center;cursor:pointer" onClick="{{ openAddPlano }}">+ Novo plano</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:22px">
+          <sc-for list="{{ planos }}" as="p" hint-placeholder-count="4">
+            <div style="{{ p.cardStyle }}">
+              <div style="display:flex;align-items:center;justify-content:space-between"><span style="{{ p.typeStyle }}">{{ p.type }}</span><span style="{{ p.toggleStyle }}" onClick="{{ p.toggle }}">{{ p.toggleLabel }}</span></div>
+              <div style="font-weight:700;font-size:16px;color:#17181c;margin-top:12px">{{ p.name }}</div>
+              <div style="display:flex;align-items:baseline;gap:3px;margin-top:6px"><span style="font-size:13px;color:#8b8c92">R$</span><span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:30px;color:#17181c">{{ p.price }}</span><span style="font-size:12px;color:#8b8c92">/mês</span></div>
+              <div style="font-size:12px;color:#5c5d63;margin-top:10px;border-top:1px solid #f1f1f3;padding-top:10px">{{ p.freq }}</div>
+              <div style="font-size:12px;color:#5c5d63;margin-top:4px">Créditos: {{ p.credits }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2;margin-bottom:10px">Fila de upgrades · {{ counts.upgrades }}</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ upgrades }}" as="u" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:13px;flex-wrap:wrap">
+              <div style="width:38px;height:38px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;background:{{ u.avBg }};color:{{ u.avFg }}">{{ u.initials }}</div>
+              <div style="flex:1;min-width:170px"><div style="font-weight:600;font-size:14px;color:#17181c">{{ u.name }}</div><div style="font-size:12px;color:#8b8c92;margin-top:3px">{{ u.from }} <span style="color:#c9781a;font-weight:700">→</span> {{ u.to }}</div></div>
+              <div style="display:flex;gap:8px"><div style="height:36px;padding:0 16px;border-radius:8px;background:#e7f4ec;color:#0f7a4d;border:1px solid #b9e2cb;font-size:12.5px;font-weight:700;display:flex;align-items:center;cursor:pointer" onClick="{{ u.approve }}">Aprovar</div><div style="height:36px;padding:0 14px;border-radius:8px;background:#fff;color:#b42318;border:1px solid #f0d2cb;font-size:12.5px;font-weight:600;display:flex;align-items:center;cursor:pointer" onClick="{{ u.reject }}">Rejeitar</div></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ upgradesEmpty }}" hint-placeholder-val="{{ false }}"><div style="background:#fff;border:1px dashed #dcdce0;border-radius:13px;padding:24px;text-align:center;font-size:13px;color:#9b9ca2">Nenhum pedido de upgrade na fila.</div></sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ EVENTOS ============ -->
+    <sc-if value="{{ isEventos }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:840px;width:100%;margin:0 auto">
+        <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:16px">
+          <div><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Eventos</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Aparecem na home e na agenda dos alunos</div></div>
+          <div style="height:38px;padding:0 16px;border-radius:9px;background:#e08a1e;color:#17181c;font-size:12.5px;font-weight:700;display:flex;align-items:center;cursor:pointer" onClick="{{ openAddEvento }}">+ Novo evento</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ eventos }}" as="e" hint-placeholder-count="3">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:16px 18px;display:flex;gap:16px">
+              <div style="width:58px;flex:none;text-align:center;background:#17181c;border-radius:11px;padding:9px 0;align-self:flex-start"><div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:20px;color:#f3b765;line-height:1">{{ e.dayNum }}</div><div style="font-family:'Spline Sans Mono',monospace;font-size:9px;text-transform:uppercase;color:#9b9ca2;margin-top:2px">{{ e.monL }}</div></div>
+              <div style="flex:1;min-width:0"><div style="font-weight:700;font-size:15px;color:#17181c">{{ e.title }}</div><div style="font-family:'Spline Sans Mono',monospace;font-size:11px;color:#9b9ca2;margin-top:3px">{{ e.date }}</div><div style="font-size:13px;color:#5c5d63;line-height:1.5;margin-top:8px">{{ e.desc }}</div></div>
+              <div style="{{ e.delStyle }}" onClick="{{ e.del }}"><span style="width:11px;height:11px;border-radius:1px;border:1.5px solid currentColor;border-top:3px solid currentColor"></span></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ NOTIFICAÇÕES ============ -->
+    <sc-if value="{{ isNotificacoes }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:22px 26px 26px;max-width:840px;width:100%;margin:0 auto">
+        <div style="margin-bottom:16px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:24px;color:#17181c">Notificações</div><div style="font-size:13px;color:#8b8c92;margin-top:2px">Envie um aviso para todos os alunos da academia</div></div>
+        <div style="background:#fff;border:1px solid #e9e9ec;border-radius:14px;padding:18px 20px;margin-bottom:22px">
+          <div style="font-weight:700;font-size:14px;color:#17181c;margin-bottom:12px">Nova mensagem broadcast</div>
+          <input value="{{ nTitle }}" onInput="{{ onNTitle }}" placeholder="Título do aviso" style="width:100%;height:40px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;color:#17181c;outline:none;margin-bottom:10px" />
+          <textarea value="{{ nMsg }}" onInput="{{ onNMsg }}" placeholder="Escreva a mensagem…" style="width:100%;height:84px;border:1px solid #e6e6e9;border-radius:9px;padding:11px 13px;font-size:14px;color:#17181c;outline:none;resize:none;line-height:1.5"></textarea>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px"><span style="font-size:12px;color:#9b9ca2">Alcance: 188 alunos ativos</span><div style="{{ sendStyle }}" onClick="{{ sendNotif }}">Enviar broadcast</div></div>
+        </div>
+        <div style="font-family:'Spline Sans Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2;margin-bottom:10px">Histórico</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ notifs }}" as="n" hint-placeholder-count="2">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:13px;padding:14px 16px"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="font-weight:600;font-size:14px;color:#17181c">{{ n.title }}</span><span style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;color:#9b9ca2">{{ n.when }}</span></div><div style="font-size:13px;color:#5c5d63;line-height:1.5;margin-top:6px">{{ n.msg }}</div><div style="font-size:11px;color:#9b9ca2;margin-top:8px">Enviado para {{ n.reach }} alunos</div></div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- ============ PERFIL DO ALUNO ============ -->
+    <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:18px 26px 26px;max-width:1040px;width:100%;margin:0 auto">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#8b8c92;cursor:pointer;margin-bottom:14px;font-weight:600" onClick="{{ goTo.alunos }}"><span style="font-size:16px">‹</span> Alunos</div>
+        <div style="background:#fff;border:1px solid #e9e9ec;border-radius:16px;padding:22px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+          <div style="width:72px;height:72px;flex:none;border-radius:18px;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:700;font-size:26px;background:{{ cur.avBg }};color:{{ cur.avFg }}">{{ cur.initials }}</div>
+          <div style="flex:1;min-width:220px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:23px;color:#17181c">{{ cur.name }}</span><span style="font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:20px;background:{{ cur.typeBg }};color:{{ cur.typeFg }}">{{ cur.type }}</span></div><div style="font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:#9b9ca2;margin-top:5px">{{ cur.email }} · {{ cur.phone }}</div><div style="display:flex;align-items:center;gap:12px;margin-top:14px;max-width:360px;flex-wrap:wrap"><dc-import name="Belt" color="{{ cur.beltColor }}" degrees="{{ cur.degrees }}" style="width:200px;height:20px" hint-size="200px,20px"></dc-import><span style="font-size:12.5px;font-weight:600;color:#5c5d63">Faixa {{ cur.beltName }} · {{ cur.degrees }}º grau</span></div></div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end"><div style="{{ cur.aptoStyle }}">{{ cur.aptoLabel }}</div><div style="display:flex;gap:8px"><div style="height:36px;padding:0 14px;border-radius:9px;background:#fff;border:1px solid #e6e6e9;font-size:12.5px;font-weight:600;color:#17181c;display:flex;align-items:center;cursor:pointer" style-hover="border-color:#cfcfd4">+ Grau</div><div style="height:36px;padding:0 15px;border-radius:9px;background:#e08a1e;color:#17181c;font-size:12.5px;font-weight:700;display:flex;align-items:center;cursor:pointer">Promover faixa</div></div></div>
+        </div>
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          <div style="flex:1.4;min-width:280px;display:flex;flex-direction:column;gap:14px">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:14px;padding:18px 20px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-weight:700;font-size:14px;color:#17181c">Progresso para {{ cur.next }}</span><span style="font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:#9b9ca2">{{ cur.pc }} / {{ cur.pr }} aulas</span></div><div style="height:11px;border-radius:6px;background:#efeff1;overflow:hidden"><div style="height:100%;border-radius:6px;background:{{ cur.progBg }};width:{{ cur.pct }}"></div></div><div style="font-size:12px;color:#8b8c92;margin-top:9px">{{ cur.progNote }}</div></div>
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:14px;overflow:hidden"><div style="display:flex;align-items:center;justify-content:space-between;padding:15px 20px 11px"><span style="font-weight:700;font-size:14px;color:#17181c">Histórico de presenças</span><span style="font-size:12px;font-weight:600;color:#c9781a;cursor:pointer">+ Retroativa</span></div><sc-for list="{{ history }}" as="h" hint-placeholder-count="6"><div style="display:flex;align-items:center;gap:12px;padding:11px 20px;border-top:1px solid #f1f1f3"><div style="width:8px;height:8px;flex:none;border-radius:50%;background:{{ h.dot }}"></div><div style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px;color:#17181c">{{ h.cls }}</div><div style="font-family:'Spline Sans Mono',monospace;font-size:10.5px;color:#9b9ca2;margin-top:2px">{{ h.date }} · {{ h.time }}</div></div><span style="font-size:11.5px;font-weight:600;color:{{ h.fg }}">{{ h.status }}</span></div></sc-for></div>
+          </div>
+          <div style="flex:1;min-width:240px;display:flex;flex-direction:column;gap:14px">
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:14px;padding:16px 18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9b9ca2;margin-bottom:12px">Resumo</div><div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f3f3f5"><span style="font-size:13px;color:#5c5d63">Presenças (mês)</span><span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;color:#17181c">{{ cur.presencas }}</span></div><div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f3f3f5"><span style="font-size:13px;color:#5c5d63">No ranking</span><span style="font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;color:#17181c">{{ cur.rankPos }}º</span></div><div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f3f3f5"><span style="font-size:13px;color:#5c5d63">Pagamento</span><span style="font-size:12.5px;font-weight:600;color:{{ cur.payFg }}">● {{ cur.payLabel }}</span></div><div style="display:flex;justify-content:space-between;padding:7px 0"><span style="font-size:13px;color:#5c5d63">Desde</span><span style="font-size:13px;color:#17181c">{{ cur.joinDate }}</span></div></div>
+            <div style="background:#fff;border:1px solid #e9e9ec;border-radius:14px;padding:8px"><div style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:pointer;font-size:13px;color:#3d3e44;font-weight:500" style-hover="background:#f6f6f7"><span style="width:7px;height:7px;border-radius:2px;background:#cdcdd2"></span>Editar faixa / graus</div><div style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:pointer;font-size:13px;color:#3d3e44;font-weight:500" style-hover="background:#f6f6f7"><span style="width:7px;height:7px;border-radius:2px;background:#cdcdd2"></span>Trocar foto de perfil</div><div style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:pointer;font-size:13px;color:#3d3e44;font-weight:500" style-hover="background:#f6f6f7"><span style="width:7px;height:7px;border-radius:2px;background:#cdcdd2"></span>Resetar progresso</div><div style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:pointer;font-size:13px;color:#3d3e44;font-weight:500" style-hover="background:#f6f6f7"><span style="width:7px;height:7px;border-radius:2px;background:#cdcdd2"></span>Resetar senha</div><div style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:9px;cursor:pointer;font-size:13px;color:#b42318;font-weight:500" style-hover="background:#fdeee9"><span style="width:7px;height:7px;border-radius:2px;background:#e3a59b"></span>Deletar aluno</div></div>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+      <div style="height:74px"></div>
+      <div style="position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;background:#17181c;padding:8px 6px;padding-bottom:calc(8px + env(safe-area-inset-bottom))">
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;cursor:pointer" onClick="{{ goTo.dashboard }}"><span style="width:18px;height:18px;border-radius:4px;border:2px solid {{ navColor.dashboard }}"></span><span style="font-size:10px;font-weight:600;color:{{ navColor.dashboard }}">Início</span></div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;cursor:pointer" onClick="{{ goTo.agenda }}"><span style="width:18px;height:18px;border-radius:4px;border:2px solid {{ navColor.agenda }};position:relative"><span style="position:absolute;left:3px;top:-3px;width:3px;height:5px;background:{{ navColor.agenda }};border-radius:1px"></span><span style="position:absolute;right:3px;top:-3px;width:3px;height:5px;background:{{ navColor.agenda }};border-radius:1px"></span></span><span style="font-size:10px;font-weight:600;color:{{ navColor.agenda }}">Agenda</span></div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;cursor:pointer" onClick="{{ goTo.chamada }}"><span style="width:18px;height:18px;border-radius:4px;border:2px solid {{ navColor.chamada }};position:relative"><span style="position:absolute;left:3px;top:6px;width:9px;height:4px;border-left:2px solid {{ navColor.chamada }};border-bottom:2px solid {{ navColor.chamada }};transform:rotate(-45deg)"></span></span><span style="font-size:10px;font-weight:600;color:{{ navColor.chamada }}">Chamada</span></div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;cursor:pointer" onClick="{{ goTo.alunos }}"><span style="width:18px;height:18px;display:flex;align-items:center;justify-content:center"><span style="width:8px;height:8px;border-radius:50%;border:2px solid {{ navColor.alunos }}"></span></span><span style="font-size:10px;font-weight:600;color:{{ navColor.alunos }}">Alunos</span></div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;cursor:pointer" onClick="{{ openMenu }}"><span style="width:18px;height:18px;display:flex;flex-direction:column;justify-content:center;gap:3px"><span style="height:2px;background:{{ navColor.mais }};border-radius:2px"></span><span style="height:2px;background:{{ navColor.mais }};border-radius:2px"></span><span style="height:2px;background:{{ navColor.mais }};border-radius:2px"></span></span><span style="font-size:10px;font-weight:600;color:{{ navColor.mais }}">Mais</span></div>
+      </div>
+    </sc-if>
+
+  </div>
+
+  <!-- ===================== MOBILE MENU OVERLAY ===================== -->
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:60;background:#17181c;display:flex;flex-direction:column;animation:fp-pop .18s ease-out">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px"><div style="font-weight:700;font-size:17px;color:#fbfbf8">Menu</div><div style="width:36px;height:36px;border-radius:9px;background:#26282e;color:#c9cace;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer" onClick="{{ closeMenu }}">×</div></div>
+      <div style="flex:1;overflow-y:auto;padding:4px 16px 24px">
+        <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="6">
+          <div style="margin-bottom:18px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5c5e66;padding:0 8px 8px">{{ g.title }}</div>
+            <sc-for list="{{ g.items }}" as="n" hint-placeholder-count="2"><div style="{{ n.mItemStyle }}" onClick="{{ n.onClick }}"><span style="{{ n.dotStyle }}"></span><span style="flex:1">{{ n.label }}</span><span style="{{ n.badgeStyle }}">{{ n.badgeText }}</span></div></sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== MODAL ===================== -->
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:70;background:rgba(15,15,18,.55);display:flex;align-items:center;justify-content:center;padding:18px" onClick="{{ closeModal }}">
+      <div style="background:#fff;border-radius:18px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;padding:22px;animation:fp-pop .18s ease-out;box-shadow:0 24px 70px rgba(0,0,0,.3)" onClick="{{ stop }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-family:'Archivo',sans-serif;font-weight:700;font-size:18px;color:#17181c">{{ modalTitle }}</div><div style="width:32px;height:32px;border-radius:8px;background:#f4f4f6;color:#5c5d63;display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer" onClick="{{ closeModal }}">×</div></div>
+
+        <sc-if value="{{ mProf }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <input onInput="{{ formH.name }}" placeholder="Nome do professor" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" />
+            <input onInput="{{ formH.email }}" placeholder="E-mail" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" />
+            <input onInput="{{ formH.senha }}" type="password" placeholder="Senha provisória" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" />
+          </div>
+        </sc-if>
+        <sc-if value="{{ mPlano }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <input onInput="{{ formH.name }}" placeholder="Nome do plano" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" />
+            <div style="display:flex;gap:10px"><input onInput="{{ formH.price }}" placeholder="Preço (R$)" style="flex:1;height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" /><input onInput="{{ formH.credits }}" placeholder="Créditos/mês" style="flex:1;height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" /></div>
+            <input onInput="{{ formH.freq }}" placeholder="Frequência (ex: 2x/semana)" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" />
+            <select onChange="{{ formH.type }}" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 11px;font-size:14px;outline:none;background:#fff;color:#17181c"><option>Coletiva</option><option>Particular</option></select>
+          </div>
+        </sc-if>
+        <sc-if value="{{ mEvento }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <input onInput="{{ formH.title }}" placeholder="Título do evento" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" />
+            <input onInput="{{ formH.date }}" placeholder="Data (ex: 12 jul 2026)" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" />
+            <textarea onInput="{{ formH.desc }}" placeholder="Descrição" style="height:80px;border:1px solid #e6e6e9;border-radius:9px;padding:11px 13px;font-size:14px;outline:none;resize:none;line-height:1.5"></textarea>
+          </div>
+        </sc-if>
+        <sc-if value="{{ mAula }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <input onInput="{{ formH.name }}" placeholder="Nome da aula" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" />
+            <div style="display:flex;gap:10px"><input onInput="{{ formH.day }}" placeholder="Dias (ex: Seg/Qua)" style="flex:1.4;height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" /><input onInput="{{ formH.time }}" placeholder="Horário" style="flex:1;height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" /></div>
+            <div style="display:flex;gap:10px"><input onInput="{{ formH.cap }}" placeholder="Capacidade" style="flex:1;height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" /><select onChange="{{ formH.mode }}" style="flex:1.4;height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 11px;font-size:14px;outline:none;background:#fff;color:#17181c"><option>Aberta</option><option>Turma Fixa</option></select></div>
+            <select onChange="{{ formH.instr }}" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 11px;font-size:14px;outline:none;background:#fff;color:#17181c"><sc-for list="{{ profNames }}" as="pn" hint-placeholder-count="3"><option>{{ pn }}</option></sc-for></select>
+          </div>
+        </sc-if>
+        <sc-if value="{{ mSlot }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <div style="display:flex;gap:10px"><input onInput="{{ formH.day }}" placeholder="Dia (ex: Ter)" style="flex:1;height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" /><input onInput="{{ formH.time }}" placeholder="Horário" style="flex:1;height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 13px;font-size:14px;outline:none" /></div>
+            <select onChange="{{ formH.instr }}" style="height:42px;border:1px solid #e6e6e9;border-radius:9px;padding:0 11px;font-size:14px;outline:none;background:#fff;color:#17181c"><sc-for list="{{ profNames }}" as="pn" hint-placeholder-count="3"><option>{{ pn }}</option></sc-for></select>
+          </div>
+        </sc-if>
+        <sc-if value="{{ mMatriculas }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:13px;color:#8b8c92;margin-bottom:10px">{{ matriculaSub }}</div>
+          <div style="display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto">
+            <sc-for list="{{ matriculaList }}" as="m" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:10px;border:1px solid #f1f1f3;cursor:pointer" onClick="{{ m.toggle }}"><div style="width:30px;height:30px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;background:{{ m.avBg }};color:{{ m.avFg }}">{{ m.initials }}</div><span style="flex:1;font-size:13px;font-weight:600;color:#17181c">{{ m.name }}</span><span style="{{ m.checkStyle }}">{{ m.check }}</span></div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showSubmit }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;gap:10px;margin-top:18px"><div style="flex:1;height:44px;border-radius:10px;background:#f4f4f6;color:#5c5d63;font-size:13.5px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ closeModal }}">Cancelar</div><div style="flex:1.4;height:44px;border-radius:10px;background:#e08a1e;color:#17181c;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer" onClick="{{ submitModal }}">{{ submitLabel }}</div></div>
+        </sc-if>
+        <sc-if value="{{ mMatriculas }}" hint-placeholder-val="{{ false }}">
+          <div style="height:44px;border-radius:10px;background:#17181c;color:#fff;font-size:13.5px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:16px" onClick="{{ closeModal }}">Concluir</div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== TIMER FULLSCREEN ===================== -->
+  <sc-if value="{{ isTimer }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:80;background:#0e0e11;display:flex;flex-direction:column;color:#fff">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 26px"><div style="display:flex;align-items:center;gap:10px"><div style="width:30px;height:30px;border-radius:8px;background:#e08a1e;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;color:#17181c">V</div><span style="font-weight:700;font-size:14px;color:#fbfbf8">Timer · Tatame</span></div><div style="width:38px;height:38px;border-radius:10px;background:#1f2126;color:#c9cace;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer" onClick="{{ goTo.dashboard }}">×</div></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px">
+        <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:18vw;line-height:.9;letter-spacing:-.03em;color:{{ timerColor }};font-variant-numeric:tabular-nums">{{ timerText }}</div>
+        <div style="display:flex;gap:10px">
+          <div style="height:46px;padding:0 20px;border-radius:11px;background:#1f2126;color:#fbfbf8;font-weight:700;font-size:14px;display:flex;align-items:center;cursor:pointer" onClick="{{ timerAdd1 }}">+1 min</div>
+          <div style="height:46px;padding:0 20px;border-radius:11px;background:#1f2126;color:#fbfbf8;font-weight:700;font-size:14px;display:flex;align-items:center;cursor:pointer" onClick="{{ timerAdd3 }}">+3 min</div>
+          <div style="height:46px;padding:0 20px;border-radius:11px;background:#1f2126;color:#fbfbf8;font-weight:700;font-size:14px;display:flex;align-items:center;cursor:pointer" onClick="{{ timerAdd5 }}">+5 min</div>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center">
+          <div style="width:72px;height:72px;border-radius:50%;background:#1f2126;color:#c9cace;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;cursor:pointer" onClick="{{ timerReset }}">Reset</div>
+          <div style="width:96px;height:96px;border-radius:50%;background:#e08a1e;color:#17181c;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 8px 30px rgba(224,138,30,.4)" onClick="{{ timerToggle }}">{{ timerBtn }}</div>
+        </div>
+      </div>
+      <div style="background:#16161a;border-top:1px solid #26282e;padding:14px 26px"><div style="font-family:'Spline Sans Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:#76787f;margin-bottom:10px">Ranking do mês</div><div style="display:flex;gap:20px;overflow-x:auto"><sc-for list="{{ timerRank }}" as="r" hint-placeholder-count="5"><div style="display:flex;align-items:center;gap:9px;flex:none"><span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;color:#e08a1e">{{ r.rank }}</span><div style="width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:10.5px;background:{{ r.avBg }};color:{{ r.avFg }}">{{ r.initials }}</div><div><div style="font-size:12px;font-weight:600;color:#fbfbf8">{{ r.name }}</div><div style="font-size:10px;color:#9b9ca2">{{ r.presencas }} check-ins</div></div></div></sc-for></div></div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    screen:'dashboard', activeId:2, vw:1280, period:'mes', call:{}, removed:{}, callDay:3,
+    menuOpen:false, modal:null, agendaDay:3, rankMonthIdx:5,
+    nTitle:'', nMsg:'', reqTrack:'adulto', tick:0,
+    timerSec:300, timerRunning:false,
+    profs:[
+      {id:1,name:'Carlos Tavares',email:'carlos@vertice.com',role:'Owner',turmas:4},
+      {id:2,name:'Renata Dias',email:'renata@vertice.com',role:'Professora',turmas:3},
+      {id:3,name:'Marcos Vieira',email:'marcos@vertice.com',role:'Professor',turmas:2},
+    ],
+    grupos:[
+      {id:1,name:'Fundamentos Gi',day:'Seg/Qua/Sex',time:'19h00',cap:30,enrolled:24,mode:'Aberta',kids:false,instr:'Renata Dias'},
+      {id:2,name:'Avançada',day:'Ter/Qui',time:'20h00',cap:20,enrolled:16,mode:'Aberta',kids:false,instr:'Carlos Tavares'},
+      {id:3,name:'No-Gi',day:'Qua/Sex',time:'20h00',cap:24,enrolled:18,mode:'Aberta',kids:false,instr:'Marcos Vieira'},
+      {id:4,name:'Kids Turma A',day:'Seg/Qua',time:'17h00',cap:16,enrolled:12,mode:'Turma Fixa',kids:true,instr:'Renata Dias'},
+      {id:5,name:'Competição',day:'Sáb',time:'10h00',cap:12,enrolled:8,mode:'Turma Fixa',kids:false,instr:'Carlos Tavares'},
+    ],
+    matriculas:{},
+    slots:[
+      {id:1,day:'Ter',time:'07h00',instr:'Carlos Tavares',students:['Rafael Lima'],active:true},
+      {id:2,day:'Ter',time:'19h00',instr:'Renata Dias',students:['Rafael Lima','Diego Martins'],active:true},
+      {id:3,day:'Qui',time:'07h00',instr:'Marcos Vieira',students:[],active:true},
+      {id:4,day:'Sex',time:'18h00',instr:'Carlos Tavares',students:['Pedro Gomes','Diego Martins','Ana Ribeiro','Marina Souza'],active:false},
+    ],
+    eventos:[
+      {id:1,title:'Exame de Faixa — 1º Semestre',date:'12 jul 2026',desc:'Avaliação de graduação para todas as faixas. Presença obrigatória dos candidatos inscritos.'},
+      {id:2,title:'Seminário com Faixa-Preta Convidado',date:'26 jul 2026',desc:'Workshop de 3h sobre guarda e passagens. Aberto a partir da faixa azul.'},
+      {id:3,title:'Open Interno Vértice',date:'09 ago 2026',desc:'Campeonato interno por categorias de peso e faixa. Inscrições na recepção.'},
+    ],
+    notifs:[
+      {id:1,title:'Aula de sábado remarcada',msg:'A aula de competição de sábado será às 11h em vez de 10h.',when:'há 2 dias',reach:188},
+      {id:2,title:'Matrículas Kids abertas',msg:'Novas vagas para a turma Kids A às quartas-feiras.',when:'há 5 dias',reach:188},
+    ],
+    planos:[
+      {id:1,name:'Coletiva Mensal',price:'149',freq:'2x por semana',type:'Coletiva',credits:'—',active:true},
+      {id:2,name:'Coletiva Full',price:'199',freq:'Ilimitado',type:'Coletiva',credits:'—',active:true},
+      {id:3,name:'Particular 4',price:'480',freq:'Mensal',type:'Particular',credits:'4',active:true},
+      {id:4,name:'Particular 8',price:'880',freq:'Mensal',type:'Particular',credits:'8',active:false},
+    ],
+    upgrades:[
+      {id:1,name:'Marina Souza',sid:1,from:'Coletiva Mensal',to:'Coletiva Full'},
+      {id:2,name:'Pedro Gomes',sid:7,from:'Coletiva Full',to:'Particular 4'},
+      {id:3,name:'Lucas Pereira',sid:8,from:'Coletiva Mensal',to:'Coletiva Full'},
+    ],
+    aprovacoes:[
+      {id:1,name:'Felipe Andrade',initials:'FA',avBg:'#dfe6f5',avFg:'#3457a6',email:'felipe.andrade@email.com',when:'há 1h',kids:false},
+      {id:2,name:'Sofia Mendes',initials:'SM',avBg:'#ede4f3',avFg:'#6d28d9',email:'sofia.mendes@email.com',when:'há 3h',kids:false},
+      {id:3,name:'Theo Barros',initials:'TB',avBg:'#efe6da',avFg:'#8a5a2b',email:'resp.theo@email.com',when:'há 5h',kids:true},
+      {id:4,name:'Camila Rocha',initials:'CR',avBg:'#e4e4e6',avFg:'#3a3a3e',email:'camila.rocha@email.com',when:'ontem',kids:false},
+      {id:5,name:'Igor Nunes',initials:'IN',avBg:'#dfe6f5',avFg:'#3457a6',email:'igor.nunes@email.com',when:'ontem',kids:false},
+      {id:6,name:'Lara Pires',initials:'LP',avBg:'#ede4f3',avFg:'#6d28d9',email:'resp.lara@email.com',when:'há 2 dias',kids:true},
+      {id:7,name:'Bruno Sá',initials:'BS',avBg:'#efe6da',avFg:'#8a5a2b',email:'bruno.sa@email.com',when:'há 2 dias',kids:false},
+    ],
+    req:{
+      adulto:[ {belt:'branca',name:'Branca',cells:[20,24,28,32]},{belt:'azul',name:'Azul',cells:[40,44,48,52]},{belt:'roxa',name:'Roxa',cells:[48,52,56,60]},{belt:'marrom',name:'Marrom',cells:[56,60,64,68]},{belt:'preta',name:'Preta',cells:[120,120,120,120]} ],
+      kids:[ {belt:'branca',name:'Branca',cells:[16,18,20,22]},{belt:'cinza',name:'Cinza',cells:[20,22,24,26]},{belt:'amarela',name:'Amarela',cells:[24,26,28,30]},{belt:'laranja',name:'Laranja',cells:[28,30,32,34]},{belt:'verde',name:'Verde',cells:[32,34,36,38]} ],
+    },
+  };
+
+  componentDidMount(){ this._onR = () => this.setState({ vw: window.innerWidth }); this._onR(); window.addEventListener('resize', this._onR); }
+  componentWillUnmount(){ window.removeEventListener('resize', this._onR); clearInterval(this._tid); }
+
+  go(screen, id){ this.setState(s => ({ screen, activeId: id ?? s.activeId, menuOpen:false })); window.scrollTo(0,0); }
+  openMenu(){ this.setState({ menuOpen:true }); }
+  closeMenu(){ this.setState({ menuOpen:false }); }
+
+  setCall(id, status){ this.setState(s => ({ call: { ...s.call, [id]: s.call[id]===status ? null : status } })); }
+  del(id){ this.setState(s => ({ removed: { ...s.removed, [id]:true } })); }
+  setPeriod(p){ this.setState({ period:p }); }
+
+  // CRUD
+  openModal(type, extra){ this._form = {}; this.setState({ modal:{ type, ...(extra||{}) } }); }
+  closeModal(){ this.setState({ modal:null }); }
+  submitModal(){
+    const f = this._form || {}; const t = this.state.modal && this.state.modal.type; const id = Date.now();
+    if(t==='prof') this.setState(s=>({ profs:[...s.profs, {id, name:f.name||'Novo professor', email:f.email||'—', role:'Professor', turmas:0}] }));
+    if(t==='plano') this.setState(s=>({ planos:[...s.planos, {id, name:f.name||'Novo plano', price:f.price||'0', freq:f.freq||'Mensal', type:f.type||'Coletiva', credits:f.credits||'—', active:true}] }));
+    if(t==='evento') this.setState(s=>({ eventos:[...s.eventos, {id, title:f.title||'Novo evento', date:f.date||'—', desc:f.desc||''}] }));
+    if(t==='aula') this.setState(s=>({ grupos:[...s.grupos, {id, name:f.name||'Nova aula', day:f.day||'Seg', time:f.time||'19h00', cap:Number(f.cap)||20, enrolled:0, mode:f.mode||'Aberta', kids:false, instr:f.instr||'Carlos Tavares'}] }));
+    if(t==='slot') this.setState(s=>({ slots:[...s.slots, {id, day:f.day||'Ter', time:f.time||'19h00', instr:f.instr||'Carlos Tavares', students:[], active:true}] }));
+    this.closeModal();
+  }
+  delProf(id){ this.setState(s=>({ profs: s.profs.filter(p=>p.id!==id) })); }
+  delEvento(id){ this.setState(s=>({ eventos: s.eventos.filter(e=>e.id!==id) })); }
+  togglePlano(id){ this.setState(s=>({ planos: s.planos.map(p=> p.id===id?{...p,active:!p.active}:p) })); }
+  toggleSlot(id){ this.setState(s=>({ slots: s.slots.map(sl=> sl.id===id?{...sl,active:!sl.active}:sl) })); }
+  approveAluno(id){ this.setState(s=>({ aprovacoes: s.aprovacoes.filter(a=>a.id!==id) })); }
+  approveUpgrade(id){ this.setState(s=>({ upgrades: s.upgrades.filter(u=>u.id!==id) })); }
+  sendNotif(){ const t=(this.state.nTitle||'').trim(); const m=(this.state.nMsg||'').trim(); if(!t&&!m) return; this.setState(s=>({ notifs:[{id:Date.now(), title:t||'(sem título)', msg:m, when:'agora', reach:188}, ...s.notifs], nTitle:'', nMsg:'' })); }
+  setReq(track, ri, ci, delta){ this.setState(s=>{ const arr=s.req[track].map((r,i)=> i!==ri?r:{...r, cells:r.cells.map((v,j)=> j!==ci?v:Math.max(0, v+delta))}); return { req: {...s.req, [track]:arr} }; }); }
+  toggleMatricula(cid, name){ this.setState(s=>{ const cur=s.matriculas[cid]||{}; return { matriculas: {...s.matriculas, [cid]: {...cur, [name]: !cur[name]}} }; }); }
+
+  // timer
+  timerToggle(){ if(this.state.timerRunning){ clearInterval(this._tid); this.setState({timerRunning:false}); } else { clearInterval(this._tid); this._tid=setInterval(()=>{ this.setState(s=>{ if(s.timerSec<=1){ clearInterval(this._tid); return {timerSec:0,timerRunning:false}; } return {timerSec:s.timerSec-1}; }); },1000); this.setState({timerRunning:true}); } }
+  timerAdd(min){ this.setState(s=>({ timerSec: s.timerSec + min*60 })); }
+  timerReset(){ clearInterval(this._tid); this.setState({ timerSec:300, timerRunning:false }); }
+
+  renderVals(){
+    const A = '#e08a1e';
+    const vw = this.state.vw, isMobile = vw < 820, screen = this.state.screen;
+    const PAY = { ok:{label:'Em dia',fg:'#0f7a4d'}, pend:{label:'Pendente',fg:'#b45309'}, late:{label:'Atrasado',fg:'#b42318'} };
+    const BELT = { branca:'#efeee9', azul:'#1d4ed8', roxa:'#5b21b6', marrom:'#5c3a1e', preta:'#161616', cinza:'#9a9ca3', amarela:'#e6b800', laranja:'#e0701e', verde:'#1f8a4c' };
+    const BELTNAME = { branca:'Branca', azul:'Azul', roxa:'Roxa', marrom:'Marrom', preta:'Preta' };
+    const TYPE = { Coletiva:{typeBg:'#f1f1f3',typeFg:'#5c5d63'}, Particular:{typeBg:'#fbf0dd',typeFg:'#b45309'} };
+    const ini = n => n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+
+    const raw = [
+      { id:1, name:'Marina Souza',  initials:'MS', avBg:'#ede4f3', avFg:'#6d28d9', belt:'roxa',   degrees:2, type:'Coletiva',   presencas:24, pay:'ok',   email:'marina.souza@email.com',  phone:'(11) 99812-4471', join:'mar/2023', pc:24, pr:40, next:'3º grau' },
+      { id:2, name:'Rafael Lima',   initials:'RL', avBg:'#dfe6f5', avFg:'#3457a6', belt:'azul',   degrees:4, type:'Particular', presencas:31, pay:'ok',   email:'rafael.lima@email.com',   phone:'(11) 99744-2210', join:'jan/2022', pc:52, pr:40, next:'Faixa Roxa' },
+      { id:3, name:'Bruno Alves',   initials:'BA', avBg:'#efe6da', avFg:'#8a5a2b', belt:'marrom', degrees:1, type:'Coletiva',   presencas:18, pay:'pend', email:'bruno.alves@email.com',   phone:'(11) 99503-8890', join:'set/2021', pc:30, pr:48, next:'2º grau' },
+      { id:4, name:'Júlia Castro',  initials:'JC', avBg:'#eceae3', avFg:'#6f6a5c', belt:'branca', degrees:3, type:'Coletiva',   presencas:22, pay:'ok',   email:'julia.castro@email.com',  phone:'(11) 99410-7723', join:'fev/2024', pc:38, pr:30, next:'4º grau' },
+      { id:5, name:'Diego Martins', initials:'DM', avBg:'#e4e4e6', avFg:'#3a3a3e', belt:'preta',  degrees:1, type:'Particular', presencas:40, pay:'ok',   email:'diego.martins@email.com', phone:'(11) 99388-1102', join:'ago/2018', pc:60, pr:120,next:'2º grau' },
+      { id:6, name:'Ana Ribeiro',   initials:'AR', avBg:'#ede4f3', avFg:'#6d28d9', belt:'roxa',   degrees:1, type:'Coletiva',   presencas:27, pay:'ok',   email:'ana.ribeiro@email.com',   phone:'(11) 99277-5567', join:'mai/2023', pc:34, pr:40, next:'2º grau' },
+      { id:7, name:'Pedro Gomes',   initials:'PG', avBg:'#efe6da', avFg:'#8a5a2b', belt:'marrom', degrees:2, type:'Particular', presencas:20, pay:'pend', email:'pedro.gomes@email.com',   phone:'(11) 99155-9034', join:'out/2020', pc:22, pr:48, next:'3º grau' },
+      { id:8, name:'Lucas Pereira', initials:'LP', avBg:'#dfe6f5', avFg:'#3457a6', belt:'azul',   degrees:0, type:'Coletiva',   presencas:9,  pay:'late', email:'lucas.pereira@email.com', phone:'(11) 99044-3320', join:'abr/2024', pc:9,  pr:32, next:'1º grau' },
+    ];
+    const deco = s => ({ ...s, beltColor:BELT[s.belt], beltName:BELTNAME[s.belt], ...TYPE[s.type], payLabel:PAY[s.pay].label, payFg:PAY[s.pay].fg, open:()=>this.go('profile', s.id) });
+    const students = raw.map(deco);
+    const byName = {}; students.forEach(s=>byName[s.name]=s);
+    const byPres = [...students].sort((a,b)=> b.presencas - a.presencas);
+    const topStudents = students.slice(0,6);
+
+    // nav
+    const counts = { aprovacoes: this.state.aprovacoes.length, upgrades: this.state.upgrades.length };
+    const navDef = [
+      { title:'Geral', items:[ {key:'dashboard',label:'Dashboard'}, {key:'agenda',label:'Agenda do dia'} ] },
+      { title:'Pessoas', items:[ {key:'alunos',label:'Alunos'}, {key:'aprovacoes',label:'Aprovações', badge:counts.aprovacoes}, {key:'professores',label:'Professores'} ] },
+      { title:'Aulas', items:[ {key:'grupo',label:'Aulas em grupo'}, {key:'particulares',label:'Aulas particulares'} ] },
+      { title:'Presença & graduação', items:[ {key:'chamada',label:'Chamada'}, {key:'presencas',label:'Presenças'}, {key:'ranking',label:'Ranking'}, {key:'requisitos',label:'Requisitos'} ] },
+      { title:'Gestão', items:[ {key:'planos',label:'Planos'}, {key:'eventos',label:'Eventos'}, {key:'notificacoes',label:'Notificações'} ] },
+      { title:'Ferramentas', items:[ {key:'timer',label:'Timer'} ] },
+    ];
+    const activeKey = screen==='profile' ? 'alunos' : screen;
+    const navGroups = navDef.map(g=>({ title:g.title, items: g.items.map(n=>{
+      const active = n.key===activeKey;
+      const hasBadge = n.badge>0;
+      return { ...n, onClick:()=>this.go(n.key),
+        itemStyle:`display:flex;align-items:center;gap:11px;padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:${active?600:500};color:${active?'#f3b765':'#9a9ca3'};background:${active?'#26282e':'transparent'}`,
+        mItemStyle:`display:flex;align-items:center;gap:12px;padding:13px 14px;border-radius:11px;cursor:pointer;font-size:15px;font-weight:${active?600:500};color:${active?'#f3b765':'#c9cace'};background:${active?'#26282e':'transparent'}`,
+        dotStyle:`width:6px;height:6px;border-radius:2px;flex:none;background:${active?A:'#46484f'}`,
+        badgeText: hasBadge ? String(n.badge) : '',
+        badgeStyle: hasBadge ? 'font-family:Archivo,sans-serif;font-size:10.5px;font-weight:700;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#e08a1e;color:#17181c;display:flex;align-items:center;justify-content:center' : 'display:none' };
+    }) }));
+    const navColor = { dashboard: activeKey==='dashboard'?A:'#6b6d75', agenda: activeKey==='agenda'?A:'#6b6d75', chamada: activeKey==='chamada'?A:'#6b6d75', alunos: activeKey==='alunos'?A:'#6b6d75', mais: this.state.menuOpen?A:'#6b6d75' };
+    const goTo = { dashboard:()=>this.go('dashboard'), agenda:()=>this.go('agenda'), chamada:()=>this.go('chamada'), alunos:()=>this.go('alunos'), aprovacoes:()=>this.go('aprovacoes'), planos:()=>this.go('planos') };
+
+    // bars
+    const hC = [60,44,78,52,88,40,30];
+    const bars = hC.map((h,i)=>({ h:h+'%', day:['S','T','Q','Q','S','S','D'][i], bg: i===4?A:'#f0c48a' }));
+
+    // chamada
+    const dow = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom']; const weekNums=[21,22,23,24,25,26,27];
+    const mkWeek = (sel, setter) => dow.map((d,i)=>{ const active=i===sel; return { dow:d, num:weekNums[i], onClick:()=>setter(i), style:`flex:none;min-width:54px;padding:9px 0;border-radius:11px;text-align:center;cursor:pointer;color:${active?'#17181c':'#8b8c92'};background:${active?'#fff':'transparent'};border:1px solid ${active?'#e08a1e':'#e9e9ec'};box-shadow:${active?'0 2px 8px rgba(224,138,30,.15)':'none'}` }; });
+    const weekDays = mkWeek(this.state.callDay, i=>this.setState({callDay:i}));
+    const bDef = [ {id:'b1',sid:0,cls:'Fundamentos Gi',time:'19h00'},{id:'b2',sid:1,cls:'Particular',time:'19h00'},{id:'b3',sid:5,cls:'No-Gi',time:'20h00'},{id:'b4',sid:2,cls:'Fundamentos Gi',time:'19h00'},{id:'b5',sid:4,cls:'Avançada',time:'20h00'},{id:'b6',sid:7,cls:'Kids',time:'17h00'},{id:'b7',sid:6,cls:'Particular',time:'18h00'} ];
+    const btnBase='padding:7px 12px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid #ececef;background:#fff;color:#8b8c92';
+    const ACT={ presente:'padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid #b9e2cb;background:#e7f4ec;color:#0f7a4d', cancelou:'padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid #f3c9bd;background:#fdeee9;color:#b42318', ausente:'padding:7px 12px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid #d8d8dd;background:#f1f1f3;color:#5c5d63' };
+    const bookings = bDef.filter(b=>!this.state.removed[b.id]).map(b=>{ const s=students[b.sid]; const st=this.state.call[b.id]; return { id:b.id, name:s.name, initials:s.initials, avBg:s.avBg, avFg:s.avFg, beltColor:s.beltColor, degrees:s.degrees, cls:b.cls, time:b.time, presenteStyle:st==='presente'?ACT.presente:btnBase, cancelouStyle:st==='cancelou'?ACT.cancelou:btnBase, ausenteStyle:st==='ausente'?ACT.ausente:btnBase, onPresente:()=>this.setCall(b.id,'presente'), onCancelou:()=>this.setCall(b.id,'cancelou'), onAusente:()=>this.setCall(b.id,'ausente'), onDelete:()=>this.del(b.id) }; });
+    const callCounts = { presente: bookings.filter(b=>this.state.call[b.id]==='presente').length, pendente: bookings.filter(b=>!this.state.call[b.id]).length };
+
+    // presencas
+    const PERIODS = { semana:{label:'Esta semana',total:'512',ativos:142,media:'3,6',top:'Diego Martins',topInitials:'DM',topCount:14}, mes:{label:'Este mês',total:'2.018',ativos:188,media:'10,7',top:'Diego Martins',topInitials:'DM',topCount:40}, trimestre:{label:'Trimestre',total:'5.840',ativos:204,media:'28,6',top:'Rafael Lima',topInitials:'RL',topCount:96}, custom:{label:'Personalizado',total:'1.204',ativos:170,media:'7,1',top:'Ana Ribeiro',topInitials:'AR',topCount:31} };
+    const period = PERIODS[this.state.period];
+    const periods = [ {k:'semana',label:'Semana'},{k:'mes',label:'Mês'},{k:'trimestre',label:'Trimestre'},{k:'custom',label:'Custom'} ].map(p=>{ const active=p.k===this.state.period; return { label:p.label, onClick:()=>this.setPeriod(p.k), style:`padding:7px 14px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;color:${active?'#17181c':'#8b8c92'};background:${active?'#fff':'transparent'};box-shadow:${active?'0 1px 3px rgba(0,0,0,.1)':'none'}` }; });
+    const MEDAL=['#d8a623','#a7a9ad','#c08552'], PBG=['#fdf6e3','#f5f5f6','#f8efe6'], PBORDER=['#f0e0b0','#e6e6e9','#ecd9c6'], PH=['168px','150px','150px'];
+    const podium = byPres.slice(0,3).map((s,i)=>({ rank:i+1, name:s.name, initials:s.initials, presencas:s.presencas, avBg:s.avBg, avFg:s.avFg, medal:MEDAL[i], bg:PBG[i], border:PBORDER[i], h:PH[i] }));
+    const rankRest = byPres.slice(3).map((s,i)=>({ rank:i+4, name:s.name, initials:s.initials, presencas:s.presencas, avBg:s.avBg, avFg:s.avFg, beltColor:s.beltColor, degrees:s.degrees, open:s.open }));
+    // ranking mensal
+    const MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const rankMonth = MONTHS[this.state.rankMonthIdx];
+    const EMO=['🥇','🥈','🥉'], PHB=['210px','185px','185px'];
+    const podiumBig = byPres.slice(0,3).map((s,i)=>({ rank:i+1, name:s.name, initials:s.initials, presencas:s.presencas, avBg:s.avBg, avFg:s.avFg, medal:MEDAL[i], medalEmoji:EMO[i], bg:PBG[i], border:PBORDER[i], h:PHB[i] }));
+    const navBtn = 'width:36px;height:36px;border-radius:9px;background:#fff;border:1px solid #e6e6e9;display:flex;align-items:center;justify-content:center;font-size:18px;color:#5c5d63;cursor:pointer';
+    const rankPrev=()=>this.setState(s=>({rankMonthIdx:Math.max(0,s.rankMonthIdx-1)}));
+    const rankNext=()=>this.setState(s=>({rankMonthIdx:Math.min(11,s.rankMonthIdx+1)}));
+
+    // agenda do dia
+    const agendaWeek = mkWeek(this.state.agendaDay, i=>this.setState({agendaDay:i}));
+    const dayTok = dow[this.state.agendaDay];
+    const kidsStyle='font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:20px;background:#eef6ff;color:#2f6fd4';
+    const modeStyleOf = m => m==='Aberta' ? 'font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:#eaf6f0;color:#0c7a52' : 'font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:#f1ecfb;color:#6d28d9';
+    const agendaGrupos = this.state.grupos.filter(c=>c.day.includes(dayTok)).map(c=>({ ...c, kidsStyle: c.kids?kidsStyle:'display:none', modeStyle:modeStyleOf(c.mode), manage:()=>this.openModal('matriculas',{cid:c.id, cname:c.name, cap:c.cap}) }));
+    const agendaSlots = this.state.slots.filter(sl=>sl.day===dayTok).map(sl=>({ ...sl, label: sl.students.length?sl.students.join(', '):'Disponível', status: sl.active?(sl.students.length?'Vinculado':'Aberto'):'Inativo', statusStyle: sl.active?(sl.students.length?'font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:#fbf0dd;color:#b45309':'font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:#eaf6f0;color:#0c7a52'):'font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;background:#f1f1f3;color:#9b9ca2', manage:()=>this.go('particulares') }));
+
+    // professores
+    const roleStyleOf = r => r==='Owner' ? 'font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:20px;background:#fbf0dd;color:#b45309' : 'font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:20px;background:#f1f1f3;color:#5c5d63';
+    const delBtn='width:34px;height:34px;border-radius:8px;border:1px solid #ececef;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#b42318';
+    const profs = this.state.profs.map(p=>({ ...p, initials:ini(p.name), roleStyle:roleStyleOf(p.role), delStyle:delBtn, del:()=>this.delProf(p.id) }));
+    const profNames = this.state.profs.map(p=>p.name);
+
+    // grupos
+    const grupos = this.state.grupos.map(c=>({ ...c, kidsStyle:c.kids?kidsStyle:'display:none', modeStyle:modeStyleOf(c.mode), instrInitials:ini(c.instr), fillPct: Math.round(c.enrolled/c.cap*100)+'%', manageLabel: c.mode==='Turma Fixa'?'Matrículas →':'Inscritos →', manage:()=>this.openModal('matriculas',{cid:c.id, cname:c.name, cap:c.cap}) }));
+
+    // slots
+    const slots = this.state.slots.map(sl=>{ const chips=sl.students.map(n=>({name:n})); const free=4-sl.students.length; return { ...sl, chips, hasFree: free>0, countLabel:`${sl.students.length}/4 alunos · ${sl.active?'disponível':'inativo'}`, toggleLabel: sl.active?'Ativo':'Inativo', toggleStyle: sl.active?'font-size:10.5px;font-weight:700;padding:4px 11px;border-radius:20px;background:#eaf6f0;color:#0c7a52;cursor:pointer':'font-size:10.5px;font-weight:700;padding:4px 11px;border-radius:20px;background:#f1f1f3;color:#9b9ca2;cursor:pointer', toggle:()=>this.toggleSlot(sl.id), manage:()=>this.openModal('matriculas',{cid:'slot'+sl.id, cname:`Slot ${sl.day} ${sl.time}`, cap:4, slot:true}) }; });
+
+    // requisitos
+    const reqTracks = [ {k:'adulto',label:'Adulto'},{k:'kids',label:'Kids'} ].map(t=>{ const active=t.k===this.state.reqTrack; return { label:t.label, onClick:()=>this.setState({reqTrack:t.k}), style:`padding:7px 18px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;color:${active?'#17181c':'#8b8c92'};background:${active?'#fff':'transparent'};box-shadow:${active?'0 1px 3px rgba(0,0,0,.1)':'none'}` }; });
+    const track = this.state.reqTrack;
+    const reqRows = this.state.req[track].map((r,ri)=>({ name:r.name, color:BELT[r.belt], cells:r.cells.map((v,ci)=>({ val:v, inc:()=>this.setReq(track,ri,ci,1), dec:()=>this.setReq(track,ri,ci,-1) })) }));
+
+    // planos
+    const planos = this.state.planos.map(p=>({ ...p, cardStyle:`background:#fff;border:1px solid ${p.active?'#e9e9ec':'#ededf0'};border-radius:14px;padding:16px 18px;opacity:${p.active?1:.6}`, typeStyle: p.type==='Particular'?'font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:#fbf0dd;color:#b45309':'font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;background:#f1f1f3;color:#5c5d63', toggleLabel:p.active?'Ativo':'Inativo', toggleStyle: p.active?'font-size:10.5px;font-weight:700;color:#0c7a52;cursor:pointer':'font-size:10.5px;font-weight:700;color:#9b9ca2;cursor:pointer', toggle:()=>this.togglePlano(p.id) }));
+    const upgrades = this.state.upgrades.map(u=>{ const s=students[u.sid-1]||{}; return { ...u, initials:s.initials, avBg:s.avBg, avFg:s.avFg, approve:()=>this.approveUpgrade(u.id), reject:()=>this.approveUpgrade(u.id) }; });
+
+    // eventos
+    const eventos = this.state.eventos.map(e=>{ const m=e.date.split(' '); return { ...e, dayNum:m[0]||'', monL:(m[1]||'').toUpperCase(), delStyle:delBtn+';flex:none', del:()=>this.delEvento(e.id) }; });
+
+    // aprovacoes
+    const aprovacoes = this.state.aprovacoes.map(a=>({ ...a, kidsStyle:a.kids?kidsStyle:'display:none', approve:()=>this.approveAluno(a.id), reject:()=>this.approveAluno(a.id) }));
+
+    // notifs
+    const notifs = this.state.notifs;
+    const sendStyle = 'height:38px;padding:0 18px;border-radius:9px;background:#e08a1e;color:#17181c;font-size:12.5px;font-weight:700;display:flex;align-items:center;cursor:pointer';
+
+    // profile
+    const cur0 = students.find(s=>s.id===this.state.activeId) || students[0];
+    const apto = cur0.pc>=cur0.pr, pct=Math.min(100,Math.round(cur0.pc/cur0.pr*100));
+    const cur = { ...cur0, aptoLabel: apto?'✓ Apto para promoção':'Não apto ainda', aptoStyle: apto?'font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;background:#e7f4ec;color:#0f7a4d':'font-size:12px;font-weight:700;padding:6px 12px;border-radius:20px;background:#f1f1f3;color:#8b8c92', pct:pct+'%', progBg: apto?'#0f9d6b':A, progNote: apto?`Atingiu o mínimo de aulas para ${cur0.next}.`:`Faltam ${Math.max(0,cur0.pr-cur0.pc)} aulas para ${cur0.next}.`, rankPos: byPres.findIndex(s=>s.id===cur0.id)+1, joinDate:cur0.join };
+    const HSTAT={ p:{status:'Presente',fg:'#0f7a4d',dot:'#0f9d6b'}, c:{status:'Cancelou',fg:'#b42318',dot:'#e5634d'}, a:{status:'Ausente',fg:'#8b8c92',dot:'#cdcdd2'} };
+    const history = [ ['Fundamentos Gi','22 jun','19h00','p'],['No-Gi','20 jun','20h00','p'],['Avançada','18 jun','20h00','c'],['Fundamentos Gi','17 jun','19h00','p'],['Particular','15 jun','18h00','p'],['Fundamentos Gi','13 jun','19h00','a'] ].map(h=>({ cls:h[0], date:h[1], time:h[2], ...HSTAT[h[3]] }));
+
+    // modal
+    const modal = this.state.modal, mtype = modal && modal.type;
+    const fields = ['name','email','senha','price','freq','type','credits','title','date','desc','day','time','cap','mode','instr'];
+    const formH = {}; fields.forEach(f=> formH[f] = e=>{ this._form = this._form||{}; this._form[f]=e.target.value; });
+    const MTITLE = { prof:'Novo professor', plano:'Novo plano', evento:'Novo evento', aula:'Nova aula em grupo', slot:'Novo slot particular', matriculas:'Gerenciar alunos' };
+    const SUBMIT = { prof:'Adicionar', plano:'Criar plano', evento:'Criar evento', aula:'Criar aula', slot:'Criar slot' };
+    let matriculaList=[], matriculaSub='';
+    if(mtype==='matriculas'){
+      const mp = this.state.matriculas[modal.cid]||{};
+      const baseSet = {}; // could prefill; start empty toggles
+      matriculaSub = `${modal.cname} · capacidade ${modal.cap}`;
+      matriculaList = students.filter(s=>!modal.slot || s.type==='Particular' || true).map(s=>{ const on=!!mp[s.name]; return { name:s.name, initials:s.initials, avBg:s.avBg, avFg:s.avFg, toggle:()=>this.toggleMatricula(modal.cid,s.name), check:on?'✓':'+', checkStyle: on?'width:26px;height:26px;border-radius:7px;background:#e7f4ec;color:#0f7a4d;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px':'width:26px;height:26px;border-radius:7px;border:1px solid #e6e6e9;color:#9b9ca2;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px' }; });
+    }
+
+    // timer
+    const ts = this.state.timerSec; const mm=String(Math.floor(ts/60)).padStart(2,'0'); const ss=String(ts%60).padStart(2,'0');
+    const timerRank = byPres.slice(0,5).map((s,i)=>({ rank:i+1, name:s.name.split(' ')[0], initials:s.initials, presencas:s.presencas, avBg:s.avBg, avFg:s.avFg }));
+
+    return {
+      isMobile, showSidebar: !isMobile, showTable: !isMobile,
+      isDashboard:screen==='dashboard', isAgenda:screen==='agenda', isAlunos:screen==='alunos', isAprovacoes:screen==='aprovacoes', isProfessores:screen==='professores', isGrupo:screen==='grupo', isParticulares:screen==='particulares', isChamada:screen==='chamada', isPresencas:screen==='presencas', isRanking:screen==='ranking', isRequisitos:screen==='requisitos', isPlanos:screen==='planos', isEventos:screen==='eventos', isNotificacoes:screen==='notificacoes', isProfile:screen==='profile', isTimer:screen==='timer',
+      navGroups, navColor, goTo, counts, menuOpen:this.state.menuOpen, openMenu:()=>this.openMenu(), closeMenu:()=>this.closeMenu(),
+      students, topStudents, bars,
+      weekDays, bookings, callCounts,
+      agendaWeek, agendaGrupos, agendaSlots, agendaGruposEmpty: agendaGrupos.length===0, agendaSlotsEmpty: agendaSlots.length===0,
+      profs, profNames, openAddProf:()=>this.openModal('prof'),
+      grupos, openAddAula:()=>this.openModal('aula'),
+      slots, openAddSlot:()=>this.openModal('slot'),
+      period, periods, podium, rankRest,
+      rankMonth, podiumBig, rankPrev, rankNext, rankPrevStyle:navBtn, rankNextStyle:navBtn,
+      reqTracks, reqRows,
+      planos, upgrades, upgradesEmpty: upgrades.length===0, openAddPlano:()=>this.openModal('plano'),
+      eventos, openAddEvento:()=>this.openModal('evento'),
+      aprovacoes, aprovacoesEmpty: aprovacoes.length===0,
+      notifs, nTitle:this.state.nTitle, nMsg:this.state.nMsg, onNTitle:e=>this.setState({nTitle:e.target.value}), onNMsg:e=>this.setState({nMsg:e.target.value}), sendNotif:()=>this.sendNotif(), sendStyle,
+      cur, history,
+      modalOpen: !!modal, modalTitle: MTITLE[mtype]||'', closeModal:()=>this.closeModal(), submitModal:()=>this.submitModal(), submitLabel:SUBMIT[mtype]||'Salvar', stop:e=>e.stopPropagation(),
+      mProf:mtype==='prof', mPlano:mtype==='plano', mEvento:mtype==='evento', mAula:mtype==='aula', mSlot:mtype==='slot', mMatriculas:mtype==='matriculas', showSubmit: !!mtype && mtype!=='matriculas',
+      formH, matriculaList, matriculaSub,
+      timerText: mm+':'+ss, timerBtn: this.state.timerRunning?'Pausar':'Iniciar', timerColor: ts<=10?'#e5634d':(ts===0?'#e5634d':'#fbfbf8'), timerToggle:()=>this.timerToggle(), timerReset:()=>this.timerReset(), timerAdd1:()=>this.timerAdd(1), timerAdd3:()=>this.timerAdd(3), timerAdd5:()=>this.timerAdd(5), timerRank,
+    };
+  }
+}
+</script>
+</body>
+</html>

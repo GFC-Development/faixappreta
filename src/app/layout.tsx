@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Archivo, Hanken_Grotesk, Spline_Sans_Mono } from "next/font/google";
+import { Archivo, Hanken_Grotesk, Spline_Sans_Mono, Teko } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth-provider";
 
+const teko = Teko({ subsets: ["latin"], variable: "--font-teko" });
 const archivo = Archivo({
   subsets: ["latin"],
   weight: ["500", "600", "700", "800"],
@@ -31,7 +32,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${archivo.variable} ${hanken.variable} ${spline.variable} font-hanken antialiased`}>
+      <body className={`${archivo.variable} ${hanken.variable} ${spline.variable} ${teko.variable} font-hanken antialiased`}>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

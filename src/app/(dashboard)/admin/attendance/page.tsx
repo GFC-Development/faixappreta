@@ -104,7 +104,7 @@ export default function AttendancePage() {
             onClick={() => setPeriod(p.value)}
             className={`px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-colors ${
               period === p.value
-                ? "bg-accent text-[#17181c]"
+                ? "bg-accent text-accent-on"
                 : "bg-[#f4f4f6] text-[#5c5d63] hover:bg-[#eaeaed]"
             }`}
           >

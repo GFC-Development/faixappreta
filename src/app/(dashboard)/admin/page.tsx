@@ -168,7 +168,7 @@ export default function AdminDashboard() {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm text-[#17181c]">Notificações</span>
-              <span className="h-[18px] min-w-[18px] rounded-[9px] bg-accent text-[#17181c] text-[10px] font-bold flex items-center justify-center px-1.5">
+              <span className="h-[18px] min-w-[18px] rounded-[9px] bg-accent text-accent-on text-[10px] font-bold flex items-center justify-center px-1.5">
                 {rescheduleLogs.filter((l) => !l.readByAdmin).length}
               </span>
             </div>

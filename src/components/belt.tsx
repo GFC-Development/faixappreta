@@ -11,6 +11,8 @@ export function Belt({ color, degrees = 0, className }: BeltProps) {
     stripes.push(`${(((i + 1) / (n + 1)) * 100).toFixed(1)}%`);
   }
 
+  const isLight = color.toUpperCase() === "#FFFFFF" || color.toUpperCase() === "#FFF";
+
   return (
     <div
       className={className}
@@ -21,8 +23,6 @@ export function Belt({ color, degrees = 0, className }: BeltProps) {
         borderRadius: 2,
         overflow: "hidden",
         background: "#e9e7e1",
-        boxShadow:
-          "inset 0 0 0 1px rgba(0,0,0,.1), inset 0 -2px 3px rgba(0,0,0,.16)",
       }}
     >
       <div
@@ -61,6 +61,18 @@ export function Belt({ color, degrees = 0, className }: BeltProps) {
           />
         ))}
       </div>
+      {/* Border overlay — renders on top of everything */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          borderRadius: 2,
+          boxShadow: isLight
+            ? "inset 0 0 0 1px rgba(0,0,0,.3), inset 0 -2px 3px rgba(0,0,0,.16)"
+            : "inset 0 0 0 1px rgba(0,0,0,.1), inset 0 -2px 3px rgba(0,0,0,.16)",
+          pointerEvents: "none",
+        }}
+      />
     </div>
   );
 }

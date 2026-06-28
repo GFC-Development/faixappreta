@@ -28,7 +28,7 @@ export function AuthHero({ tenantName, tenantSlug, logoUrl }: AuthHeroProps) {
         />
       ) : (
         <div
-          className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center font-archivo font-extrabold text-[27px] text-[#17181c]"
+          className="w-14 h-14 rounded-2xl bg-accent flex items-center justify-center font-archivo font-extrabold text-[27px] text-[color:var(--color-accent-on)]"
           style={{ boxShadow: "0 8px 24px rgba(224,138,30,.34)" }}
         >
           {initial}

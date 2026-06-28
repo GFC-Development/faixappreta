@@ -14,7 +14,7 @@ export const AuthButton = forwardRef<HTMLButtonElement, AuthButtonProps>(
     const variants = {
       primary: disabled
         ? "bg-[#efe7da] text-[#bba277] cursor-not-allowed"
-        : "bg-accent text-[#17181c] hover:bg-accent-dark",
+        : "bg-accent text-[color:var(--color-accent-on)] hover:bg-accent-dark hover:text-[color:var(--color-accent-dark-on)]",
       secondary:
         "bg-white border border-[#e3e3e0] text-[#17181c] text-[14.5px] font-semibold hover:border-[#cfcfcb]",
     };

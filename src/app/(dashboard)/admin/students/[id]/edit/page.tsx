@@ -233,7 +233,7 @@ export default function EditStudentPage() {
                   onClick={() => setDegrees(d)}
                   className={`w-10 h-10 rounded-[8px] border text-sm font-semibold transition-colors ${
                     degrees === d
-                      ? "bg-accent text-[#17181c] border-accent"
+                      ? "bg-accent text-accent-on border-accent"
                       : "bg-[#f4f4f6] text-[#5c5d63] border-[#e9e9ec] hover:bg-[#eaeaed]"
                   }`}
                 >

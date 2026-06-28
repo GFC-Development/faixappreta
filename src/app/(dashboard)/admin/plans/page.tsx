@@ -195,7 +195,7 @@ export default function AdminPlansPage() {
           onClick={() => setTab("plans")}
           className={`px-4 py-2 rounded-[8px] text-[12px] font-semibold transition-colors ${
             tab === "plans"
-              ? "bg-accent text-[#17181c]"
+              ? "bg-accent text-accent-on"
               : "bg-[#f4f4f6] text-[#5c5d63] hover:bg-[#eaeaed]"
           }`}
         >
@@ -205,7 +205,7 @@ export default function AdminPlansPage() {
           onClick={() => setTab("requests")}
           className={`px-4 py-2 rounded-[8px] text-[12px] font-semibold transition-colors relative ${
             tab === "requests"
-              ? "bg-accent text-[#17181c]"
+              ? "bg-accent text-accent-on"
               : "bg-[#f4f4f6] text-[#5c5d63] hover:bg-[#eaeaed]"
           }`}
         >

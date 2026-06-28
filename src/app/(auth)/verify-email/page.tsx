@@ -9,6 +9,16 @@ import { AuthDivider } from "@/components/auth/auth-divider";
 import { BackButton } from "@/components/auth/back-button";
 import { OtpInput } from "@/components/auth/otp-input";
 
+function getContrastColor(hex: string) {
+  const h = hex.replace('#', '');
+  const r = parseInt(h.substring(0, 2), 16) / 255;
+  const g = parseInt(h.substring(2, 4), 16) / 255;
+  const b = parseInt(h.substring(4, 6), 16) / 255;
+  const toLinear = (c: number) => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  const luminance = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+  return luminance > 0.35 ? '#17181c' : '#ffffff';
+}
+
 function VerifyEmailForm() {
   const searchParams = useSearchParams();
   const emailParam = searchParams.get("email") || "";
@@ -53,9 +63,11 @@ function VerifyEmailForm() {
           if (data.logoUrl) setTenantLogoUrl(data.logoUrl);
           if (data.primaryColor) {
             document.documentElement.style.setProperty("--color-accent", data.primaryColor);
+            document.documentElement.style.setProperty("--color-accent-on", getContrastColor(data.primaryColor));
           }
           if (data.secondaryColor) {
             document.documentElement.style.setProperty("--color-accent-dark", data.secondaryColor);
+            document.documentElement.style.setProperty("--color-accent-dark-on", getContrastColor(data.secondaryColor));
           }
         })
         .catch(() => {});

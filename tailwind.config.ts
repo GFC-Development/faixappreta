@@ -12,6 +12,7 @@ const config: Config = {
         archivo: ["var(--font-archivo)", "sans-serif"],
         hanken: ["var(--font-hanken)", "sans-serif"],
         spline: ["var(--font-spline)", "monospace"],
+        teko: ["var(--font-teko)", "sans-serif"],
       },
       colors: {
         surface: {
@@ -29,6 +30,8 @@ const config: Config = {
           DEFAULT: "var(--color-accent)",
           light: "var(--color-accent-light)",
           dark: "var(--color-accent-dark)",
+          on: "var(--color-accent-on)",
+          "dark-on": "var(--color-accent-dark-on)",
         },
       },
       keyframes: {

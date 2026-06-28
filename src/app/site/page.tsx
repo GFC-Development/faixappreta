@@ -190,7 +190,7 @@ export default function SitePage() {
           <p className="text-red-500 font-bold uppercase tracking-[0.2em] text-sm mb-6 md:mt-6">
             Sistema de gestão para centros de treinamento
           </p>
-          <h1 className="font-archivo text-6xl sm:text-7xl md:text-[7.5rem] font-bold uppercase leading-[0.85] text-white mb-8">
+          <h1 className="font-teko text-6xl sm:text-7xl md:text-[7.5rem] font-bold uppercase leading-[0.85] text-white mb-8">
             Seu CT merece mais do que{" "}
             <span className="text-red-600">planilha e caderno</span>
           </h1>
@@ -224,7 +224,7 @@ export default function SitePage() {
       <section className="py-24 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-archivo text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
+            <h2 className="font-teko text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
               A maioria dos professores passa por isso todos os dias
             </h2>
           </div>
@@ -240,7 +240,7 @@ export default function SitePage() {
             ))}
           </div>
           <div className="text-center mt-12">
-            <h3 className="font-archivo text-4xl sm:text-5xl font-bold uppercase text-white mb-4">
+            <h3 className="font-teko text-4xl sm:text-5xl font-bold uppercase text-white mb-4">
               Se identificou com alguma dessas?
             </h3>
             <p className="text-zinc-400 text-lg">
@@ -257,7 +257,7 @@ export default function SitePage() {
       <section className="py-24 px-4 sm:px-6 bg-[#080808]">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-archivo text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
+            <h2 className="font-teko text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
               Antes e depois do{" "}
               faix<span className="text-red-600">app</span>reta
             </h2>
@@ -287,7 +287,7 @@ export default function SitePage() {
       <section className="py-24 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-archivo text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
+            <h2 className="font-teko text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
               Personalize{" "}
               <span className="text-red-600">do seu jeito</span>.
             </h2>
@@ -300,7 +300,7 @@ export default function SitePage() {
               <div className="w-12 h-12 rounded-2xl bg-red-600/10 flex items-center justify-center mb-6 text-red-600 group-hover:scale-110 transition-transform">
                 <Palette className="w-6 h-6" />
               </div>
-              <h3 className="font-archivo text-3xl font-bold text-white uppercase mb-3">
+              <h3 className="font-teko text-3xl font-bold text-white uppercase mb-3">
                 Sua logo e suas cores
               </h3>
               <p className="text-zinc-400 leading-relaxed">
@@ -311,7 +311,7 @@ export default function SitePage() {
               <div className="w-12 h-12 rounded-2xl bg-red-600/10 flex items-center justify-center mb-6 text-red-600 group-hover:scale-110 transition-transform">
                 <Globe className="w-6 h-6" />
               </div>
-              <h3 className="font-archivo text-3xl font-bold text-white uppercase mb-3">
+              <h3 className="font-teko text-3xl font-bold text-white uppercase mb-3">
                 Endereço próprio
               </h3>
               <p className="text-zinc-400 leading-relaxed mb-4">
@@ -332,7 +332,7 @@ export default function SitePage() {
       <section id="funcionalidades" className="py-24 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="font-archivo text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
+            <h2 className="font-teko text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
               Tudo que você precisa,{" "}
               <span className="text-red-600">nada que você não precisa</span>
             </h2>
@@ -353,7 +353,7 @@ export default function SitePage() {
                   <div className="w-12 h-12 rounded-2xl bg-red-600/10 flex items-center justify-center mb-6 text-red-600">
                     {f.icon}
                   </div>
-                  <h3 className="font-archivo text-4xl font-bold text-white uppercase mb-4">
+                  <h3 className="font-teko text-4xl font-bold text-white uppercase mb-4">
                     {f.titulo}
                   </h3>
                   <p className="text-zinc-400 text-lg leading-relaxed">
@@ -400,7 +400,7 @@ export default function SitePage() {
       {/* Prova social - oculto até termos depoimentos reais */}
       {false && <section className="py-24 px-4 sm:px-6 bg-[#080808]">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="font-archivo text-5xl sm:text-6xl font-bold uppercase text-white mb-16">
+          <h2 className="font-teko text-5xl sm:text-6xl font-bold uppercase text-white mb-16">
             Quem usa, <span className="text-red-600">recomenda</span>
           </h2>
           <div className="grid md:grid-cols-2 gap-8">
@@ -450,7 +450,7 @@ export default function SitePage() {
       <section id="planos" className="py-24 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-archivo text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
+            <h2 className="font-teko text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
               Quanto custa{" "}
               <span className="text-red-600">profissionalizar</span> seu CT?
             </h2>
@@ -475,7 +475,7 @@ export default function SitePage() {
                   <span className="text-zinc-500 text-2xl font-medium">
                     R$
                   </span>
-                  <span className="text-white text-7xl font-archivo font-bold">
+                  <span className="text-white text-7xl font-teko font-bold">
                     179,90
                   </span>
                   <span className="text-zinc-500">/mês</span>
@@ -523,7 +523,7 @@ export default function SitePage() {
       <section className="py-24 px-4 sm:px-6 bg-[#080808]">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="font-archivo text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
+            <h2 className="font-teko text-5xl sm:text-6xl font-bold uppercase text-white mb-4">
               Perguntas frequentes
             </h2>
           </div>
@@ -539,7 +539,7 @@ export default function SitePage() {
       <section className="py-24 px-4 sm:px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-red-600/10 blur-[120px] rounded-full -bottom-1/2 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96" />
         <div className="max-w-3xl mx-auto text-center relative z-10">
-          <h2 className="font-archivo text-5xl md:text-7xl font-bold uppercase text-white mb-6">
+          <h2 className="font-teko text-5xl md:text-7xl font-bold uppercase text-white mb-6">
             Seu tempo no tatame é{" "}
             <span className="text-red-600">para ensinar</span>, não para
             preencher planilha

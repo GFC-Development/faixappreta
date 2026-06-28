@@ -45,7 +45,7 @@ export function PhotoUpload({ preview, onChange }: PhotoUploadProps) {
             </span>
           </div>
         )}
-        <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-accent border-[3px] border-[#f7f7f8] flex items-center justify-center text-[#17181c] font-extrabold text-sm">
+        <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-accent border-[3px] border-[#f7f7f8] flex items-center justify-center text-[color:var(--color-accent-on)] font-extrabold text-sm">
           +
         </div>
         <input

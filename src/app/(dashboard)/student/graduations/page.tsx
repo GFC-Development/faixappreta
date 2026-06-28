@@ -42,7 +42,7 @@ export default function GraduationsPage() {
         </Card>
       ) : (
         <div className="relative pl-8">
-          <div className="absolute left-3 top-2 bottom-2 w-px border-l-2 border-dashed border-[#e9e9ec]" />
+          <div className="absolute left-[15px] top-2 bottom-2 border-l-2 border-dashed border-[#e9e9ec]" />
 
           <div className="space-y-6">
             {logs.map((log) => {
@@ -55,7 +55,7 @@ export default function GraduationsPage() {
 
               return (
                 <div key={log.id} className="relative">
-                  <div className="absolute -left-5 top-3 w-3 h-3 rounded-full bg-accent border-2 border-[#f4f4f6]" />
+                  <div className="absolute -left-[22px] top-3 w-3 h-3 rounded-full bg-accent border-2 border-[#f4f4f6]" />
 
                   <Card className="!p-4">
                     <div className="mb-2">
